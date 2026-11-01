@@ -6,6 +6,7 @@ Generated with Archify from the JSON sources in `candidates/`, pinned to commit 
 | Diagram | What it shows |
 |---|---|
 | [system-architecture.html](system-architecture.html) | End-to-end system: SPA, FastAPI, LangGraph, agents, services, providers, RAG, SQLite, MCP |
+| [langgraph-workflow.html](langgraph-workflow.html) | LangGraph multi-agent workflow: load_context, router, clarify / advice redirect, Send fan-out to six agents, fallback, synthesizer, compliance, checkpointing |
 | [page-landing-signin.html](page-landing-signin.html) | Landing page: auth config, Google / guest sign-in, session cookie |
 | [page-chat.html](page-chat.html) | Chat: SSE turn through router, agent fan-out, synthesizer, compliance |
 | [page-portfolio.html](page-portfolio.html) | Portfolio: list, analysis, CSV import and save |

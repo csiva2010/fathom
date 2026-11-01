@@ -1,0 +1,704 @@
+{
+ "schema_version": 1,
+ "diagram_type": "architecture",
+ "meta": {
+  "title": "LangGraph Multi-Agent Workflow (one chat turn)",
+  "output": "architecture/langgraph-workflow.html",
+  "quality_profile": "showcase",
+  "repository": {
+   "url": "git@github.com:csiva2010/fathom.git",
+   "link_mode": "local-only",
+   "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+  },
+  "views": [
+   {
+    "id": "answer",
+    "label": "Normal answer",
+    "focus": [
+     "request",
+     "load",
+     "router",
+     "send",
+     "qa",
+     "news",
+     "tax",
+     "portfolio",
+     "market",
+     "goal",
+     "fallback",
+     "synth",
+     "compliance",
+     "sse"
+    ],
+    "note": "Router plans up to 3 agents; they run in parallel and merge in the synthesizer."
+   },
+   {
+    "id": "shortcut",
+    "label": "Clarify / advice redirect",
+    "focus": [
+     "router",
+     "clarify",
+     "redirect",
+     "compliance",
+     "sse"
+    ],
+    "note": "No agents run; the fixed reply still passes compliance."
+   },
+   {
+    "id": "failure",
+    "label": "Failure handling",
+    "focus": [
+     "send",
+     "unavailable",
+     "fallback",
+     "synth"
+    ],
+    "note": "Timeouts, errors and missing agents become notes; the turn still completes."
+   }
+  ]
+ },
+ "components": [
+  {
+   "id": "ckpt",
+   "type": "database",
+   "label": "checkpoints.db",
+   "sublabel": "FinanceState per thread",
+   "pos": [
+    40,
+    120
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/web_app/container.py",
+     "line": 90,
+     "end_line": 102
+    },
+    {
+     "path": "backend/src/workflow/state.py",
+     "line": 156,
+     "end_line": 174
+    }
+   ]
+  },
+  {
+   "id": "request",
+   "type": "frontend",
+   "label": "stream_turn",
+   "sublabel": "astream(thread_id)",
+   "pos": [
+    40,
+    300
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/streaming.py",
+     "line": 195,
+     "end_line": 209
+    }
+   ]
+  },
+  {
+   "id": "load",
+   "type": "backend",
+   "label": "load_context",
+   "sublabel": "validate, profile",
+   "pos": [
+    250,
+    300
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/context.py",
+     "line": 146,
+     "end_line": 187
+    }
+   ]
+  },
+  {
+   "id": "appdb",
+   "type": "database",
+   "label": "app.db",
+   "sublabel": "profile, portfolio, goals",
+   "pos": [
+    250,
+    470
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/context.py",
+     "line": 79,
+     "end_line": 126
+    }
+   ]
+  },
+  {
+   "id": "router",
+   "type": "backend",
+   "label": "router",
+   "sublabel": "LLM RoutePlan",
+   "tag": "rules if no LLM",
+   "pos": [
+    450,
+    300
+   ],
+   "size": [
+    150,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/router.py",
+     "line": 167,
+     "end_line": 256
+    },
+    {
+     "path": "backend/src/workflow/graph.py",
+     "line": 53,
+     "end_line": 75,
+     "label": "route_after_router"
+    }
+   ]
+  },
+  {
+   "id": "clarify",
+   "type": "messagebus",
+   "label": "clarify",
+   "sublabel": "ask back",
+   "pos": [
+    400,
+    640
+   ],
+   "size": [
+    120,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/responses.py",
+     "line": 47,
+     "end_line": 63
+    }
+   ]
+  },
+  {
+   "id": "redirect",
+   "type": "security",
+   "label": "advice_redirect",
+   "sublabel": "fixed template",
+   "pos": [
+    540,
+    600
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/responses.py",
+     "line": 28,
+     "end_line": 44
+    }
+   ]
+  },
+  {
+   "id": "send",
+   "type": "backend",
+   "label": "Send fan-out",
+   "sublabel": "one branch per agent, max 3",
+   "pos": [
+    660,
+    132
+   ],
+   "size": [
+    130,
+    382
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/graph.py",
+     "line": 61,
+     "end_line": 75
+    }
+   ]
+  },
+  {
+   "id": "qa",
+   "type": "backend",
+   "label": "Finance Q&A",
+   "sublabel": "search_kb, define_term",
+   "pos": [
+    860,
+    132
+   ],
+   "size": [
+    170,
+    52
+   ],
+   "sources": [
+    {
+     "path": "backend/src/agents/finance_qa.py"
+    }
+   ]
+  },
+  {
+   "id": "tax",
+   "type": "backend",
+   "label": "Tax Education",
+   "sublabel": "tax KB, then all",
+   "pos": [
+    860,
+    198
+   ],
+   "size": [
+    170,
+    52
+   ],
+   "sources": [
+    {
+     "path": "backend/src/agents/tax_education.py"
+    }
+   ]
+  },
+  {
+   "id": "news",
+   "type": "backend",
+   "label": "News",
+   "sublabel": "get_news, search_kb",
+   "pos": [
+    860,
+    264
+   ],
+   "size": [
+    170,
+    52
+   ],
+   "sources": [
+    {
+     "path": "backend/src/agents/news_synthesizer.py"
+    }
+   ]
+  },
+  {
+   "id": "market",
+   "type": "backend",
+   "label": "Market Analysis",
+   "sublabel": "history, indicators",
+   "pos": [
+    860,
+    330
+   ],
+   "size": [
+    170,
+    52
+   ],
+   "sources": [
+    {
+     "path": "backend/src/agents/market_analysis.py"
+    }
+   ]
+  },
+  {
+   "id": "portfolio",
+   "type": "backend",
+   "label": "Portfolio",
+   "sublabel": "analyze, benchmark",
+   "pos": [
+    860,
+    396
+   ],
+   "size": [
+    170,
+    52
+   ],
+   "sources": [
+    {
+     "path": "backend/src/agents/portfolio_analysis.py"
+    }
+   ]
+  },
+  {
+   "id": "goal",
+   "type": "backend",
+   "label": "Goal Planning",
+   "sublabel": "project_goal",
+   "pos": [
+    860,
+    462
+   ],
+   "size": [
+    170,
+    52
+   ],
+   "sources": [
+    {
+     "path": "backend/src/agents/goal_planning.py"
+    }
+   ]
+  },
+  {
+   "id": "unavailable",
+   "type": "messagebus",
+   "label": "agent_unavailable",
+   "sublabel": "unregistered agent",
+   "pos": [
+    860,
+    570
+   ],
+   "size": [
+    170,
+    56
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/agent_runner.py",
+     "line": 96,
+     "end_line": 107
+    }
+   ]
+  },
+  {
+   "id": "fallback",
+   "type": "backend",
+   "label": "fallback",
+   "sublabel": "NodeErrors to notes",
+   "pos": [
+    1100,
+    132
+   ],
+   "size": [
+    130,
+    382
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/agent_runner.py",
+     "line": 110,
+     "end_line": 127
+    }
+   ]
+  },
+  {
+   "id": "synth",
+   "type": "backend",
+   "label": "synthesizer",
+   "sublabel": "1 pass, 2+ LLM merge",
+   "pos": [
+    1280,
+    300
+   ],
+   "size": [
+    150,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/synthesizer.py",
+     "line": 71,
+     "end_line": 139
+    }
+   ]
+  },
+  {
+   "id": "compliance",
+   "type": "security",
+   "label": "compliance",
+   "sublabel": "no advice, disclaimer",
+   "pos": [
+    1490,
+    300
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/compliance.py",
+     "line": 90,
+     "end_line": 154
+    }
+   ]
+  },
+  {
+   "id": "sse",
+   "type": "frontend",
+   "label": "SSE to browser",
+   "sublabel": "route, token, done",
+   "pos": [
+    1490,
+    120
+   ],
+   "size": [
+    140,
+    60
+   ],
+   "sources": [
+    {
+     "path": "backend/src/workflow/streaming.py",
+     "line": 219,
+     "end_line": 248
+    }
+   ]
+  }
+ ],
+ "boundaries": [
+  {
+   "kind": "region",
+   "label": "Parallel agents (AgentNode: 20 s timeout, 1 retry)",
+   "wraps": [
+    "qa",
+    "tax",
+    "news",
+    "market",
+    "portfolio",
+    "goal"
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "id": "e-resume",
+   "from": "request",
+   "to": "ckpt",
+   "label": "resume thread",
+   "variant": "dashed",
+   "fromSide": "top",
+   "toSide": "bottom"
+  },
+  {
+   "id": "e-start",
+   "from": "request",
+   "to": "load",
+   "label": "START",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-ctx",
+   "from": "load",
+   "to": "appdb",
+   "label": "read",
+   "variant": "dashed",
+   "fromSide": "bottom",
+   "toSide": "top"
+  },
+  {
+   "id": "e-route",
+   "from": "load",
+   "to": "router",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-clarify",
+   "from": "router",
+   "to": "clarify",
+   "label": "unclear",
+   "fromSide": "bottom",
+   "toSide": "top"
+  },
+  {
+   "id": "e-redirect",
+   "from": "router",
+   "to": "redirect",
+   "label": "advice",
+   "variant": "security",
+   "fromSide": "bottom",
+   "toSide": "top"
+  },
+  {
+   "id": "e-send",
+   "from": "router",
+   "to": "send",
+   "label": "answer",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-qa",
+   "from": "send",
+   "to": "qa",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-tax",
+   "from": "send",
+   "to": "tax",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-news",
+   "from": "send",
+   "to": "news",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-market",
+   "from": "send",
+   "to": "market",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-portfolio",
+   "from": "send",
+   "to": "portfolio",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-goal",
+   "from": "send",
+   "to": "goal",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-missing",
+   "from": "send",
+   "to": "unavailable",
+   "label": "missing",
+   "fromSide": "bottom",
+   "toSide": "left"
+  },
+  {
+   "id": "e-qa-f",
+   "from": "qa",
+   "to": "fallback",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-tax-f",
+   "from": "tax",
+   "to": "fallback",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-news-f",
+   "from": "news",
+   "to": "fallback",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-market-f",
+   "from": "market",
+   "to": "fallback",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-portfolio-f",
+   "from": "portfolio",
+   "to": "fallback",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-goal-f",
+   "from": "goal",
+   "to": "fallback",
+   "fromSide": "right",
+   "toSide": "left"
+  },
+  {
+   "id": "e-unavail-f",
+   "from": "unavailable",
+   "to": "fallback",
+   "label": "NodeError",
+   "fromSide": "right",
+   "toSide": "bottom"
+  },
+  {
+   "id": "e-synth",
+   "from": "fallback",
+   "to": "synth",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-guard",
+   "from": "synth",
+   "to": "compliance",
+   "label": "draft",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e-clarify-c",
+   "from": "clarify",
+   "to": "compliance",
+   "fromSide": "bottom",
+   "toSide": "bottom"
+  },
+  {
+   "id": "e-redirect-c",
+   "from": "redirect",
+   "to": "compliance",
+   "fromSide": "bottom",
+   "toSide": "bottom"
+  },
+  {
+   "id": "e-end",
+   "from": "compliance",
+   "to": "sse",
+   "label": "final, END",
+   "variant": "emphasis",
+   "fromSide": "top",
+   "toSide": "bottom"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "violet",
+   "title": "Routing",
+   "items": [
+    "router asks the LLM for a structured RoutePlan: agents, confidence, tickers, standalone query",
+    "Advice request -> advice_redirect; confidence below 0.6 -> clarify; otherwise one Send per agent (max 3)",
+    "No LLM: keyword rules pick agents; nothing matched -> Finance Q&A"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "Parallel agents",
+   "items": [
+    "Chosen agents run concurrently; outputs merge through the agent_outputs reducer",
+    "Each agent: prepare (retrieve / load data), LLM tool loop (max 3 rounds, allow-listed tools), AgentOutput",
+    "A timeout or error becomes a NodeError; a missing Tax agent is substituted by Q&A"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "Guardrails",
+   "items": [
+    "Advice wording is rewritten once by the LLM, else those sentences are removed",
+    "KB answers without citations get a note; market answers get the disclaimer"
+   ]
+  },
+  {
+   "dot": "cyan",
+   "title": "State + streaming",
+   "items": [
+    "The checkpointer saves FinanceState after each step, keyed by conversation id",
+    "stream_turn maps router, agent and compliance updates to SSE events; tokens stream live"
+   ]
+  }
+ ]
+}
