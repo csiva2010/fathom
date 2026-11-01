@@ -5,8 +5,8 @@ import { FreshnessBadge } from "@/components/badges/FreshnessBadge";
 import { formatChange, formatPrice } from "@/lib/format/number";
 import { formatPercent, formatShare, formatUsd } from "@/lib/format/money";
 
-import { SCENARIOS } from "./chartMath";
-import { PriceSparkline, ProjectionChart, ShareBars, type ProjectionSeriesPoint } from "./charts";
+import { SCENARIOS } from "@/components/charts/chartMath";
+import { PriceChart as PriceLine, ProjectionChart, ShareBars, type ProjectionSeriesPoint } from "@/components/charts/charts";
 
 /*
  * Chart and table payloads that agents attach to answers (CH-06). The backend sends
@@ -204,7 +204,7 @@ function SectorTable({ title, data }: { title: string; data: Data }) {
 function PriceChart({ title, data }: { title: string; data: Data }) {
   return (
     <Card title={title} freshness={[data.freshness as Freshness]}>
-      <PriceSparkline points={(data.points as { t: string; close: number }[]) ?? []} label={`${title} closing prices`} />
+      <PriceLine points={(data.points as { t: string; close: number }[]) ?? []} label={`${title} closing prices`} />
     </Card>
   );
 }

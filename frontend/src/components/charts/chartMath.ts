@@ -35,9 +35,9 @@ export function spreadLabels(ys: number[], gap: number, top: number, bottom: num
   return out;
 }
 
-/** Goal scenarios in fixed color order: slot 1 for the expected case. */
+/** Goal scenarios, expected first (the line); the other two bound the band. */
 export const SCENARIOS = [
-  { key: "expected", label: "Expected", color: "var(--viz-series-1)" },
-  { key: "pessimistic", label: "Pessimistic", color: "var(--viz-series-2)" },
-  { key: "optimistic", label: "Optimistic", color: "var(--viz-series-3)" },
+  { key: "expected", label: "Expected" },
+  { key: "pessimistic", label: "Pessimistic" },
+  { key: "optimistic", label: "Optimistic" },
 ] as const;

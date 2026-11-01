@@ -90,6 +90,14 @@ class BenchmarkComparison(BaseModel):
     difference_percent: float
 
 
+class PerformancePoint(BaseModel):
+    """Portfolio and benchmark on one date, both rebased to 100 at the start (PF-05)."""
+
+    date: date
+    portfolio: float
+    benchmark: float
+
+
 class Observation(BaseModel):
     """An educational learning point about the portfolio, never an instruction (PF-06)."""
 
@@ -110,6 +118,7 @@ class PortfolioAnalysis(BaseModel):
     diversification: Diversification
     risk: RiskMetrics
     benchmark: BenchmarkComparison | None = None
+    performance: list[PerformancePoint] = Field(default_factory=list)
     observations: list[Observation] = Field(default_factory=list)
     unpriced: list[str] = Field(default_factory=list)  # symbols we could not price
     freshness: list[Freshness] = Field(default_factory=list)

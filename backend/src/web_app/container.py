@@ -70,6 +70,10 @@ class AppContainer:
 
     async def start(self) -> None:
         """Open async resources: the checkpointer, then the workflow that saves to it."""
+        if self.portfolios is None:
+            self.portfolios = PortfolioAnalysisService(
+                self.market, benchmark_symbol=self.settings.market.benchmark_symbol
+            )
         if self.checkpointer is None:
             self.checkpointer = await self._open_checkpointer()
         if self.workflow is None:

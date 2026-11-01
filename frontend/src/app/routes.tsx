@@ -4,7 +4,10 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ChatPage } from "@/features/chat/ChatPage";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { MarketPage } from "@/features/market/MarketPage";
-import { ComingSoonPage } from "@/features/placeholders/ComingSoonPage";
+import { GoalsPage } from "@/features/goals/GoalsPage";
+import { ArticlePage } from "@/features/learn/ArticlePage";
+import { LearnPage } from "@/features/learn/LearnPage";
+import { PortfolioPage } from "@/features/portfolio/PortfolioPage";
 import { ProfilePage } from "@/features/profile/ProfilePage";
 import { RequireAuth } from "@/lib/auth/RequireAuth";
 
@@ -19,19 +22,11 @@ export function AppRoutes() {
             <Route index element={null} />
             <Route path=":conversationId" element={null} />
           </Route>
-          <Route
-            path="/portfolio"
-            element={<ComingSoonPage title="Portfolio" description="Enter or import holdings and see clear metrics." />}
-          />
+          <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/market" element={<MarketPage />} />
-          <Route
-            path="/goals"
-            element={<ComingSoonPage title="Goals" description="Project savings goals at your risk level." />}
-          />
-          <Route
-            path="/learn"
-            element={<ComingSoonPage title="Learn" description="Browse articles by topic and level." />}
-          />
+          <Route path="/goals" element={<GoalsPage />} />
+          <Route path="/learn" element={<LearnPage />} />
+          <Route path="/learn/:articleId" element={<ArticlePage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>

@@ -6,17 +6,14 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from src.core.domain.risk import RiskProfile
+from src.core.services.risk_questionnaire import RiskQuestion, RiskResult
+
 
 class ExperienceLevel(StrEnum):
     BEGINNER = "beginner"
     INTERMEDIATE = "intermediate"
     ADVANCED = "advanced"
-
-
-class RiskProfile(StrEnum):
-    CONSERVATIVE = "conservative"
-    MODERATE = "moderate"
-    AGGRESSIVE = "aggressive"
 
 
 class ProfileOut(BaseModel):
@@ -41,3 +38,18 @@ class ProfileUpdate(BaseModel):
     risk_profile: RiskProfile | None = None
     risk_answers: dict[str, int | str] | None = Field(default=None, max_length=20)
     accept_disclaimer: bool | None = None
+
+
+class RiskQuestionnaireOut(BaseModel):
+    questions: list[RiskQuestion]
+
+
+class RiskAnswers(BaseModel):
+    """Question id -> chosen option id, for every question (GL-01)."""
+
+    answers: dict[str, str] = Field(max_length=20)
+
+
+class RiskAssessmentOut(BaseModel):
+    result: RiskResult
+    me: MeOut

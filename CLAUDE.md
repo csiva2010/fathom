@@ -124,6 +124,8 @@ cd ../frontend && npm run gen:api
   `CHECKPOINT_TYPES` in `workflow/state.py` or the checkpointer won't load it.
 - Frontend: feature code lives in `features/<tab>/`; shared UI in `components/`; every view
   needs loading, empty and error states (UI-09). Use generated API types via `src/api/types.ts`.
+  Charts use the `--viz-*` tokens in `styles/index.css` (validated light and dark); format
+  date-only values (`YYYY-MM-DD`) with `timeZone: "UTC"` or they show a day early.
 
 ## Build plan status
 
@@ -141,6 +143,9 @@ cd ../frontend && npm run gen:api
   (`workflow.checkpoint_path`, default `var/checkpoints.db`) opened by
   `AppContainer.start()`; Chat tab with streamed answers, agent badges, source cards,
   follow-ups and inline charts (`features/chat/`).
-- Day 4 to 5: Portfolio, Market and Goals views, MCP server, KB/Learn API endpoints,
-  feedback endpoint (CH-08).
+- Day 4 to 5 (views done): Portfolio (CRUD, CSV import, analysis with donut, sector bars,
+  benchmark line), Market (watchlist in localStorage, price chart with ranges, indicators,
+  movers, sectors), Goals (risk questionnaire GL-01, CRUD, projection band, live slider via
+  `POST /goals/project`) and Learn (`/kb/articles`, `/kb/glossary`). Shared SVG charts live
+  in `components/charts/`. Still to do: MCP server, feedback endpoint (CH-08).
 - Day 6 to 7: tests and evals, Learn tab, trace panel, Docker, docs, demo.

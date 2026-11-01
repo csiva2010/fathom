@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { readEventStream } from "@/api/sse";
 
-import { niceTicks, spreadLabels } from "./artifacts/chartMath";
+import { niceTicks, spreadLabels } from "@/components/charts/chartMath";
 import { linkCitations } from "./citations";
 import { applyEvent, emptyDraft } from "./hooks/chatState";
 

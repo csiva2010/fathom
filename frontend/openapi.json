@@ -246,6 +246,136 @@
         }
       }
     },
+    "/api/v1/me/risk-questionnaire": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Risk profile questions",
+        "operationId": "get_risk_questionnaire_api_v1_me_risk_questionnaire_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskQuestionnaireOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Score the questionnaire and save the risk profile (GL-01)",
+        "operationId": "submit_risk_questionnaire_api_v1_me_risk_questionnaire_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RiskAnswers"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskAssessmentOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/market/quotes": {
       "get": {
         "tags": [
@@ -508,6 +638,302 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/NewsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/market/movers": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Today's biggest gainers and losers",
+        "operationId": "get_movers_api_v1_market_movers_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 5,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoversResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/market/sectors": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Sector moves via sector ETFs",
+        "operationId": "get_sectors_api_v1_market_sectors_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectorsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/market/symbols": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Ticker search (MD-09)",
+        "operationId": "search_symbols_api_v1_market_symbols_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Ticker or company name",
+              "title": "Q"
+            },
+            "description": "Ticker or company name"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SymbolSearchResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/market/indicators/{symbol}": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Moving averages, 52-week range and volatility",
+        "operationId": "get_indicators_api_v1_market_indicators__symbol__get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndicatorsResponse"
                 }
               }
             }
@@ -966,6 +1392,1187 @@
           }
         }
       }
+    },
+    "/api/v1/portfolios": {
+      "get": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "Your portfolios, then the samples",
+        "operationId": "list_portfolios_api_v1_portfolios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "Save a portfolio",
+        "operationId": "create_portfolio_api_v1_portfolios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortfolioIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolios/import": {
+      "post": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "Parse a holdings CSV for review",
+        "operationId": "import_csv_api_v1_portfolios_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvImportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CsvImportOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolios/{portfolio_id}": {
+      "get": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "One portfolio",
+        "operationId": "get_portfolio_api_v1_portfolios__portfolio_id__get",
+        "parameters": [
+          {
+            "name": "portfolio_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Portfolio Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "Replace a portfolio's holdings",
+        "operationId": "update_portfolio_api_v1_portfolios__portfolio_id__put",
+        "parameters": [
+          {
+            "name": "portfolio_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Portfolio Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortfolioIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "Delete a portfolio",
+        "operationId": "delete_portfolio_api_v1_portfolios__portfolio_id__delete",
+        "parameters": [
+          {
+            "name": "portfolio_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Portfolio Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolios/{portfolio_id}/analysis": {
+      "get": {
+        "tags": [
+          "portfolios"
+        ],
+        "summary": "Metrics, allocation, risk, benchmark and observations",
+        "operationId": "analyze_portfolio_api_v1_portfolios__portfolio_id__analysis_get",
+        "parameters": [
+          {
+            "name": "portfolio_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Portfolio Id"
+            }
+          },
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PriceRange",
+              "description": "Benchmark window",
+              "default": "1Y"
+            },
+            "description": "Benchmark window"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioAnalysis"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/goals": {
+      "get": {
+        "tags": [
+          "goals"
+        ],
+        "summary": "Your goals with their projections",
+        "operationId": "list_goals_api_v1_goals_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "goals"
+        ],
+        "summary": "Add a goal",
+        "operationId": "create_goal_api_v1_goals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/project": {
+      "post": {
+        "tags": [
+          "goals"
+        ],
+        "summary": "Project goal inputs (live slider)",
+        "operationId": "project_api_v1_goals_project_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectionOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/{goal_id}": {
+      "put": {
+        "tags": [
+          "goals"
+        ],
+        "summary": "Update a goal",
+        "operationId": "update_goal_api_v1_goals__goal_id__put",
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "goals"
+        ],
+        "summary": "Delete a goal",
+        "operationId": "delete_goal_api_v1_goals__goal_id__delete",
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/kb/articles": {
+      "get": {
+        "tags": [
+          "learn"
+        ],
+        "summary": "Browse and search articles",
+        "operationId": "list_articles_api_v1_kb_articles_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Level"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleList"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/kb/articles/{article_id}": {
+      "get": {
+        "tags": [
+          "learn"
+        ],
+        "summary": "One article",
+        "operationId": "get_article_api_v1_kb_articles__article_id__get",
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/kb/glossary": {
+      "get": {
+        "tags": [
+          "learn"
+        ],
+        "summary": "Search the glossary",
+        "operationId": "search_glossary_api_v1_kb_glossary_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryList"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/kb/glossary/{term}": {
+      "get": {
+        "tags": [
+          "learn"
+        ],
+        "summary": "Define one term",
+        "operationId": "define_term_api_v1_kb_glossary__term__get",
+        "parameters": [
+          {
+            "name": "term",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Term"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryTerm"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -999,6 +2606,190 @@
           "agent"
         ],
         "title": "AgentStartEvent"
+      },
+      "AllocationSlice": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "value",
+          "weight"
+        ],
+        "title": "AllocationSlice"
+      },
+      "ArticleList": {
+        "properties": {
+          "articles": {
+            "items": {
+              "$ref": "#/components/schemas/ArticleSummary"
+            },
+            "type": "array",
+            "title": "Articles"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOut"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Levels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "articles",
+          "categories",
+          "levels"
+        ],
+        "title": "ArticleList"
+      },
+      "ArticleOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "last_reviewed": {
+            "type": "string",
+            "format": "date",
+            "title": "Last Reviewed"
+          },
+          "body_md": {
+            "type": "string",
+            "title": "Body Md"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "category",
+          "category_label",
+          "level",
+          "summary",
+          "tags",
+          "source_name",
+          "source_url",
+          "last_reviewed",
+          "body_md"
+        ],
+        "title": "ArticleOut"
+      },
+      "ArticleSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "last_reviewed": {
+            "type": "string",
+            "format": "date",
+            "title": "Last Reviewed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "category",
+          "category_label",
+          "level",
+          "summary",
+          "tags",
+          "source_name",
+          "source_url",
+          "last_reviewed"
+        ],
+        "title": "ArticleSummary"
       },
       "Artifact": {
         "properties": {
@@ -1055,6 +2846,17 @@
           "artifact"
         ],
         "title": "ArtifactEvent"
+      },
+      "AssetClass": {
+        "type": "string",
+        "enum": [
+          "stock",
+          "etf",
+          "bond_etf",
+          "cash",
+          "other"
+        ],
+        "title": "AssetClass"
       },
       "AuthConfigOut": {
         "properties": {
@@ -1123,6 +2925,75 @@
           "volume"
         ],
         "title": "Bar"
+      },
+      "BenchmarkComparison": {
+        "properties": {
+          "benchmark_symbol": {
+            "type": "string",
+            "title": "Benchmark Symbol"
+          },
+          "range": {
+            "type": "string",
+            "title": "Range"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "portfolio_return_percent": {
+            "type": "number",
+            "title": "Portfolio Return Percent"
+          },
+          "benchmark_return_percent": {
+            "type": "number",
+            "title": "Benchmark Return Percent"
+          },
+          "difference_percent": {
+            "type": "number",
+            "title": "Difference Percent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "benchmark_symbol",
+          "range",
+          "start",
+          "end",
+          "portfolio_return_percent",
+          "benchmark_return_percent",
+          "difference_percent"
+        ],
+        "title": "BenchmarkComparison",
+        "description": "PF-05: today's holdings versus the benchmark over the same dates."
+      },
+      "CategoryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "count"
+        ],
+        "title": "CategoryOut"
       },
       "ChatMessage": {
         "properties": {
@@ -1339,6 +3210,46 @@
         ],
         "title": "ConversationOut"
       },
+      "CsvImportIn": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 1000000,
+            "title": "Content",
+            "description": "The CSV file's text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "CsvImportIn"
+      },
+      "CsvImportOut": {
+        "properties": {
+          "holdings": {
+            "items": {
+              "$ref": "#/components/schemas/HoldingIn"
+            },
+            "type": "array",
+            "title": "Holdings"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "holdings",
+          "errors"
+        ],
+        "title": "CsvImportOut",
+        "description": "Parsed rows to review in the form before saving, plus per-row problems."
+      },
       "DataStatus": {
         "type": "string",
         "enum": [
@@ -1347,6 +3258,69 @@
           "mock"
         ],
         "title": "DataStatus"
+      },
+      "Diversification": {
+        "properties": {
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "effective_holdings": {
+            "type": "number",
+            "title": "Effective Holdings"
+          },
+          "effective_sectors": {
+            "type": "number",
+            "title": "Effective Sectors"
+          },
+          "largest_holding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Largest Holding"
+          },
+          "largest_holding_weight": {
+            "type": "number",
+            "title": "Largest Holding Weight",
+            "default": 0.0
+          },
+          "largest_sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Largest Sector"
+          },
+          "largest_sector_weight": {
+            "type": "number",
+            "title": "Largest Sector Weight",
+            "default": 0.0
+          },
+          "drivers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Drivers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "effective_holdings",
+          "effective_sectors"
+        ],
+        "title": "Diversification",
+        "description": "Concentration-based score from 0 (one position) to 100 (broadly spread) (PF-03)."
       },
       "DoneEvent": {
         "properties": {
@@ -1433,6 +3407,50 @@
         "title": "ErrorEvent",
         "description": "The turn failed; uses the same fields as the REST error envelope."
       },
+      "ExampleAllocation": {
+        "properties": {
+          "risk_profile": {
+            "$ref": "#/components/schemas/RiskProfile"
+          },
+          "slices": {
+            "items": {
+              "$ref": "#/components/schemas/ExampleAllocationSlice"
+            },
+            "type": "array",
+            "title": "Slices"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "risk_profile",
+          "slices",
+          "note"
+        ],
+        "title": "ExampleAllocation",
+        "description": "A generic textbook mix for a risk profile, shown as education only (GL-04)."
+      },
+      "ExampleAllocationSlice": {
+        "properties": {
+          "asset_class": {
+            "type": "string",
+            "title": "Asset Class"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "asset_class",
+          "weight"
+        ],
+        "title": "ExampleAllocationSlice"
+      },
       "ExperienceLevel": {
         "type": "string",
         "enum": [
@@ -1483,6 +3501,278 @@
           "freshness"
         ],
         "title": "FreshnessEvent"
+      },
+      "GlossaryList": {
+        "properties": {
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/GlossaryTerm"
+            },
+            "type": "array",
+            "title": "Terms"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "terms",
+          "total"
+        ],
+        "title": "GlossaryList"
+      },
+      "GlossaryTerm": {
+        "properties": {
+          "term": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Term"
+          },
+          "definition": {
+            "type": "string",
+            "minLength": 10,
+            "title": "Definition"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "default": "beginner"
+          },
+          "related": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Related"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "term",
+          "definition"
+        ],
+        "title": "GlossaryTerm"
+      },
+      "GoalIn": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/GoalType"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Name",
+            "default": ""
+          },
+          "target_amount": {
+            "type": "number",
+            "maximum": 100000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Target Amount"
+          },
+          "target_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Target Date"
+          },
+          "current_savings": {
+            "type": "number",
+            "maximum": 100000000.0,
+            "minimum": 0.0,
+            "title": "Current Savings",
+            "default": 0
+          },
+          "monthly_contribution": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Monthly Contribution",
+            "default": 0
+          },
+          "risk_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "target_amount",
+          "target_date"
+        ],
+        "title": "GoalIn",
+        "description": "GL-02. Without a risk profile the goal uses the user's own (moderate if unset)."
+      },
+      "GoalList": {
+        "properties": {
+          "goals": {
+            "items": {
+              "$ref": "#/components/schemas/GoalOut"
+            },
+            "type": "array",
+            "title": "Goals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "goals"
+        ],
+        "title": "GoalList"
+      },
+      "GoalOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/GoalType"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "target_amount": {
+            "type": "number",
+            "title": "Target Amount"
+          },
+          "target_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Target Date"
+          },
+          "current_savings": {
+            "type": "number",
+            "title": "Current Savings"
+          },
+          "monthly_contribution": {
+            "type": "number",
+            "title": "Monthly Contribution"
+          },
+          "risk_profile": {
+            "$ref": "#/components/schemas/RiskProfile"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "projection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalProjection"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "projection_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projection Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "name",
+          "target_amount",
+          "target_date",
+          "current_savings",
+          "monthly_contribution",
+          "risk_profile",
+          "created_at",
+          "projection"
+        ],
+        "title": "GoalOut"
+      },
+      "GoalProjection": {
+        "properties": {
+          "months": {
+            "type": "integer",
+            "title": "Months"
+          },
+          "target_amount": {
+            "type": "number",
+            "title": "Target Amount"
+          },
+          "target_amount_real": {
+            "type": "number",
+            "title": "Target Amount Real"
+          },
+          "inflation_percent": {
+            "type": "number",
+            "title": "Inflation Percent"
+          },
+          "total_contributed": {
+            "type": "number",
+            "title": "Total Contributed"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioResult"
+            },
+            "type": "array",
+            "title": "Scenarios"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectionPoint"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "assumptions": {
+            "type": "string",
+            "title": "Assumptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "months",
+          "target_amount",
+          "target_amount_real",
+          "inflation_percent",
+          "total_contributed",
+          "scenarios",
+          "series",
+          "assumptions"
+        ],
+        "title": "GoalProjection"
+      },
+      "GoalType": {
+        "type": "string",
+        "enum": [
+          "retirement",
+          "house",
+          "emergency",
+          "education",
+          "other"
+        ],
+        "title": "GoalType"
       },
       "HealthResponse": {
         "properties": {
@@ -1549,6 +3839,201 @@
           "freshness"
         ],
         "title": "HistoryResponse"
+      },
+      "HoldingIn": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 1,
+            "title": "Symbol"
+          },
+          "quantity": {
+            "type": "number",
+            "maximum": 1000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Quantity"
+          },
+          "cost_basis": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Basis",
+            "description": "Per share"
+          },
+          "asset_class": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssetClass"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "quantity"
+        ],
+        "title": "HoldingIn"
+      },
+      "HoldingMetrics": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "asset_class": {
+            "$ref": "#/components/schemas/AssetClass"
+          },
+          "quantity": {
+            "type": "number",
+            "title": "Quantity"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "market_value": {
+            "type": "number",
+            "title": "Market Value"
+          },
+          "cost_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Value"
+          },
+          "gain": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gain"
+          },
+          "gain_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gain Percent"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          },
+          "beta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Beta"
+          },
+          "expense_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expense Ratio"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "asset_class",
+          "quantity",
+          "price",
+          "market_value",
+          "weight"
+        ],
+        "title": "HoldingMetrics"
+      },
+      "HoldingOut": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "quantity": {
+            "type": "number",
+            "title": "Quantity"
+          },
+          "cost_basis": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Basis"
+          },
+          "asset_class": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssetClass"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "quantity",
+          "cost_basis",
+          "asset_class"
+        ],
+        "title": "HoldingOut"
       },
       "IndexOut": {
         "properties": {
@@ -1627,6 +4112,162 @@
         ],
         "title": "IndexQuote"
       },
+      "Indicators": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "last_close": {
+            "type": "number",
+            "title": "Last Close"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "period_change_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Change Percent"
+          },
+          "sma_50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sma 50"
+          },
+          "sma_200": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sma 200"
+          },
+          "price_vs_sma_50_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Vs Sma 50 Percent"
+          },
+          "price_vs_sma_200_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Vs Sma 200 Percent"
+          },
+          "week52_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week52 Low"
+          },
+          "week52_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week52 High"
+          },
+          "week52_position_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week52 Position Percent"
+          },
+          "volatility_30d_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatility 30D Percent"
+          },
+          "max_drawdown_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Drawdown Percent"
+          },
+          "bars_used": {
+            "type": "integer",
+            "title": "Bars Used",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "last_close",
+          "as_of"
+        ],
+        "title": "Indicators",
+        "description": "Plain-language market insights for one symbol, computed from daily bars (MD-08).\n\nPercent fields are percentages (1.5 means 1.5%)."
+      },
+      "IndicatorsResponse": {
+        "properties": {
+          "indicators": {
+            "$ref": "#/components/schemas/Indicators"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "indicators",
+          "freshness"
+        ],
+        "title": "IndicatorsResponse"
+      },
       "MarketOverviewResponse": {
         "properties": {
           "indices": {
@@ -1703,6 +4344,30 @@
         ],
         "title": "MessageCreate"
       },
+      "MoversResponse": {
+        "properties": {
+          "gainers": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteOut"
+            },
+            "type": "array",
+            "title": "Gainers"
+          },
+          "losers": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteOut"
+            },
+            "type": "array",
+            "title": "Losers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gainers",
+          "losers"
+        ],
+        "title": "MoversResponse"
+      },
       "NewsItem": {
         "properties": {
           "id": {
@@ -1769,6 +4434,274 @@
         ],
         "title": "NewsResponse"
       },
+      "Observation": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "Observation",
+        "description": "An educational learning point about the portfolio, never an instruction (PF-06)."
+      },
+      "PerformancePoint": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "portfolio": {
+            "type": "number",
+            "title": "Portfolio"
+          },
+          "benchmark": {
+            "type": "number",
+            "title": "Benchmark"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "portfolio",
+          "benchmark"
+        ],
+        "title": "PerformancePoint",
+        "description": "Portfolio and benchmark on one date, both rebased to 100 at the start (PF-05)."
+      },
+      "PortfolioAnalysis": {
+        "properties": {
+          "total_value": {
+            "type": "number",
+            "title": "Total Value"
+          },
+          "total_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Cost"
+          },
+          "total_gain": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Gain"
+          },
+          "total_gain_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Gain Percent"
+          },
+          "holdings": {
+            "items": {
+              "$ref": "#/components/schemas/HoldingMetrics"
+            },
+            "type": "array",
+            "title": "Holdings"
+          },
+          "allocation_by_holding": {
+            "items": {
+              "$ref": "#/components/schemas/AllocationSlice"
+            },
+            "type": "array",
+            "title": "Allocation By Holding"
+          },
+          "allocation_by_asset_class": {
+            "items": {
+              "$ref": "#/components/schemas/AllocationSlice"
+            },
+            "type": "array",
+            "title": "Allocation By Asset Class"
+          },
+          "allocation_by_sector": {
+            "items": {
+              "$ref": "#/components/schemas/AllocationSlice"
+            },
+            "type": "array",
+            "title": "Allocation By Sector"
+          },
+          "weighted_expense_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Expense Ratio"
+          },
+          "diversification": {
+            "$ref": "#/components/schemas/Diversification"
+          },
+          "risk": {
+            "$ref": "#/components/schemas/RiskMetrics"
+          },
+          "benchmark": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BenchmarkComparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "performance": {
+            "items": {
+              "$ref": "#/components/schemas/PerformancePoint"
+            },
+            "type": "array",
+            "title": "Performance"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            },
+            "type": "array",
+            "title": "Observations"
+          },
+          "unpriced": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unpriced"
+          },
+          "freshness": {
+            "items": {
+              "$ref": "#/components/schemas/Freshness"
+            },
+            "type": "array",
+            "title": "Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_value",
+          "holdings",
+          "allocation_by_holding",
+          "allocation_by_asset_class",
+          "allocation_by_sector",
+          "diversification",
+          "risk"
+        ],
+        "title": "PortfolioAnalysis"
+      },
+      "PortfolioIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Description",
+            "default": ""
+          },
+          "holdings": {
+            "items": {
+              "$ref": "#/components/schemas/HoldingIn"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Holdings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "holdings"
+        ],
+        "title": "PortfolioIn"
+      },
+      "PortfolioList": {
+        "properties": {
+          "portfolios": {
+            "items": {
+              "$ref": "#/components/schemas/PortfolioOut"
+            },
+            "type": "array",
+            "title": "Portfolios"
+          }
+        },
+        "type": "object",
+        "required": [
+          "portfolios"
+        ],
+        "title": "PortfolioList"
+      },
+      "PortfolioOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "is_sample": {
+            "type": "boolean",
+            "title": "Is Sample"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "holdings": {
+            "items": {
+              "$ref": "#/components/schemas/HoldingOut"
+            },
+            "type": "array",
+            "title": "Holdings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "is_sample",
+          "created_at",
+          "holdings"
+        ],
+        "title": "PortfolioOut"
+      },
       "PriceHistory": {
         "properties": {
           "symbol": {
@@ -1812,6 +4745,15 @@
           "5Y"
         ],
         "title": "PriceRange"
+      },
+      "ProfileFit": {
+        "type": "string",
+        "enum": [
+          "within",
+          "above",
+          "below"
+        ],
+        "title": "ProfileFit"
       },
       "ProfileOut": {
         "properties": {
@@ -1925,6 +4867,101 @@
         },
         "type": "object",
         "title": "ProfileUpdate"
+      },
+      "ProjectionOut": {
+        "properties": {
+          "projection": {
+            "$ref": "#/components/schemas/GoalProjection"
+          },
+          "example_allocation": {
+            "$ref": "#/components/schemas/ExampleAllocation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "projection",
+          "example_allocation"
+        ],
+        "title": "ProjectionOut",
+        "description": "Projection for given inputs (GL-03), plus the textbook mix for the profile (GL-04)."
+      },
+      "ProjectionPoint": {
+        "properties": {
+          "month": {
+            "type": "integer",
+            "title": "Month"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "contributed": {
+            "type": "number",
+            "title": "Contributed"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/Scenario"
+            },
+            "type": "object",
+            "title": "Values"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month",
+          "date",
+          "contributed",
+          "values"
+        ],
+        "title": "ProjectionPoint"
+      },
+      "ProjectionRequest": {
+        "properties": {
+          "target_amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Target Amount"
+          },
+          "target_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Target Date"
+          },
+          "current_savings": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Current Savings",
+            "default": 0
+          },
+          "monthly_contribution": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Monthly Contribution",
+            "default": 0
+          },
+          "risk_profile": {
+            "$ref": "#/components/schemas/RiskProfile",
+            "default": "moderate"
+          },
+          "inflation_percent": {
+            "type": "number",
+            "maximum": 15.0,
+            "minimum": 0.0,
+            "title": "Inflation Percent",
+            "default": 2.5
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_amount",
+          "target_date"
+        ],
+        "title": "ProjectionRequest"
       },
       "ProviderHealth": {
         "properties": {
@@ -2110,6 +5147,143 @@
         "title": "ReplaceEvent",
         "description": "Supersedes everything streamed so far (a compliance rewrite, a retried agent)."
       },
+      "RiskAnswers": {
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "maxProperties": 20,
+            "title": "Answers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "RiskAnswers",
+        "description": "Question id -> chosen option id, for every question (GL-01)."
+      },
+      "RiskAssessmentOut": {
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/RiskResult"
+          },
+          "me": {
+            "$ref": "#/components/schemas/MeOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "result",
+          "me"
+        ],
+        "title": "RiskAssessmentOut"
+      },
+      "RiskMetrics": {
+        "properties": {
+          "weighted_beta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Beta"
+          },
+          "beta_coverage": {
+            "type": "number",
+            "title": "Beta Coverage",
+            "default": 0.0
+          },
+          "annualized_volatility_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annualized Volatility Percent"
+          },
+          "max_drawdown_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Drawdown Percent"
+          },
+          "history_days": {
+            "type": "integer",
+            "title": "History Days",
+            "default": 0
+          },
+          "risk_level": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profile_fit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProfileFit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RiskMetrics",
+        "description": "PF-04. Volatility and drawdown come from today's holdings replayed over history."
+      },
+      "RiskOption": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "points": {
+            "type": "integer",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "points"
+        ],
+        "title": "RiskOption"
+      },
       "RiskProfile": {
         "type": "string",
         "enum": [
@@ -2118,6 +5292,70 @@
           "aggressive"
         ],
         "title": "RiskProfile"
+      },
+      "RiskQuestion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/RiskOption"
+            },
+            "type": "array",
+            "title": "Options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "prompt",
+          "options"
+        ],
+        "title": "RiskQuestion"
+      },
+      "RiskQuestionnaireOut": {
+        "properties": {
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/RiskQuestion"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "questions"
+        ],
+        "title": "RiskQuestionnaireOut"
+      },
+      "RiskResult": {
+        "properties": {
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "max_score": {
+            "type": "integer",
+            "title": "Max Score"
+          },
+          "risk_profile": {
+            "$ref": "#/components/schemas/RiskProfile"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "max_score",
+          "risk_profile"
+        ],
+        "title": "RiskResult"
       },
       "RouteEvent": {
         "properties": {
@@ -2156,6 +5394,168 @@
         ],
         "title": "RouteEvent",
         "description": "The router's plan: which agents will answer (CH-03 badges show from here)."
+      },
+      "Scenario": {
+        "type": "string",
+        "enum": [
+          "pessimistic",
+          "expected",
+          "optimistic"
+        ],
+        "title": "Scenario"
+      },
+      "ScenarioResult": {
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "annual_return_percent": {
+            "type": "number",
+            "title": "Annual Return Percent"
+          },
+          "final_value": {
+            "type": "number",
+            "title": "Final Value"
+          },
+          "final_value_real": {
+            "type": "number",
+            "title": "Final Value Real"
+          },
+          "reaches_target": {
+            "type": "boolean",
+            "title": "Reaches Target"
+          },
+          "shortfall": {
+            "type": "number",
+            "title": "Shortfall"
+          },
+          "required_monthly_contribution": {
+            "type": "number",
+            "title": "Required Monthly Contribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario",
+          "annual_return_percent",
+          "final_value",
+          "final_value_real",
+          "reaches_target",
+          "shortfall",
+          "required_monthly_contribution"
+        ],
+        "title": "ScenarioResult"
+      },
+      "SectorOut": {
+        "properties": {
+          "sector": {
+            "$ref": "#/components/schemas/SectorPerformance"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sector",
+          "freshness"
+        ],
+        "title": "SectorOut"
+      },
+      "SectorPerformance": {
+        "properties": {
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "change_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Percent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sector",
+          "symbol",
+          "price"
+        ],
+        "title": "SectorPerformance",
+        "description": "A sector's day move, measured through its sector ETF (MD-08)."
+      },
+      "SectorsResponse": {
+        "properties": {
+          "sectors": {
+            "items": {
+              "$ref": "#/components/schemas/SectorOut"
+            },
+            "type": "array",
+            "title": "Sectors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sectors"
+        ],
+        "title": "SectorsResponse"
+      },
+      "SymbolInfo": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "exchange": {
+            "type": "string",
+            "title": "Exchange",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol"
+        ],
+        "title": "SymbolInfo",
+        "description": "One entry in the symbol directory used for ticker search and validation (MD-09)."
+      },
+      "SymbolSearchResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SymbolInfo"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "freshness"
+        ],
+        "title": "SymbolSearchResponse"
       },
       "TokenEvent": {
         "properties": {

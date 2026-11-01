@@ -6,13 +6,15 @@ Loaded once at startup. If the BM25 index is missing it is rebuilt from the sour
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from src.core.config import Settings, resolve_path
 from src.core.logging import get_logger
+from src.rag.catalog import ArticleCatalog
 from src.rag.embeddings import Embedder, build_embedders
 from src.rag.glossary import Glossary
+from src.rag.ingestion.article_loader import load_articles
 from src.rag.ingestion.glossary_loader import load_glossary
 from src.rag.ingestion.pipeline import GLOSSARY_FILENAME, IngestionFailed, run_ingestion
 from src.rag.keyword.bm25_index import INDEX_FILENAME, BM25Index
@@ -27,6 +29,7 @@ log = get_logger(__name__)
 class KnowledgeBase:
     retriever: HybridRetriever
     glossary: Glossary
+    catalog: ArticleCatalog = field(default_factory=lambda: ArticleCatalog([]))
 
 
 def load_knowledge_base(
@@ -60,15 +63,18 @@ def load_knowledge_base(
         embedders=embedders,
     )
     glossary = Glossary(load_glossary(source_dir / GLOSSARY_FILENAME).terms)
+    # Ingestion already validated the files; invalid ones are skipped here, not fatal.
+    catalog = ArticleCatalog(load_articles(source_dir, kb.categories, kb.levels).articles)
     log.info(
         "knowledge base loaded",
         extra={
             "chunks": retriever.chunk_count,
             "glossary_terms": len(glossary),
+            "articles": len(catalog),
             "vector_search": vector_store is not None,
         },
     )
-    return KnowledgeBase(retriever=retriever, glossary=glossary)
+    return KnowledgeBase(retriever=retriever, glossary=glossary, catalog=catalog)
 
 
 def _has_store(directory: Path) -> bool:

@@ -84,10 +84,4 @@ describe("App routing and auth", () => {
     expect(screen.getByText(/Not configured, using sample data/)).toBeInTheDocument();
     expect(screen.getByText("Not built yet")).toBeInTheDocument();
   });
-
-  it("renders a placeholder for tabs that ship later", async () => {
-    mockFetch({ "GET /me": () => ({ body: ME }) });
-    renderApp("/goals");
-    expect(await screen.findByText("Coming soon")).toBeInTheDocument();
-  });
 });

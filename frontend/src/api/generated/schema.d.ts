@@ -140,6 +140,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/risk-questionnaire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Risk profile questions */
+        get: operations["get_risk_questionnaire_api_v1_me_risk_questionnaire_get"];
+        put?: never;
+        /** Score the questionnaire and save the risk profile (GL-01) */
+        post: operations["submit_risk_questionnaire_api_v1_me_risk_questionnaire_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/market/quotes": {
         parameters: {
             query?: never;
@@ -208,6 +226,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/market/movers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Today's biggest gainers and losers */
+        get: operations["get_movers_api_v1_market_movers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/market/sectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sector moves via sector ETFs */
+        get: operations["get_sectors_api_v1_market_sectors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/market/symbols": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ticker search (MD-09) */
+        get: operations["search_symbols_api_v1_market_symbols_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/market/indicators/{symbol}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Moving averages, 52-week range and volatility */
+        get: operations["get_indicators_api_v1_market_indicators__symbol__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/conversations": {
         parameters: {
             query?: never;
@@ -261,6 +347,198 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portfolios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your portfolios, then the samples */
+        get: operations["list_portfolios_api_v1_portfolios_get"];
+        put?: never;
+        /** Save a portfolio */
+        post: operations["create_portfolio_api_v1_portfolios_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolios/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Parse a holdings CSV for review */
+        post: operations["import_csv_api_v1_portfolios_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolios/{portfolio_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One portfolio */
+        get: operations["get_portfolio_api_v1_portfolios__portfolio_id__get"];
+        /** Replace a portfolio's holdings */
+        put: operations["update_portfolio_api_v1_portfolios__portfolio_id__put"];
+        post?: never;
+        /** Delete a portfolio */
+        delete: operations["delete_portfolio_api_v1_portfolios__portfolio_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolios/{portfolio_id}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Metrics, allocation, risk, benchmark and observations */
+        get: operations["analyze_portfolio_api_v1_portfolios__portfolio_id__analysis_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your goals with their projections */
+        get: operations["list_goals_api_v1_goals_get"];
+        put?: never;
+        /** Add a goal */
+        post: operations["create_goal_api_v1_goals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/goals/project": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Project goal inputs (live slider) */
+        post: operations["project_api_v1_goals_project_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/goals/{goal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update a goal */
+        put: operations["update_goal_api_v1_goals__goal_id__put"];
+        post?: never;
+        /** Delete a goal */
+        delete: operations["delete_goal_api_v1_goals__goal_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Browse and search articles */
+        get: operations["list_articles_api_v1_kb_articles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/articles/{article_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One article */
+        get: operations["get_article_api_v1_kb_articles__article_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/glossary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search the glossary */
+        get: operations["search_glossary_api_v1_kb_glossary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kb/glossary/{term}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Define one term */
+        get: operations["define_term_api_v1_kb_glossary__term__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -278,6 +556,78 @@ export interface components {
              */
             type: "agent_start";
             agent: components["schemas"]["AgentName"];
+        };
+        /** AllocationSlice */
+        AllocationSlice: {
+            /** Label */
+            label: string;
+            /** Value */
+            value: number;
+            /** Weight */
+            weight: number;
+        };
+        /** ArticleList */
+        ArticleList: {
+            /** Articles */
+            articles: components["schemas"]["ArticleSummary"][];
+            /** Categories */
+            categories: components["schemas"]["CategoryOut"][];
+            /** Levels */
+            levels: string[];
+        };
+        /** ArticleOut */
+        ArticleOut: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+            /** Level */
+            level: string;
+            /** Summary */
+            summary: string;
+            /** Tags */
+            tags: string[];
+            /** Source Name */
+            source_name: string;
+            /** Source Url */
+            source_url: string;
+            /**
+             * Last Reviewed
+             * Format: date
+             */
+            last_reviewed: string;
+            /** Body Md */
+            body_md: string;
+        };
+        /** ArticleSummary */
+        ArticleSummary: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+            /** Level */
+            level: string;
+            /** Summary */
+            summary: string;
+            /** Tags */
+            tags: string[];
+            /** Source Name */
+            source_name: string;
+            /** Source Url */
+            source_url: string;
+            /**
+             * Last Reviewed
+             * Format: date
+             */
+            last_reviewed: string;
         };
         /**
          * Artifact
@@ -305,6 +655,11 @@ export interface components {
             type: "artifact";
             artifact: components["schemas"]["Artifact"];
         };
+        /**
+         * AssetClass
+         * @enum {string}
+         */
+        AssetClass: "stock" | "etf" | "bond_etf" | "cash" | "other";
         /**
          * AuthConfigOut
          * @description Public sign-in options so the landing page shows the right button.
@@ -337,6 +692,41 @@ export interface components {
             close: number;
             /** Volume */
             volume: number;
+        };
+        /**
+         * BenchmarkComparison
+         * @description PF-05: today's holdings versus the benchmark over the same dates.
+         */
+        BenchmarkComparison: {
+            /** Benchmark Symbol */
+            benchmark_symbol: string;
+            /** Range */
+            range: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Portfolio Return Percent */
+            portfolio_return_percent: number;
+            /** Benchmark Return Percent */
+            benchmark_return_percent: number;
+            /** Difference Percent */
+            difference_percent: number;
+        };
+        /** CategoryOut */
+        CategoryOut: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Count */
+            count: number;
         };
         /**
          * ChatMessage
@@ -432,11 +822,57 @@ export interface components {
              */
             updated_at: string;
         };
+        /** CsvImportIn */
+        CsvImportIn: {
+            /**
+             * Content
+             * @description The CSV file's text
+             */
+            content: string;
+        };
+        /**
+         * CsvImportOut
+         * @description Parsed rows to review in the form before saving, plus per-row problems.
+         */
+        CsvImportOut: {
+            /** Holdings */
+            holdings: components["schemas"]["HoldingIn"][];
+            /** Errors */
+            errors: string[];
+        };
         /**
          * DataStatus
          * @enum {string}
          */
         DataStatus: "live" | "cached" | "mock";
+        /**
+         * Diversification
+         * @description Concentration-based score from 0 (one position) to 100 (broadly spread) (PF-03).
+         */
+        Diversification: {
+            /** Score */
+            score: number;
+            /** Effective Holdings */
+            effective_holdings: number;
+            /** Effective Sectors */
+            effective_sectors: number;
+            /** Largest Holding */
+            largest_holding?: string | null;
+            /**
+             * Largest Holding Weight
+             * @default 0
+             */
+            largest_holding_weight: number;
+            /** Largest Sector */
+            largest_sector?: string | null;
+            /**
+             * Largest Sector Weight
+             * @default 0
+             */
+            largest_sector_weight: number;
+            /** Drivers */
+            drivers?: string[];
+        };
         /**
          * DoneEvent
          * @description The finished, compliance-checked message. The client should render this one.
@@ -489,6 +925,24 @@ export interface components {
             retryable: boolean;
         };
         /**
+         * ExampleAllocation
+         * @description A generic textbook mix for a risk profile, shown as education only (GL-04).
+         */
+        ExampleAllocation: {
+            risk_profile: components["schemas"]["RiskProfile"];
+            /** Slices */
+            slices: components["schemas"]["ExampleAllocationSlice"][];
+            /** Note */
+            note: string;
+        };
+        /** ExampleAllocationSlice */
+        ExampleAllocationSlice: {
+            /** Asset Class */
+            asset_class: string;
+            /** Weight */
+            weight: number;
+        };
+        /**
          * ExperienceLevel
          * @enum {string}
          */
@@ -516,6 +970,116 @@ export interface components {
             type: "freshness";
             freshness: components["schemas"]["Freshness"];
         };
+        /** GlossaryList */
+        GlossaryList: {
+            /** Terms */
+            terms: components["schemas"]["GlossaryTerm"][];
+            /** Total */
+            total: number;
+        };
+        /** GlossaryTerm */
+        GlossaryTerm: {
+            /** Term */
+            term: string;
+            /** Definition */
+            definition: string;
+            /**
+             * Level
+             * @default beginner
+             */
+            level: string;
+            /** Related */
+            related?: string[];
+            /** Aliases */
+            aliases?: string[];
+        };
+        /**
+         * GoalIn
+         * @description GL-02. Without a risk profile the goal uses the user's own (moderate if unset).
+         */
+        GoalIn: {
+            type: components["schemas"]["GoalType"];
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /** Target Amount */
+            target_amount: number;
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+            /**
+             * Current Savings
+             * @default 0
+             */
+            current_savings: number;
+            /**
+             * Monthly Contribution
+             * @default 0
+             */
+            monthly_contribution: number;
+            risk_profile?: components["schemas"]["RiskProfile"] | null;
+        };
+        /** GoalList */
+        GoalList: {
+            /** Goals */
+            goals: components["schemas"]["GoalOut"][];
+        };
+        /** GoalOut */
+        GoalOut: {
+            /** Id */
+            id: string;
+            type: components["schemas"]["GoalType"];
+            /** Name */
+            name: string;
+            /** Target Amount */
+            target_amount: number;
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+            /** Current Savings */
+            current_savings: number;
+            /** Monthly Contribution */
+            monthly_contribution: number;
+            risk_profile: components["schemas"]["RiskProfile"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            projection: components["schemas"]["GoalProjection"] | null;
+            /** Projection Error */
+            projection_error?: string | null;
+        };
+        /** GoalProjection */
+        GoalProjection: {
+            /** Months */
+            months: number;
+            /** Target Amount */
+            target_amount: number;
+            /** Target Amount Real */
+            target_amount_real: number;
+            /** Inflation Percent */
+            inflation_percent: number;
+            /** Total Contributed */
+            total_contributed: number;
+            /** Scenarios */
+            scenarios: components["schemas"]["ScenarioResult"][];
+            /** Series */
+            series: components["schemas"]["ProjectionPoint"][];
+            /** Assumptions */
+            assumptions: string;
+        };
+        /**
+         * GoalType
+         * @enum {string}
+         */
+        GoalType: "retirement" | "house" | "emergency" | "education" | "other";
         /** HealthResponse */
         HealthResponse: {
             /**
@@ -540,6 +1104,60 @@ export interface components {
         HistoryResponse: {
             history: components["schemas"]["PriceHistory"];
             freshness: components["schemas"]["Freshness"];
+        };
+        /** HoldingIn */
+        HoldingIn: {
+            /** Symbol */
+            symbol: string;
+            /** Quantity */
+            quantity: number;
+            /**
+             * Cost Basis
+             * @description Per share
+             */
+            cost_basis?: number | null;
+            asset_class?: components["schemas"]["AssetClass"] | null;
+        };
+        /** HoldingMetrics */
+        HoldingMetrics: {
+            /** Symbol */
+            symbol: string;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            asset_class: components["schemas"]["AssetClass"];
+            /** Quantity */
+            quantity: number;
+            /** Price */
+            price: number;
+            /** Market Value */
+            market_value: number;
+            /** Cost Value */
+            cost_value?: number | null;
+            /** Gain */
+            gain?: number | null;
+            /** Gain Percent */
+            gain_percent?: number | null;
+            /** Weight */
+            weight: number;
+            /** Sector */
+            sector?: string | null;
+            /** Beta */
+            beta?: number | null;
+            /** Expense Ratio */
+            expense_ratio?: number | null;
+        };
+        /** HoldingOut */
+        HoldingOut: {
+            /** Symbol */
+            symbol: string;
+            /** Quantity */
+            quantity: number;
+            /** Cost Basis */
+            cost_basis: number | null;
+            asset_class: components["schemas"]["AssetClass"] | null;
         };
         /** IndexOut */
         IndexOut: {
@@ -569,6 +1187,53 @@ export interface components {
             as_of: string;
         };
         /**
+         * Indicators
+         * @description Plain-language market insights for one symbol, computed from daily bars (MD-08).
+         *
+         *     Percent fields are percentages (1.5 means 1.5%).
+         */
+        Indicators: {
+            /** Symbol */
+            symbol: string;
+            /** Last Close */
+            last_close: number;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /** Period Change Percent */
+            period_change_percent?: number | null;
+            /** Sma 50 */
+            sma_50?: number | null;
+            /** Sma 200 */
+            sma_200?: number | null;
+            /** Price Vs Sma 50 Percent */
+            price_vs_sma_50_percent?: number | null;
+            /** Price Vs Sma 200 Percent */
+            price_vs_sma_200_percent?: number | null;
+            /** Week52 Low */
+            week52_low?: number | null;
+            /** Week52 High */
+            week52_high?: number | null;
+            /** Week52 Position Percent */
+            week52_position_percent?: number | null;
+            /** Volatility 30D Percent */
+            volatility_30d_percent?: number | null;
+            /** Max Drawdown Percent */
+            max_drawdown_percent?: number | null;
+            /**
+             * Bars Used
+             * @default 0
+             */
+            bars_used: number;
+        };
+        /** IndicatorsResponse */
+        IndicatorsResponse: {
+            indicators: components["schemas"]["Indicators"];
+            freshness: components["schemas"]["Freshness"];
+        };
+        /**
          * MarketOverviewResponse
          * @description Day 1: indices. Sector performance and movers arrive with the indicators service.
          */
@@ -594,6 +1259,13 @@ export interface components {
         MessageCreate: {
             /** Content */
             content: string;
+        };
+        /** MoversResponse */
+        MoversResponse: {
+            /** Gainers */
+            gainers: components["schemas"]["QuoteOut"][];
+            /** Losers */
+            losers: components["schemas"]["QuoteOut"][];
         };
         /** NewsItem */
         NewsItem: {
@@ -630,6 +1302,98 @@ export interface components {
             items: components["schemas"]["NewsItem"][];
             freshness: components["schemas"]["Freshness"];
         };
+        /**
+         * Observation
+         * @description An educational learning point about the portfolio, never an instruction (PF-06).
+         */
+        Observation: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+        };
+        /**
+         * PerformancePoint
+         * @description Portfolio and benchmark on one date, both rebased to 100 at the start (PF-05).
+         */
+        PerformancePoint: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Portfolio */
+            portfolio: number;
+            /** Benchmark */
+            benchmark: number;
+        };
+        /** PortfolioAnalysis */
+        PortfolioAnalysis: {
+            /** Total Value */
+            total_value: number;
+            /** Total Cost */
+            total_cost?: number | null;
+            /** Total Gain */
+            total_gain?: number | null;
+            /** Total Gain Percent */
+            total_gain_percent?: number | null;
+            /** Holdings */
+            holdings: components["schemas"]["HoldingMetrics"][];
+            /** Allocation By Holding */
+            allocation_by_holding: components["schemas"]["AllocationSlice"][];
+            /** Allocation By Asset Class */
+            allocation_by_asset_class: components["schemas"]["AllocationSlice"][];
+            /** Allocation By Sector */
+            allocation_by_sector: components["schemas"]["AllocationSlice"][];
+            /** Weighted Expense Ratio */
+            weighted_expense_ratio?: number | null;
+            diversification: components["schemas"]["Diversification"];
+            risk: components["schemas"]["RiskMetrics"];
+            benchmark?: components["schemas"]["BenchmarkComparison"] | null;
+            /** Performance */
+            performance?: components["schemas"]["PerformancePoint"][];
+            /** Observations */
+            observations?: components["schemas"]["Observation"][];
+            /** Unpriced */
+            unpriced?: string[];
+            /** Freshness */
+            freshness?: components["schemas"]["Freshness"][];
+        };
+        /** PortfolioIn */
+        PortfolioIn: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Holdings */
+            holdings: components["schemas"]["HoldingIn"][];
+        };
+        /** PortfolioList */
+        PortfolioList: {
+            /** Portfolios */
+            portfolios: components["schemas"]["PortfolioOut"][];
+        };
+        /** PortfolioOut */
+        PortfolioOut: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string;
+            /** Is Sample */
+            is_sample: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Holdings */
+            holdings: components["schemas"]["HoldingOut"][];
+        };
         /** PriceHistory */
         PriceHistory: {
             /** Symbol */
@@ -646,6 +1410,11 @@ export interface components {
          * @enum {string}
          */
         PriceRange: "1D" | "5D" | "1M" | "3M" | "6M" | "1Y" | "5Y";
+        /**
+         * ProfileFit
+         * @enum {string}
+         */
+        ProfileFit: "within" | "above" | "below";
         /** ProfileOut */
         ProfileOut: {
             experience_level: components["schemas"]["ExperienceLevel"];
@@ -669,6 +1438,57 @@ export interface components {
             } | null;
             /** Accept Disclaimer */
             accept_disclaimer?: boolean | null;
+        };
+        /**
+         * ProjectionOut
+         * @description Projection for given inputs (GL-03), plus the textbook mix for the profile (GL-04).
+         */
+        ProjectionOut: {
+            projection: components["schemas"]["GoalProjection"];
+            example_allocation: components["schemas"]["ExampleAllocation"];
+        };
+        /** ProjectionPoint */
+        ProjectionPoint: {
+            /** Month */
+            month: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Contributed */
+            contributed: number;
+            /** Values */
+            values: {
+                [key: string]: number;
+            };
+        };
+        /** ProjectionRequest */
+        ProjectionRequest: {
+            /** Target Amount */
+            target_amount: number;
+            /**
+             * Target Date
+             * Format: date
+             */
+            target_date: string;
+            /**
+             * Current Savings
+             * @default 0
+             */
+            current_savings: number;
+            /**
+             * Monthly Contribution
+             * @default 0
+             */
+            monthly_contribution: number;
+            /** @default moderate */
+            risk_profile: components["schemas"]["RiskProfile"];
+            /**
+             * Inflation Percent
+             * @default 2.5
+             */
+            inflation_percent: number;
         };
         /** ProviderHealth */
         ProviderHealth: {
@@ -731,10 +1551,81 @@ export interface components {
             text: string;
         };
         /**
+         * RiskAnswers
+         * @description Question id -> chosen option id, for every question (GL-01).
+         */
+        RiskAnswers: {
+            /** Answers */
+            answers: {
+                [key: string]: string;
+            };
+        };
+        /** RiskAssessmentOut */
+        RiskAssessmentOut: {
+            result: components["schemas"]["RiskResult"];
+            me: components["schemas"]["MeOut"];
+        };
+        /**
+         * RiskMetrics
+         * @description PF-04. Volatility and drawdown come from today's holdings replayed over history.
+         */
+        RiskMetrics: {
+            /** Weighted Beta */
+            weighted_beta?: number | null;
+            /**
+             * Beta Coverage
+             * @default 0
+             */
+            beta_coverage: number;
+            /** Annualized Volatility Percent */
+            annualized_volatility_percent?: number | null;
+            /** Max Drawdown Percent */
+            max_drawdown_percent?: number | null;
+            /**
+             * History Days
+             * @default 0
+             */
+            history_days: number;
+            risk_level?: components["schemas"]["RiskProfile"] | null;
+            profile?: components["schemas"]["RiskProfile"] | null;
+            profile_fit?: components["schemas"]["ProfileFit"] | null;
+        };
+        /** RiskOption */
+        RiskOption: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Points */
+            points: number;
+        };
+        /**
          * RiskProfile
          * @enum {string}
          */
         RiskProfile: "conservative" | "moderate" | "aggressive";
+        /** RiskQuestion */
+        RiskQuestion: {
+            /** Id */
+            id: string;
+            /** Prompt */
+            prompt: string;
+            /** Options */
+            options: components["schemas"]["RiskOption"][];
+        };
+        /** RiskQuestionnaireOut */
+        RiskQuestionnaireOut: {
+            /** Questions */
+            questions: components["schemas"]["RiskQuestion"][];
+        };
+        /** RiskResult */
+        RiskResult: {
+            /** Score */
+            score: number;
+            /** Max Score */
+            max_score: number;
+            risk_profile: components["schemas"]["RiskProfile"];
+        };
         /**
          * RouteEvent
          * @description The router's plan: which agents will answer (CH-03 badges show from here).
@@ -754,6 +1645,75 @@ export interface components {
             agents: components["schemas"]["AgentName"][];
             /** Confidence */
             confidence: number;
+        };
+        /**
+         * Scenario
+         * @enum {string}
+         */
+        Scenario: "pessimistic" | "expected" | "optimistic";
+        /** ScenarioResult */
+        ScenarioResult: {
+            scenario: components["schemas"]["Scenario"];
+            /** Annual Return Percent */
+            annual_return_percent: number;
+            /** Final Value */
+            final_value: number;
+            /** Final Value Real */
+            final_value_real: number;
+            /** Reaches Target */
+            reaches_target: boolean;
+            /** Shortfall */
+            shortfall: number;
+            /** Required Monthly Contribution */
+            required_monthly_contribution: number;
+        };
+        /** SectorOut */
+        SectorOut: {
+            sector: components["schemas"]["SectorPerformance"];
+            freshness: components["schemas"]["Freshness"];
+        };
+        /**
+         * SectorPerformance
+         * @description A sector's day move, measured through its sector ETF (MD-08).
+         */
+        SectorPerformance: {
+            /** Sector */
+            sector: string;
+            /** Symbol */
+            symbol: string;
+            /** Price */
+            price: number;
+            /** Change Percent */
+            change_percent?: number | null;
+        };
+        /** SectorsResponse */
+        SectorsResponse: {
+            /** Sectors */
+            sectors: components["schemas"]["SectorOut"][];
+        };
+        /**
+         * SymbolInfo
+         * @description One entry in the symbol directory used for ticker search and validation (MD-09).
+         */
+        SymbolInfo: {
+            /** Symbol */
+            symbol: string;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Exchange
+             * @default
+             */
+            exchange: string;
+        };
+        /** SymbolSearchResponse */
+        SymbolSearchResponse: {
+            /** Results */
+            results: components["schemas"]["SymbolInfo"][];
+            freshness: components["schemas"]["Freshness"];
         };
         /**
          * TokenEvent
@@ -1009,6 +1969,122 @@ export interface operations {
             };
         };
     };
+    get_risk_questionnaire_api_v1_me_risk_questionnaire_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskQuestionnaireOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    submit_risk_questionnaire_api_v1_me_risk_questionnaire_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RiskAnswers"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskAssessmentOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     get_quotes_api_v1_market_quotes_get: {
         parameters: {
             query: {
@@ -1204,6 +2280,238 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NewsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_movers_api_v1_market_movers_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoversResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_sectors_api_v1_market_sectors_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectorsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    search_symbols_api_v1_market_symbols_get: {
+        parameters: {
+            query: {
+                /** @description Ticker or company name */
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SymbolSearchResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_indicators_api_v1_market_indicators__symbol__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                symbol: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndicatorsResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -1532,6 +2840,948 @@ export interface operations {
                 };
                 content: {
                     "text/event-stream": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    list_portfolios_api_v1_portfolios_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioList"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    create_portfolio_api_v1_portfolios_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    import_csv_api_v1_portfolios_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvImportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CsvImportOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_portfolio_api_v1_portfolios__portfolio_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                portfolio_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    update_portfolio_api_v1_portfolios__portfolio_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                portfolio_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    delete_portfolio_api_v1_portfolios__portfolio_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                portfolio_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    analyze_portfolio_api_v1_portfolios__portfolio_id__analysis_get: {
+        parameters: {
+            query?: {
+                /** @description Benchmark window */
+                range?: components["schemas"]["PriceRange"];
+            };
+            header?: never;
+            path: {
+                portfolio_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioAnalysis"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    list_goals_api_v1_goals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalList"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    create_goal_api_v1_goals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    project_api_v1_goals_project_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectionOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    update_goal_api_v1_goals__goal_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    delete_goal_api_v1_goals__goal_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    list_articles_api_v1_kb_articles_get: {
+        parameters: {
+            query?: {
+                category?: string | null;
+                level?: string | null;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleList"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_article_api_v1_kb_articles__article_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                article_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    search_glossary_api_v1_kb_glossary_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlossaryList"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    define_term_api_v1_kb_glossary__term__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                term: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlossaryTerm"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
         };

@@ -19,6 +19,7 @@ from src.core.domain.portfolio import (
     HoldingInput,
     HoldingMetrics,
     Observation,
+    PerformancePoint,
     PortfolioAnalysis,
     ProfileFit,
     RiskMetrics,
@@ -333,6 +334,36 @@ def compare_to_benchmark(
     )
 
 
+MAX_PERFORMANCE_POINTS = 260
+
+
+def indexed_performance(
+    series: Sequence[tuple[date, float]],
+    benchmark_bars: Sequence[Bar],
+    max_points: int = MAX_PERFORMANCE_POINTS,
+) -> list[PerformancePoint]:
+    """Portfolio and benchmark rebased to 100 on their first shared date (PF-05 chart).
+
+    Long histories are thinned to about `max_points`, always keeping the last day so the
+    line ends on the same returns as `compare_to_benchmark`.
+    """
+    benchmark = {bar.t.date(): bar.close for bar in benchmark_bars}
+    aligned = [(day, value, benchmark[day]) for day, value in series if day in benchmark]
+    if len(aligned) < 2 or not aligned[0][1] or not aligned[0][2]:
+        return []
+    _, p0, b0 = aligned[0]
+    step = max(1, -(-len(aligned) // max_points))  # ceiling division
+    picked = aligned[::step]
+    if picked[-1] is not aligned[-1]:
+        picked.append(aligned[-1])
+    return [
+        PerformancePoint(
+            date=day, portfolio=round(value / p0 * 100, 2), benchmark=round(close / b0 * 100, 2)
+        )
+        for day, value, close in picked
+    ]
+
+
 # --- Educational observations (PF-06) -----------------------------------------
 
 
@@ -485,6 +516,7 @@ def analyze(
         diversification=diversification_result,
         risk=risk,
         benchmark=compare_to_benchmark(series, benchmark_bars, benchmark_symbol, range_label),
+        performance=indexed_performance(series, benchmark_bars),
         observations=observations(metrics, sectors, diversification_result, risk, unpriced),
         unpriced=unpriced,
     )
