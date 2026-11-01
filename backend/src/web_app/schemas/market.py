@@ -5,9 +5,12 @@ from pydantic import BaseModel
 from src.core.domain.market import (
     Freshness,
     IndexQuote,
+    Indicators,
     NewsItem,
     PriceHistory,
     Quote,
+    SectorPerformance,
+    SymbolInfo,
 )
 
 
@@ -39,4 +42,28 @@ class HistoryResponse(BaseModel):
 
 class NewsResponse(BaseModel):
     items: list[NewsItem]
+    freshness: Freshness
+
+
+class MoversResponse(BaseModel):
+    gainers: list[QuoteOut]
+    losers: list[QuoteOut]
+
+
+class SectorOut(BaseModel):
+    sector: SectorPerformance
+    freshness: Freshness
+
+
+class SectorsResponse(BaseModel):
+    sectors: list[SectorOut]
+
+
+class SymbolSearchResponse(BaseModel):
+    results: list[SymbolInfo]
+    freshness: Freshness
+
+
+class IndicatorsResponse(BaseModel):
+    indicators: Indicators
     freshness: Freshness

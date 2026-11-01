@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from src.core.config import Settings
 from src.core.services.market.market_data_service import MarketDataService
+from src.core.services.portfolio_service import PortfolioAnalysisService
 from src.data.db.session import session_scope
 from src.web_app.container import AppContainer
 
@@ -31,7 +32,15 @@ def get_market(container: Annotated[AppContainer, Depends(get_container)]) -> Ma
     return container.market
 
 
+def get_portfolios(
+    container: Annotated[AppContainer, Depends(get_container)],
+) -> PortfolioAnalysisService:
+    assert container.portfolios is not None  # set by AppContainer.start
+    return container.portfolios
+
+
 ContainerDep = Annotated[AppContainer, Depends(get_container)]
 SettingsDep = Annotated[Settings, Depends(get_settings_dep)]
 DbDep = Annotated[Session, Depends(get_db)]
 MarketDep = Annotated[MarketDataService, Depends(get_market)]
+PortfoliosDep = Annotated[PortfolioAnalysisService, Depends(get_portfolios)]

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import type { Citation } from "@/api/types";
 
 import { citationAnchor } from "../citations";
@@ -22,6 +24,11 @@ export function SourceCards({ citations, messageId }: { citations: Citation[]; m
               <div className="space-y-1 border-t border-slate-100 px-3 py-2 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-300">
                 <p>
                   Section: <span className="font-medium text-slate-800 dark:text-slate-100">{citation.section}</span>
+                </p>
+                <p>
+                  <Link to={`/learn/${citation.article_id}`} className="font-medium text-emerald-700 underline dark:text-emerald-300">
+                    Read the full article
+                  </Link>
                 </p>
                 <p>
                   Source:{" "}
