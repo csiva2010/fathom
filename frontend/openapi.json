@@ -554,10 +554,508 @@
           }
         }
       }
+    },
+    "/api/v1/conversations": {
+      "get": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Your conversations, newest first",
+        "operationId": "list_conversations_api_v1_conversations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Start a conversation",
+        "operationId": "create_conversation_api_v1_conversations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "A conversation's messages",
+        "operationId": "get_conversation_api_v1_conversations__conversation_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Delete a conversation and its memory",
+        "operationId": "delete_conversation_api_v1_conversations__conversation_id__delete",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{conversation_id}/messages": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Send a message; the answer streams back as Server-Sent Events",
+        "operationId": "send_message_api_v1_conversations__conversation_id__messages_post",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/event-stream": {
+                "itemSchema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string",
+                      "contentMediaType": "application/json",
+                      "contentSchema": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/RouteEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/AgentStartEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/TokenEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/ReplaceEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/ArtifactEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/CitationEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/FreshnessEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/DoneEvent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/ErrorEvent"
+                          }
+                        ],
+                        "discriminator": {
+                          "propertyName": "type",
+                          "mapping": {
+                            "route": "#/components/schemas/RouteEvent",
+                            "agent_start": "#/components/schemas/AgentStartEvent",
+                            "token": "#/components/schemas/TokenEvent",
+                            "replace": "#/components/schemas/ReplaceEvent",
+                            "artifact": "#/components/schemas/ArtifactEvent",
+                            "citation": "#/components/schemas/CitationEvent",
+                            "freshness": "#/components/schemas/FreshnessEvent",
+                            "done": "#/components/schemas/DoneEvent",
+                            "error": "#/components/schemas/ErrorEvent"
+                          }
+                        },
+                        "title": "Streamitem Send Message Api V1 Conversations  Conversation Id  Messages Post"
+                      }
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "retry": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "502": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AgentName": {
+        "type": "string",
+        "enum": [
+          "finance_qa",
+          "portfolio_analysis",
+          "market_analysis",
+          "goal_planning",
+          "news_synthesizer",
+          "tax_education"
+        ],
+        "title": "AgentName"
+      },
+      "AgentStartEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "agent_start",
+            "title": "Type",
+            "default": "agent_start"
+          },
+          "agent": {
+            "$ref": "#/components/schemas/AgentName"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent"
+        ],
+        "title": "AgentStartEvent"
+      },
+      "Artifact": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "quote_card",
+              "price_chart",
+              "indicators",
+              "index_cards",
+              "movers",
+              "sector_table",
+              "portfolio_metrics",
+              "allocation",
+              "projection",
+              "example_allocation",
+              "news_list"
+            ],
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "title",
+          "data"
+        ],
+        "title": "Artifact",
+        "description": "Chart or table payload the UI renders next to an answer (CH-06)."
+      },
+      "ArtifactEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "artifact",
+            "title": "Type",
+            "default": "artifact"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact"
+        ],
+        "title": "ArtifactEvent"
+      },
       "AuthConfigOut": {
         "properties": {
           "mode": {
@@ -626,6 +1124,221 @@
         ],
         "title": "Bar"
       },
+      "ChatMessage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "answer",
+              "clarification",
+              "redirect"
+            ],
+            "title": "Kind",
+            "default": "answer"
+          },
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/AgentName"
+            },
+            "type": "array",
+            "title": "Agents"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/Artifact"
+            },
+            "type": "array",
+            "title": "Artifacts"
+          },
+          "freshness": {
+            "items": {
+              "$ref": "#/components/schemas/Freshness"
+            },
+            "type": "array",
+            "title": "Freshness"
+          },
+          "follow_ups": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Follow Ups"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "content"
+        ],
+        "title": "ChatMessage",
+        "description": "One message in a conversation, as the chat UI renders it."
+      },
+      "Citation": {
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "title": "Article Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "article_id",
+          "title",
+          "section",
+          "source_name",
+          "source_url"
+        ],
+        "title": "Citation",
+        "description": "What the UI shows on a source card (CH-04)."
+      },
+      "CitationEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "citation",
+            "title": "Type",
+            "default": "citation"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "citation": {
+            "$ref": "#/components/schemas/Citation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "citation"
+        ],
+        "title": "CitationEvent",
+        "description": "A source card; `number` matches the answer's [n] marker."
+      },
+      "ConversationCreate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "title": "ConversationCreate"
+      },
+      "ConversationDetail": {
+        "properties": {
+          "conversation": {
+            "$ref": "#/components/schemas/ConversationOut"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation",
+          "messages"
+        ],
+        "title": "ConversationDetail"
+      },
+      "ConversationList": {
+        "properties": {
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationOut"
+            },
+            "type": "array",
+            "title": "Conversations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversations"
+        ],
+        "title": "ConversationList"
+      },
+      "ConversationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ConversationOut"
+      },
       "DataStatus": {
         "type": "string",
         "enum": [
@@ -634,6 +1347,25 @@
           "mock"
         ],
         "title": "DataStatus"
+      },
+      "DoneEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "done",
+            "title": "Type",
+            "default": "done"
+          },
+          "message": {
+            "$ref": "#/components/schemas/ChatMessage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "DoneEvent",
+        "description": "The finished, compliance-checked message. The client should render this one."
       },
       "ErrorBody": {
         "properties": {
@@ -671,6 +1403,36 @@
         "title": "ErrorEnvelope",
         "description": "Every error response uses this shape: {error: {code, message, retryable}}."
       },
+      "ErrorEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "error",
+            "title": "Type",
+            "default": "error"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "retryable": {
+            "type": "boolean",
+            "title": "Retryable",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorEvent",
+        "description": "The turn failed; uses the same fields as the REST error envelope."
+      },
       "ExperienceLevel": {
         "type": "string",
         "enum": [
@@ -703,6 +1465,24 @@
         ],
         "title": "Freshness",
         "description": "Where a number came from and how fresh it is (MD-07). Shown as a badge in the UI."
+      },
+      "FreshnessEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "freshness",
+            "title": "Type",
+            "default": "freshness"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "freshness"
+        ],
+        "title": "FreshnessEvent"
       },
       "HealthResponse": {
         "properties": {
@@ -907,6 +1687,21 @@
           "profile"
         ],
         "title": "MeOut"
+      },
+      "MessageCreate": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "MessageCreate"
       },
       "NewsItem": {
         "properties": {
@@ -1295,6 +2090,26 @@
         ],
         "title": "QuotesResponse"
       },
+      "ReplaceEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "replace",
+            "title": "Type",
+            "default": "replace"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "ReplaceEvent",
+        "description": "Supersedes everything streamed so far (a compliance rewrite, a retried agent)."
+      },
       "RiskProfile": {
         "type": "string",
         "enum": [
@@ -1303,6 +2118,64 @@
           "aggressive"
         ],
         "title": "RiskProfile"
+      },
+      "RouteEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "route",
+            "title": "Type",
+            "default": "route"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "answer",
+              "clarification",
+              "redirect"
+            ],
+            "title": "Kind"
+          },
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/AgentName"
+            },
+            "type": "array",
+            "title": "Agents"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "agents",
+          "confidence"
+        ],
+        "title": "RouteEvent",
+        "description": "The router's plan: which agents will answer (CH-03 badges show from here)."
+      },
+      "TokenEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "token",
+            "title": "Type",
+            "default": "token"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "TokenEvent",
+        "description": "Text to append to the answer."
       }
     }
   }

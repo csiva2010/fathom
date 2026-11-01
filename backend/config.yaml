@@ -151,6 +151,7 @@ workflow:
   history_messages: 8             # recent messages the router and agents see
   max_focus_tickers: 3
   max_message_chars: 4000
+  checkpoint_path: var/checkpoints.db   # conversation memory; empty = in memory
 
 seed:
   dir: data/seed

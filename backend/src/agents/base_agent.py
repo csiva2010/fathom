@@ -15,7 +15,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any, ClassVar
+from typing import Any, ClassVar, TypedDict
 
 from langchain_core.messages import (
     BaseMessage,
@@ -56,6 +56,13 @@ LEVEL_GUIDES = {
 }
 
 
+class AgentOptions(TypedDict):
+    """Shared constructor options every agent accepts (from WorkflowConfig)."""
+
+    max_tool_rounds: int
+    history: int
+
+
 @dataclass
 class AgentRun:
     """What one agent run gathered: sources, chart payloads, freshness, tool calls."""
@@ -65,6 +72,9 @@ class AgentRun:
     freshness: list[Freshness] = field(default_factory=list)
     tool_calls: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    # Per-run values that tool handlers need (set in `prepare`). Agents are shared across
+    # requests, so per-user data must live here, never on the agent instance.
+    inputs: dict[str, Any] = field(default_factory=dict)
 
     def cite(self, citation: Citation) -> int:
         """Add a citation once and return its 1-based number for [n] markers."""
@@ -82,6 +92,32 @@ class AgentRun:
 ToolHandler = Callable[[AgentRun, Any], Awaitable[str]]
 
 
+def inline_refs(schema: dict[str, Any]) -> dict[str, Any]:
+    """Replace `$ref`s to `$defs` with the definitions themselves.
+
+    Pydantic puts enums and nested models under `$defs`; Gemini's function declarations
+    don't support `$defs`/`$ref` and silently drop them, losing those arguments' types.
+    """
+    defs: dict[str, Any] = schema.get("$defs", {})
+
+    def resolve(node: Any) -> Any:
+        if isinstance(node, dict):
+            ref = node.get("$ref")
+            if isinstance(ref, str) and ref.startswith("#/$defs/"):
+                merged = {
+                    **defs[ref.removeprefix("#/$defs/")],
+                    **{k: v for k, v in node.items() if k != "$ref"},
+                }
+                return resolve(merged)
+            return {k: resolve(v) for k, v in node.items() if k != "$defs"}
+        if isinstance(node, list):
+            return [resolve(item) for item in node]
+        return node
+
+    resolved: dict[str, Any] = resolve(schema)
+    return resolved
+
+
 @dataclass(frozen=True)
 class AgentTool:
     name: str
@@ -91,7 +127,7 @@ class AgentTool:
 
     def spec(self) -> dict[str, Any]:
         """OpenAI-style function spec; LangChain converts it for each provider."""
-        parameters = self.args_schema.model_json_schema()
+        parameters = inline_refs(self.args_schema.model_json_schema())
         parameters.pop("title", None)
         return {
             "type": "function",

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import math
-from collections.abc import Sequence
+import re
+from collections.abc import AsyncIterator, Sequence
 from typing import Any
 
 from langchain_core.callbacks import AsyncCallbackManagerForLLMRun, CallbackManagerForLLMRun
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import AIMessage, BaseMessage
-from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage
+from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 
 from src.core.llm.gateway import LLMGateway, NamedModel
 from src.rag.keyword.tokenizer import tokenize
@@ -66,12 +67,38 @@ class ScriptedChatModel(BaseChatModel):
         return self._next(messages)
 
 
+class StreamingChatModel(ScriptedChatModel):
+    """Streams plain-text replies word by word, as real providers do when a caller (such
+    as LangGraph's "messages" stream mode) listens for tokens. Other replies arrive whole."""
+
+    def _should_stream(self, *, async_api: bool, **kwargs: Any) -> bool:
+        if not (self.replies and isinstance(self.replies[0], str)):
+            return False
+        return super()._should_stream(async_api=async_api, **kwargs)
+
+    async def _astream(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
+        **kwargs: Any,
+    ) -> AsyncIterator[ChatGenerationChunk]:
+        self.calls.append(list(messages))
+        reply: str = self.replies.pop(0)
+        for piece in re.findall(r"\S+\s*", reply):
+            chunk = ChatGenerationChunk(message=AIMessageChunk(content=piece))
+            if run_manager is not None:
+                await run_manager.on_llm_new_token(piece, chunk=chunk)
+            yield chunk
+
+
 def scripted(*replies: Any) -> ScriptedChatModel:
     return ScriptedChatModel(replies=list(replies), calls=[], bound_tools=[])
 
 
-def gateway(*replies: Any) -> tuple[LLMGateway, ScriptedChatModel]:
-    model = scripted(*replies)
+def gateway(*replies: Any, streaming: bool = False) -> tuple[LLMGateway, ScriptedChatModel]:
+    model_type = StreamingChatModel if streaming else ScriptedChatModel
+    model = model_type(replies=list(replies), calls=[], bound_tools=[])
     return LLMGateway([NamedModel("fake:primary", model)]), model
 
 

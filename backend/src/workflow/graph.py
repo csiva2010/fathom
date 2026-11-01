@@ -9,9 +9,10 @@
                                         END
 
 The router's plan fans out with LangGraph's Send API; agent outputs merge through the
-`agent_outputs` reducer. A planned agent that is not registered yet is replaced by its
-substitute (Tax -> Q&A, which covers the tax KB); otherwise it goes to a stub node that
-records a NodeError, so the user is told that part isn't available instead of failing.
+`agent_outputs` reducer. All six agents are registered in production. A graph built with
+fewer (tests, partial deployments) replaces a missing agent with its substitute (Tax ->
+Q&A, which covers the tax KB) or sends it to a stub node that records a NodeError, so the
+user is told that part isn't available instead of failing.
 """
 
 from __future__ import annotations

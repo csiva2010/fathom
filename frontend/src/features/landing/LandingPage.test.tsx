@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import * as navigation from "@/lib/auth/navigation";
-import { GUEST, GUEST_MODE, HEALTH, OVERVIEW } from "@/test/fixtures";
+import { GUEST, GUEST_MODE, HEALTH } from "@/test/fixtures";
 import { mockFetch, unauthenticated } from "@/test/mockFetch";
 import { renderApp } from "@/test/renderApp";
 
@@ -17,7 +17,7 @@ describe("Guest sign-in (AUTH__MODE=guest)", () => {
         signedIn = true;
         return { status: 204 };
       },
-      "GET /market/overview": () => ({ body: OVERVIEW }),
+      "GET /conversations": () => ({ body: { conversations: [] } }),
     });
     const redirect = vi.spyOn(navigation, "redirectTo");
     renderApp("/");
@@ -26,7 +26,7 @@ describe("Guest sign-in (AUTH__MODE=guest)", () => {
     expect(screen.queryByRole("button", { name: /google/i })).not.toBeInTheDocument();
 
     await userEvent.click(button);
-    expect(await screen.findByRole("article", { name: "S&P 500" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /what would you like to understand/i })).toBeInTheDocument();
     expect(fetchSpy).toHaveBeenCalledWith("/api/v1/auth/guest", expect.objectContaining({ method: "POST" }));
     expect(redirect).not.toHaveBeenCalled();
   });

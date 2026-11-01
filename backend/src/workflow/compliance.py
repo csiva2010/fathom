@@ -31,6 +31,7 @@ from src.workflow.state import (
 log = get_logger(__name__)
 
 DISCLAIMER = "*Educational information only, not investment advice.*"
+FINAL_ANSWER_KEY = "final_answer"
 
 ADVICE_LANGUAGE = re.compile(
     r"\byou should (definitely |probably |really )?(buy|sell|hold|short|dump|invest in|"
@@ -124,9 +125,16 @@ class ComplianceNode:
         if report.issues:
             log.warning("compliance fixed answer", extra={"issues": report.issues, "found": found})
         final = draft.model_copy(update={"answer_md": answer, "compliance": report})
+        # The full answer rides on the message so a reloaded conversation shows its agents,
+        # sources and charts. Prompts only ever see message text (see recent_history).
+        message = AIMessage(
+            answer,
+            id=state.get("turn_id") or None,
+            additional_kwargs={FINAL_ANSWER_KEY: final.model_dump(mode="json")},
+        )
         return {
             "final": final,
-            "messages": [AIMessage(answer)],
+            "messages": [message],
             "trace": [
                 TraceEvent(
                     node="compliance",

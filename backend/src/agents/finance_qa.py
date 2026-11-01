@@ -52,7 +52,9 @@ investing concepts clearly and accurately.
 - If the excerpts don't cover part of the question, say so briefly rather than guessing.
 - Use the search_kb tool for a missing sub-topic and define_term for a jargon term."""
 
-    category: str | None = None  # the Tax agent narrows retrieval to one category
+    # Retrieval scopes tried in order until one clears the relevance threshold; None is the
+    # whole KB. The Tax agent starts with its own category.
+    categories: tuple[str | None, ...] = (None,)
 
     def __init__(self, gateway: LLMGateway, knowledge_base: KnowledgeBase | None, **kwargs: int):
         super().__init__(gateway, **kwargs)
@@ -79,9 +81,7 @@ investing concepts clearly and accurately.
             return Prepared(early=self._answer_only(KB_UNAVAILABLE_ANSWER, 0.0))
         query = self.question(state)
         user = state.get("user")
-        result = await self._kb.retriever.search(
-            query, category=self.category, level=user.experience_level if user else None
-        )
+        result = await self._retrieve(query, user.experience_level if user else None)
         term = self._kb.glossary.lookup(query)
         if not result.found and term is None:
             return Prepared(early=self._answer_only(NO_CONTEXT_ANSWER, 0.2))
@@ -92,6 +92,15 @@ investing concepts clearly and accurately.
         if result.found:
             parts.append(as_data("knowledge_base", self._excerpts(run, result)))
         return Prepared(context="\n\n".join(parts), data={"result": result, "term": term})
+
+    async def _retrieve(self, query: str, level: str | None = None) -> RetrievalResult:
+        assert self._kb is not None
+        result = RetrievalResult(query=query)
+        for category in self.categories:
+            result = await self._kb.retriever.search(query, category=category, level=level)
+            if result.found:
+                break
+        return result
 
     def _answer_only(self, text: str, confidence: float) -> AgentOutput:
         return AgentOutput(
@@ -110,8 +119,7 @@ investing concepts clearly and accurately.
         return "\n\n".join(lines)
 
     async def _search_tool(self, run: AgentRun, args: SearchKbArgs) -> str:
-        assert self._kb is not None
-        result = await self._kb.retriever.search(args.query, category=self.category)
+        result = await self._retrieve(args.query)
         if not result.found:
             return "NO_CONTEXT: nothing in the knowledge base matches that query."
         return self._excerpts(run, result)

@@ -16,7 +16,7 @@ from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
 from pydantic import BaseModel, Field
 
-from src.core.domain.market import Freshness
+from src.core.domain.market import AssetClass, DataStatus, Freshness
 from src.core.domain.portfolio import HoldingInput
 from src.core.domain.risk import RiskProfile
 from src.rag.models import Citation
@@ -93,7 +93,17 @@ class Artifact(BaseModel):
     """Chart or table payload the UI renders next to an answer (CH-06)."""
 
     kind: Literal[
-        "quote_card", "price_chart", "indicators", "index_cards", "movers", "sector_table"
+        "quote_card",
+        "price_chart",
+        "indicators",
+        "index_cards",
+        "movers",
+        "sector_table",
+        "portfolio_metrics",
+        "allocation",
+        "projection",
+        "example_allocation",
+        "news_list",
     ]
     title: str
     data: dict[str, Any]
@@ -145,6 +155,7 @@ class FinalAnswer(BaseModel):
 
 class FinanceState(TypedDict, total=False):
     messages: Annotated[list[AnyMessage], add_messages]
+    turn_id: str  # id the caller gives this turn's answer message (CH-08 feedback, history)
     user: UserContext
     portfolio: PortfolioSnapshot | None
     goals: list[GoalSnapshot]
@@ -156,3 +167,27 @@ class FinanceState(TypedDict, total=False):
     trace: Annotated[list[TraceEvent], per_turn]
     draft: FinalAnswer | None
     final: FinalAnswer | None
+
+
+# Types a checkpoint may contain. The checkpointer only deserializes listed types, so add
+# any new model that goes into FinanceState here.
+CHECKPOINT_TYPES: tuple[type, ...] = (
+    UserContext,
+    PortfolioSnapshot,
+    GoalSnapshot,
+    RoutePlan,
+    AgentOutput,
+    Artifact,
+    NodeError,
+    TraceEvent,
+    ComplianceReport,
+    FinalAnswer,
+    AgentName,
+    Citation,
+    Freshness,
+    DataStatus,
+    HoldingInput,
+    AssetClass,
+    RiskProfile,
+    Fresh,
+)

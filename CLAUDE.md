@@ -119,6 +119,9 @@ cd ../frontend && npm run gen:api
 - **Agents:** every agent extends `BaseAgent` and returns `AgentOutput`; register it in
   `workflow/factory.py`. Tools are an allow-list per agent; tool results come from services.
   Retrieved or provider text goes into prompts wrapped with `as_data` (prompt-injection guard).
+  Agent instances are shared across requests: per-run data for tools goes on `AgentRun.inputs`,
+  never on `self`. A new Pydantic type stored in graph state must be added to
+  `CHECKPOINT_TYPES` in `workflow/state.py` or the checkpointer won't load it.
 - Frontend: feature code lives in `features/<tab>/`; shared UI in `components/`; every view
   needs loading, empty and error states (UI-09). Use generated API types via `src/api/types.ts`.
 
@@ -131,8 +134,13 @@ cd ../frontend && npm run gen:api
 - Day 2 to 3 (done except chat): LLM gateway, LangGraph graph (router, Send fan-out,
   fallback, synthesizer, compliance), Finance Q&A and Market agents, vector embeddings
   (Gemini + OpenAI collections in ChromaDB), hybrid retrieval and reranker. KB at 110
-  articles and 259 glossary terms. Still to do: chat endpoint with SSE and the SQLite
-  checkpointer (the container uses an in-memory checkpointer for now).
-- Day 3 to 5: Portfolio, Goal, News and Tax agents (Tax is served by Q&A until then),
-  Portfolio, Market and Goals views, MCP server, KB/Learn API endpoints.
+  articles and 259 glossary terms.
+- Day 3 to 4 (done): Portfolio, Goal, News and Tax agents (all six registered);
+  conversations API with the chat answer streamed over SSE (`workflow/streaming.py` maps
+  graph runs to events; `routers/conversations.py`); SQLite checkpointer in its own file
+  (`workflow.checkpoint_path`, default `var/checkpoints.db`) opened by
+  `AppContainer.start()`; Chat tab with streamed answers, agent badges, source cards,
+  follow-ups and inline charts (`features/chat/`).
+- Day 4 to 5: Portfolio, Market and Goals views, MCP server, KB/Learn API endpoints,
+  feedback endpoint (CH-08).
 - Day 6 to 7: tests and evals, Learn tab, trace panel, Docker, docs, demo.

@@ -24,9 +24,16 @@ describe("App routing and auth", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(/cancelled/i);
   });
 
-  it("sends signed-in users to the market tab with index cards and freshness badges", async () => {
-    mockFetch({ "GET /me": () => ({ body: ME }), "GET /market/overview": () => ({ body: OVERVIEW }) });
+  it("sends signed-in users to the chat tab", async () => {
+    mockFetch({ "GET /me": () => ({ body: ME }), "GET /conversations": () => ({ body: { conversations: [] } }) });
     renderApp("/");
+    expect(await screen.findByRole("heading", { name: /what would you like to understand/i })).toBeInTheDocument();
+    expect(window.location.pathname).toBe("/chat");
+  });
+
+  it("shows index cards and freshness badges on the market tab", async () => {
+    mockFetch({ "GET /me": () => ({ body: ME }), "GET /market/overview": () => ({ body: OVERVIEW }) });
+    renderApp("/market");
 
     const spx = await screen.findByRole("article", { name: "S&P 500" });
     expect(within(spx).getByText("5,800.12")).toBeInTheDocument();

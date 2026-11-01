@@ -111,13 +111,31 @@ async def test_without_any_llm_the_graph_still_answers(market: MarketDataService
     graph = workflow(LLMGateway([]), market)
     tax = await ask(graph, "How does a Roth IRA work?", thread="a")
     assert tax["plan"].agents == [AgentName.TAX] and tax["plan"].method == "rules"
-    assert tax["final"].agents == [AgentName.FINANCE_QA]  # Q&A stands in for Tax
+    assert tax["final"].agents == [AgentName.TAX]
     assert tax["final"].citations and tax["errors"] == []
 
+    # Compound question: both agents answer offline and the answers are joined.
     plan = await ask(graph, "Is my portfolio on track for my house goal?", thread="b")
-    notes = [e.node for e in plan["errors"]]
-    assert notes == ["portfolio_analysis", "goal_planning"]
-    assert "isn't available yet" in plan["final"].answer_md
+    assert plan["final"].agents == [AgentName.PORTFOLIO, AgentName.GOAL] and plan["errors"] == []
+    answer = plan["final"].answer_md
+    assert "### Portfolio Analysis" in answer and "### Goal Planning" in answer
+    assert plan["final"].compliance.disclaimer_added
+
+
+async def test_planned_agent_missing_from_graph_degrades(market: MarketDataService) -> None:
+    gw, _ = gateway(decision(["tax_education", "news_synthesizer"]), "Merged.")
+    graph = build_workflow(
+        WorkflowDeps(
+            gateway=gw,
+            context_loader=StaticContextLoader(),
+            agents={AgentName.FINANCE_QA: SlowAgent(AgentName.FINANCE_QA, 0)},
+            config=Settings(_env_file=None).workflow,  # type: ignore[call-arg]
+        )
+    )
+    result = await ask(graph, "Roth IRA taxes and news?")
+    assert result["final"].agents == [AgentName.FINANCE_QA]  # stands in for Tax
+    assert [e.node for e in result["errors"]] == ["news_synthesizer"]
+    assert "isn't available yet" in result["final"].answer_md
 
 
 class SlowAgent:
@@ -180,10 +198,14 @@ async def test_container_builds_workflow(tmp_path: Path) -> None:
     try:
         assert container.knowledge_base is not None
         assert not container.llm.available
+        await container.start()
+        assert (tmp_path / "checkpoints.db").exists()  # conversation memory on disk
         result = await container.workflow.ainvoke(
             {"messages": [HumanMessage("What is compound interest?")], "user": USER},
             {"configurable": {"thread_id": "c1"}},
         )
         assert result["final"].citations[0].article_id == "compound-growth"
+        saved = await container.workflow.aget_state({"configurable": {"thread_id": "c1"}})
+        assert len(saved.values["messages"]) == 2
     finally:
         await container.aclose()

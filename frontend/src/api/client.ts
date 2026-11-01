@@ -25,7 +25,7 @@ function isEnvelope(body: unknown): body is ErrorEnvelope {
   return typeof body === "object" && body !== null && "error" in body;
 }
 
-async function toApiError(response: Response): Promise<ApiError> {
+export async function toApiError(response: Response): Promise<ApiError> {
   const body: unknown = await response.json().catch(() => null);
   if (isEnvelope(body)) {
     const { code, message, retryable } = body.error;

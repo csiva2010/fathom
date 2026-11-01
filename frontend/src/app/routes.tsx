@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppShell } from "@/components/layout/AppShell";
+import { ChatPage } from "@/features/chat/ChatPage";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { MarketPage } from "@/features/market/MarketPage";
 import { ComingSoonPage } from "@/features/placeholders/ComingSoonPage";
@@ -13,10 +14,11 @@ export function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route element={<RequireAuth />}>
         <Route element={<AppShell />}>
-          <Route
-            path="/chat"
-            element={<ComingSoonPage title="Chat" description="Ask the assistant anything about money and investing." />}
-          />
+          {/* A layout route, so the page (and an answer mid-stream) survives /chat -> /chat/:id. */}
+          <Route path="/chat" element={<ChatPage />}>
+            <Route index element={null} />
+            <Route path=":conversationId" element={null} />
+          </Route>
           <Route
             path="/portfolio"
             element={<ComingSoonPage title="Portfolio" description="Enter or import holdings and see clear metrics." />}

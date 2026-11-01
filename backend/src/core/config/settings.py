@@ -203,6 +203,10 @@ class WorkflowConfig(BaseModel):
     history_messages: int = Field(default=8, ge=0)
     max_focus_tickers: int = Field(default=3, ge=1)
     max_message_chars: int = Field(default=4000, ge=100)
+    # Conversation memory (OR-05): a SQLite file for LangGraph checkpoints, kept apart from
+    # the app DB so the async checkpointer and the sync ORM never contend for one write
+    # lock. Empty = in memory (lost on restart).
+    checkpoint_path: str = ""
 
 
 class SeedConfig(BaseModel):
