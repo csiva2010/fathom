@@ -116,3 +116,42 @@ class PriceRange(StrEnum):
     M6 = "6M"
     Y1 = "1Y"
     Y5 = "5Y"
+
+
+class SymbolInfo(BaseModel):
+    """One entry in the symbol directory used for ticker search and validation (MD-09)."""
+
+    symbol: str
+    name: str = ""
+    exchange: str = ""
+
+
+class Indicators(BaseModel):
+    """Plain-language market insights for one symbol, computed from daily bars (MD-08).
+
+    Percent fields are percentages (1.5 means 1.5%).
+    """
+
+    symbol: str
+    last_close: float
+    as_of: datetime
+    period_change_percent: float | None = None  # first to last bar of the window
+    sma_50: float | None = None
+    sma_200: float | None = None
+    price_vs_sma_50_percent: float | None = None
+    price_vs_sma_200_percent: float | None = None
+    week52_low: float | None = None
+    week52_high: float | None = None
+    week52_position_percent: float | None = None  # 0 = at the low, 100 = at the high
+    volatility_30d_percent: float | None = None  # annualized
+    max_drawdown_percent: float | None = None  # worst peak-to-trough fall in the window
+    bars_used: int = 0
+
+
+class SectorPerformance(BaseModel):
+    """A sector's day move, measured through its sector ETF (MD-08)."""
+
+    sector: str
+    symbol: str
+    price: float
+    change_percent: float | None = None

@@ -9,13 +9,19 @@ import pytest
 from pydantic import ValidationError
 
 from src.core.config import BACKEND_ROOT, Settings, resolve_path
-from src.core.domain.market import Bar
+from src.core.domain.market import Bar, SymbolInfo
 from src.core.errors import UnknownSymbol, ValidationFailed
 from src.core.logging import configure_logging
 from src.core.logging.context import request_id_var, user_id_var
 from src.core.logging.formatters import JsonFormatter
 from src.core.services.market.ranges import trim_to_sessions
-from src.core.services.market.symbols import MAX_SYMBOLS, normalise_symbol, normalise_symbols
+from src.core.services.market.symbols import (
+    MAX_SYMBOLS,
+    normalise_symbol,
+    normalise_symbols,
+    search_symbols,
+    suggest_symbols,
+)
 from tests.conftest import make_settings
 
 # --- Settings ----------------------------------------------------------------
@@ -151,6 +157,32 @@ def test_trim_to_sessions() -> None:
 
 def test_unknown_symbol_message() -> None:
     assert "ZZZ" in UnknownSymbol(["ZZZ"]).message
+    assert "Did you mean" not in UnknownSymbol(["ZZZ"]).message
+    with_hint = UnknownSymbol(["APPL"], ["AAPL", "APP"])
+    assert with_hint.message.endswith("Did you mean AAPL or APP?")
+    assert with_hint.suggestions == ["AAPL", "APP"]
+
+
+def test_search_symbols_ranking() -> None:
+    entries = [
+        SymbolInfo(symbol="VTI", name="Vanguard Total Stock Market ETF"),
+        SymbolInfo(symbol="V", name="Visa Inc."),
+        SymbolInfo(symbol="VOO", name="Vanguard S&P 500 ETF"),
+        SymbolInfo(symbol="AVGO", name="Broadcom Inc."),
+        SymbolInfo(symbol="SPY", name="SPDR S&P 500 ETF Trust"),
+    ]
+    assert [e.symbol for e in search_symbols(entries, "v")] == ["V", "VOO", "VTI"]
+    assert [e.symbol for e in search_symbols(entries, "broad")] == ["AVGO"]
+    assert [e.symbol for e in search_symbols(entries, "s&p 500")] == ["SPY", "VOO"]
+    assert [e.symbol for e in search_symbols(entries, "TOTAL", limit=1)] == ["VTI"]
+    assert [e.symbol for e in search_symbols(entries, "anguar")] == ["VOO", "VTI"]
+    assert search_symbols(entries, "  ") == []
+    assert search_symbols(entries, "zzz") == []
+
+
+def test_suggest_symbols() -> None:
+    assert suggest_symbols(["AAPL", "MSFT", "AMZN"], "APPL") == ["AAPL"]
+    assert suggest_symbols(["AAPL"], "QQQQQ") == []
 
 
 def test_guest_mode_is_allowed_in_production(tmp_path: Path) -> None:

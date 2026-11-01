@@ -5,8 +5,9 @@ Run locally:  uvicorn src.web_app.main:app --reload   (from the backend/ folder)
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from typing import Any
 
 from fastapi import FastAPI
@@ -14,8 +15,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from src import __version__
-from src.core.config import Settings, get_settings
+from src.core.config import Settings, get_settings, resolve_path
 from src.core.logging import configure_logging, get_logger
+from src.core.services.market.warmup import sample_symbols, warm_cache
+from src.data.providers.mock.seed_loader import SeedData
 from src.web_app.container import AppContainer
 from src.web_app.errors.handlers import register_error_handlers
 from src.web_app.middleware.origin_check import OriginCheckMiddleware
@@ -33,6 +36,12 @@ def create_app(settings: Settings | None = None, container: AppContainer | None 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.container = container or AppContainer.build(settings)
+        warmup: asyncio.Task[dict[str, int]] | None = None
+        if settings.market.warm_cache.on_startup:
+            symbols = sample_symbols(
+                SeedData(resolve_path(settings.seed.dir)), [settings.market.benchmark_symbol]
+            )
+            warmup = asyncio.create_task(warm_cache(app.state.container.market, symbols))
         log.info(
             "api started",
             extra={
@@ -44,6 +53,10 @@ def create_app(settings: Settings | None = None, container: AppContainer | None 
         try:
             yield
         finally:
+            if warmup is not None:
+                warmup.cancel()
+                with suppress(asyncio.CancelledError):
+                    await warmup
             await app.state.container.aclose()
 
     app = FastAPI(

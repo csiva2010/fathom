@@ -5,7 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from src.core.domain.market import Bar, NewsItem, Quote
+from src.core.domain.market import Bar, NewsItem, Quote, SymbolInfo
+from src.core.errors import ProviderBadResponse
 
 
 def parse_timestamp(raw: str) -> datetime:
@@ -86,3 +87,23 @@ def parse_news(payload: dict[str, Any]) -> list[NewsItem]:
             )
         )
     return items
+
+
+# Listed US venues only; OTC and crypto are out of scope (AS-01).
+LISTED_EXCHANGES = frozenset({"NYSE", "NASDAQ", "ARCA", "AMEX", "BATS", "NYSEARCA"})
+
+
+def parse_assets(payload: Any) -> list[SymbolInfo]:
+    if not isinstance(payload, list):
+        raise ProviderBadResponse("alpaca", "unexpected assets response shape")
+    symbols: list[SymbolInfo] = []
+    for asset in payload:
+        if not isinstance(asset, dict) or asset.get("status", "active") != "active":
+            continue
+        exchange = str(asset.get("exchange", "")).upper()
+        symbol = str(asset.get("symbol", "")).upper()
+        if symbol and exchange in LISTED_EXCHANGES:
+            symbols.append(
+                SymbolInfo(symbol=symbol, name=asset.get("name") or "", exchange=exchange)
+            )
+    return symbols

@@ -17,6 +17,7 @@ from src.core.domain.market import (
     NewsItem,
     Quote,
     ReferenceData,
+    SymbolInfo,
 )
 from src.data.providers.mock.seed_loader import SeedData
 from src.data.resilience.circuit_breaker import BreakerState
@@ -148,3 +149,16 @@ class MockMarketProvider:
 
     async def get_reference_data(self, symbol: str) -> ReferenceData:
         return self.reference_data(symbol)
+
+    # --- Symbol table ------------------------------------------------------
+
+    def symbol_table(self) -> list[SymbolInfo]:
+        """The local symbol table: every symbol the seed files know about."""
+        reference = self._seed.reference
+        symbols = sorted({*self._seed.base_prices, *reference})
+        return [
+            SymbolInfo(symbol=s, name=reference[s].name if s in reference else "") for s in symbols
+        ]
+
+    async def list_symbols(self) -> list[SymbolInfo]:
+        return self.symbol_table()

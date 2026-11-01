@@ -39,6 +39,9 @@ market:
     data_base_url: https://data.alpaca.markets
     feed: sip                 # sip = paid real-time; iex = free tier
     requests_per_minute: 180
+    # Symbol search reads the assets list from the Trading API host (read-only, never
+    # trading). Leave unset to pick paper-api or api from the key type.
+    # assets_base_url: https://paper-api.alpaca.markets
   alpha_vantage:
     base_url: https://www.alphavantage.co/query
     requests_per_minute: 5    # raise to match your plan
@@ -56,6 +59,7 @@ market:
     news: 900
     index: 900
     reference: 86400
+    symbols: 86400
   # Alpha Vantage index coverage is a day-1 check; proxy_symbol is the ETF fallback.
   indices:
     - id: SPX
@@ -70,6 +74,25 @@ market:
       name: Dow Jones Industrial Average
       av_symbol: DJI
       proxy_symbol: DIA
+  benchmark_symbol: SPY       # portfolio comparison (PF-05)
+  # Sector performance is measured through the SPDR sector ETFs (MD-08).
+  sector_etfs:
+    - { sector: Information Technology, symbol: XLK }
+    - { sector: Financials, symbol: XLF }
+    - { sector: Health Care, symbol: XLV }
+    - { sector: Consumer Discretionary, symbol: XLY }
+    - { sector: Communication Services, symbol: XLC }
+    - { sector: Industrials, symbol: XLI }
+    - { sector: Consumer Staples, symbol: XLP }
+    - { sector: Energy, symbol: XLE }
+    - { sector: Utilities, symbol: XLU }
+    - { sector: Real Estate, symbol: XLRE }
+    - { sector: Materials, symbol: XLB }
+  # Top movers are picked from this fixed set of liquid US stocks and ETFs.
+  movers_universe: [AAPL, MSFT, NVDA, GOOGL, AMZN, META, TSLA, BRK.B, JPM, V, JNJ, PG, KO,
+                    PEP, XOM, UNH, HD, WMT, DIS, NFLX, SPY, QQQ, DIA, IWM, GLD, TLT]
+  warm_cache:
+    on_startup: false         # true pre-warms sample tickers; costs Alpha Vantage quota
 
 kb:
   source_dir: data/kb

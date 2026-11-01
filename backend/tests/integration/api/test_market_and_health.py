@@ -7,7 +7,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from src.rag.ingestion.pipeline import run_ingestion
-from tests.conftest import FIXTURES
+from tests.conftest import FIXTURES, make_settings
 
 API = "/api/v1"
 
@@ -76,3 +76,10 @@ def test_unknown_route_uses_envelope(client: TestClient) -> None:
     response = client.get(f"{API}/nope")
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "not_found"
+
+
+def test_cache_warm_up_runs_at_startup_when_enabled(client_for, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]
+    settings = make_settings(tmp_path, market={"warm_cache": {"on_startup": True}})
+    client = client_for(settings)
+    assert client.get(f"{API}/health").status_code == 200
+    # Shutdown cancels the warm-up task cleanly whether or not it finished.

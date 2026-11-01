@@ -65,6 +65,9 @@ class AlpacaConfig(BaseModel):
     data_base_url: str = "https://data.alpaca.markets"
     feed: Literal["sip", "iex"] = "sip"
     requests_per_minute: int = Field(default=180, gt=0)
+    # Read-only assets list for symbol search (MD-09), served from the Trading API host.
+    # Empty = picked from the key: paper keys (PK...) use paper-api, live keys use api.
+    assets_base_url: str = ""
 
 
 class AlphaVantageConfig(BaseModel):
@@ -90,6 +93,7 @@ class CacheTtlConfig(BaseModel):
     news: int = 900
     index: int = 900
     reference: int = 86400
+    symbols: int = 86400
 
 
 class IndexConfig(BaseModel):
@@ -97,6 +101,17 @@ class IndexConfig(BaseModel):
     name: str
     av_symbol: str
     proxy_symbol: str
+
+
+class SectorEtfConfig(BaseModel):
+    sector: str
+    symbol: str
+
+
+class WarmCacheConfig(BaseModel):
+    # Off by default: warming calls Alpha Vantage once or twice per sample ticker, which
+    # queues behind its rate limit and can use up a small daily quota on every restart.
+    on_startup: bool = False
 
 
 class MarketConfig(BaseModel):
@@ -107,6 +122,10 @@ class MarketConfig(BaseModel):
     circuit_breaker: CircuitBreakerConfig = Field(default_factory=CircuitBreakerConfig)
     cache_ttl_seconds: CacheTtlConfig = Field(default_factory=CacheTtlConfig)
     indices: list[IndexConfig] = Field(default_factory=list)
+    benchmark_symbol: str = "SPY"
+    sector_etfs: list[SectorEtfConfig] = Field(default_factory=list)
+    movers_universe: list[str] = Field(default_factory=list)
+    warm_cache: WarmCacheConfig = Field(default_factory=WarmCacheConfig)
 
 
 class KnowledgeBaseConfig(BaseModel):

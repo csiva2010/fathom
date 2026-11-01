@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from src.core.config import resolve_path
-from src.core.config.settings import CacheTtlConfig, IndexConfig
+from src.core.config.settings import CacheTtlConfig, IndexConfig, SectorEtfConfig
 from src.core.domain.market import (
     Bar,
     DataStatus,
@@ -14,6 +15,7 @@ from src.core.domain.market import (
     PriceRange,
     Quote,
     ReferenceData,
+    SymbolInfo,
 )
 from src.core.errors import ProviderUnavailable, UnknownSymbol, ValidationFailed
 from src.core.services.market.market_data_service import MarketDataService
@@ -25,10 +27,17 @@ from src.data.resilience.circuit_breaker import BreakerState
 
 NOW = datetime(2026, 10, 30, 15, 0, tzinfo=UTC)
 INDICES = [IndexConfig(id="SPX", name="S&P 500", av_symbol="SPX", proxy_symbol="SPY")]
+SECTORS = [
+    SectorEtfConfig(sector="Information Technology", symbol="XLK"),
+    SectorEtfConfig(sector="Energy", symbol="XLE"),
+    SectorEtfConfig(sector="Utilities", symbol="XLU"),
+    SectorEtfConfig(sector="Missing", symbol="NOPE"),
+]
+CHANGES = {"AAPL": 2.0, "VOO": -1.0, "SPY": 0.5, "XLK": 1.5, "XLE": -0.5}
 
 
 def quote(symbol: str, price: float = 10.0) -> Quote:
-    return Quote(symbol=symbol, price=price, as_of=NOW)
+    return Quote(symbol=symbol, price=price, change_percent=CHANGES.get(symbol), as_of=NOW)
 
 
 class FakeAlpaca:
@@ -40,6 +49,7 @@ class FakeAlpaca:
         self.known = known if known is not None else {"AAPL", "VOO", "SPY"}
         self.down = False
         self.quote_calls: list[list[str]] = []
+        self.symbol_calls = 0
 
     async def get_quotes(self, symbols: list[str]) -> dict[str, Quote]:
         self.quote_calls.append(symbols)
@@ -63,6 +73,12 @@ class FakeAlpaca:
             raise ProviderUnavailable(self.name, "down")
         return [NewsItem(id="1", headline="h", published_at=NOW, symbols=symbols)]
 
+    async def list_symbols(self) -> list[SymbolInfo]:
+        self.symbol_calls += 1
+        if self.down:
+            raise ProviderUnavailable(self.name, "down")
+        return [SymbolInfo(symbol=s, name=f"{s} Company", exchange="NYSE") for s in self.known]
+
 
 class FakeAlphaVantage:
     name = "alpha_vantage"
@@ -71,6 +87,8 @@ class FakeAlphaVantage:
     def __init__(self, configured: bool = True) -> None:
         self.configured = configured
         self.down = False
+        self.delay = 0.0
+        self.error: Exception | None = None
 
     async def get_index_quote(self, index_id: str, name: str, symbol: str) -> IndexQuote:
         if self.down:
@@ -80,6 +98,9 @@ class FakeAlphaVantage:
         )
 
     async def get_reference_data(self, symbol: str) -> ReferenceData:
+        await asyncio.sleep(self.delay)
+        if self.error is not None:
+            raise self.error
         if self.down:
             raise ProviderUnavailable(self.name, "down")
         return ReferenceData(symbol=symbol, name="Live name")
@@ -95,6 +116,8 @@ def make_service(alpaca: FakeAlpaca | None = None, av: FakeAlphaVantage | None =
         mock=MockMarketProvider(SeedData(resolve_path("data/seed")), now=NOW),
         ttl=CacheTtlConfig(),
         indices=INDICES,
+        sector_etfs=SECTORS,
+        movers_universe=["AAPL", "VOO", "SPY", "XLU"],
     )
     return service, alpaca, av
 
@@ -222,3 +245,137 @@ def test_provider_status() -> None:
     service, _, _ = make_service(av=FakeAlphaVantage(configured=False))
     status = {s.name: s.configured for s in service.provider_status()}
     assert status == {"alpaca": True, "alpha_vantage": False}
+
+
+# --- Symbol search and validation (MD-09) -------------------------------------
+
+
+async def test_search_symbols_uses_cached_provider_directory() -> None:
+    service, alpaca, _ = make_service(alpaca=FakeAlpaca(known={"AAPL", "AA", "VOO", "SPY"}))
+    first = await service.search_symbols("  aa ", limit=10)
+    assert [s.symbol for s in first.value] == ["AA", "AAPL"]
+    assert first.freshness.status is DataStatus.LIVE
+
+    second = await service.search_symbols("company", limit=2)
+    assert len(second.value) == 2
+    assert second.freshness.status is DataStatus.CACHED
+    assert alpaca.symbol_calls == 1
+
+
+async def test_search_symbols_rejects_empty_and_long_queries() -> None:
+    service, _, _ = make_service()
+    with pytest.raises(ValidationFailed):
+        await service.search_symbols("   ")
+    with pytest.raises(ValidationFailed):
+        await service.search_symbols("x" * 51)
+
+
+async def test_validate_symbols_against_provider_suggests_spellings() -> None:
+    service, _, _ = make_service(alpaca=FakeAlpaca(known={"AAPL", "VOO", "SPY"}))
+    check = await service.validate_symbols("AAPL, APPL")
+    assert [s.symbol for s in check.known] == ["AAPL"]
+    assert check.unknown == ["APPL"]
+    assert check.suggestions["APPL"] == ["AAPL"]
+    assert check.unverified == []
+
+    with pytest.raises(UnknownSymbol) as raised:
+        await service.validate_symbol("APPL")
+    assert raised.value.suggestions == ["AAPL"]
+    assert "Did you mean AAPL?" in raised.value.message
+    assert (await service.validate_symbol("voo")).name == "VOO Company"
+
+
+async def test_validate_symbols_with_local_table_cannot_rule_out_tickers() -> None:
+    service, _, _ = make_service(alpaca=FakeAlpaca(configured=False))
+    check = await service.validate_symbols(["AAPL", "ZZZZ"])
+    assert check.unknown == []
+    assert check.unverified == ["ZZZZ"]
+    assert [s.symbol for s in check.known] == ["AAPL", "ZZZZ"]
+    assert check.known[0].name == "Apple Inc."
+    assert (await service.validate_symbol("ZZZZ")).symbol == "ZZZZ"
+
+
+# --- Insights (MD-08) ---------------------------------------------------------
+
+
+async def test_indicators_carry_history_freshness() -> None:
+    service, alpaca, _ = make_service()
+    result = await service.get_indicators("aapl")
+    assert result.value.symbol == "AAPL"
+    assert result.value.bars_used == 4
+    assert result.freshness.status is DataStatus.LIVE
+
+    alpaca.down = True
+    mocked = await service.get_indicators("VOO")
+    assert mocked.freshness.status is DataStatus.MOCK
+    assert mocked.value.sma_200 is not None
+
+
+async def test_indicators_reject_symbol_with_empty_history() -> None:
+    service, _, _ = make_service()
+
+    async def no_bars(symbol: str, price_range: PriceRange):  # type: ignore[no-untyped-def]
+        history = await MarketDataService.get_history(service, "AAPL", price_range)
+        return history.model_copy(update={"value": history.value.model_copy(update={"bars": []})})
+
+    service.get_history = no_bars  # type: ignore[method-assign]
+    with pytest.raises(UnknownSymbol):
+        await service.get_indicators("AAPL")
+
+
+async def test_movers_rank_the_universe() -> None:
+    service, _, _ = make_service(alpaca=FakeAlpaca(known={"AAPL", "VOO", "SPY", "XLU"}))
+    movers = await service.get_movers(limit=1)
+    assert [q.value.symbol for q in movers.gainers] == ["AAPL"]
+    assert [q.value.symbol for q in movers.losers] == ["VOO"]
+
+    empty, _, _ = make_service()
+    empty._movers_universe = []
+    assert await empty.get_movers() == type(movers)()
+
+
+async def test_sector_performance_sorted_best_first() -> None:
+    service, _, _ = make_service(alpaca=FakeAlpaca(known={"XLK", "XLE", "XLU"}))
+    sectors = await service.get_sector_performance()
+    assert [s.value.symbol for s in sectors] == ["XLK", "XLE", "XLU"]  # XLU has no change
+    assert sectors[0].value.sector == "Information Technology"
+    assert all(s.freshness.status is DataStatus.LIVE for s in sectors)
+
+    service._sector_etfs = []
+    assert await service.get_sector_performance() == []
+
+
+# --- Reference data with a timeout --------------------------------------------
+
+
+async def test_slow_reference_data_falls_back_then_fills_cache() -> None:
+    service, _, av = make_service()
+    av.delay = 0.05
+    quick = await service.get_reference_data("VOO", timeout=0.001)
+    assert quick.freshness.status is DataStatus.MOCK
+    assert quick.value.expense_ratio == 0.0003
+
+    await asyncio.sleep(0.1)  # the provider call finished in the background
+    assert not service._background
+    cached = await service.get_reference_data("VOO", timeout=0.001)
+    assert cached.freshness.status is DataStatus.CACHED
+    assert cached.value.name == "Live name"
+
+
+async def test_slow_reference_data_prefers_stale_cache_and_logs_failures() -> None:
+    service, _, av = make_service()
+    await service.get_reference_data("AAPL")
+    entry = service._chain.cache.get_any("ref:AAPL")
+    assert entry is not None
+    entry.expires_at = 0
+
+    av.delay = 0.05
+    av.error = UnknownSymbol(["AAPL"])  # a definitive error the chain re-raises
+    stale = await service.get_reference_data("AAPL", timeout=0.001)
+    assert stale.freshness.status is DataStatus.CACHED
+    await asyncio.sleep(0.1)
+    assert not service._background
+
+    av.delay = 0
+    av.error = None
+    assert (await service.get_reference_data("MSFT", timeout=1)).value.name == "Live name"

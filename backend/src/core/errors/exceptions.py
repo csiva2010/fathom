@@ -96,9 +96,11 @@ class UnknownSymbol(AppError):
     code = "unknown_symbol"
     status_code = 404
 
-    def __init__(self, symbols: list[str]):
+    def __init__(self, symbols: list[str], suggestions: list[str] | None = None):
         joined = ", ".join(symbols)
-        super().__init__(
-            f"We couldn't find {joined}. Check the ticker spelling (US stocks and ETFs only)."
-        )
+        message = f"We couldn't find {joined}. Check the ticker spelling (US stocks and ETFs only)."
+        if suggestions:
+            message += f" Did you mean {' or '.join(suggestions)}?"
+        super().__init__(message)
         self.symbols = symbols
+        self.suggestions = suggestions or []

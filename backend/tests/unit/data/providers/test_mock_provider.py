@@ -47,3 +47,11 @@ def test_seed_sample_portfolios() -> None:
     samples = SeedData(resolve_path("data/seed")).sample_portfolios
     assert len(samples) == 3
     assert all(s["holdings"] for s in samples)
+
+
+async def test_symbol_table_covers_prices_and_reference_data() -> None:
+    mock = make_mock()
+    table = {s.symbol: s for s in await mock.list_symbols()}
+    assert table["AAPL"].name == "Apple Inc."
+    assert "XLRE" in table and table["XLRE"].name == ""  # priced but no reference entry
+    assert list(table) == sorted(table)

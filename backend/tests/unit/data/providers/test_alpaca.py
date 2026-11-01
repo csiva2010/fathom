@@ -7,8 +7,9 @@ import pytest
 import respx
 
 from src.core.config.settings import AlpacaConfig
+from src.core.errors import ProviderBadResponse
 from src.data.providers.alpaca.client import AlpacaProvider
-from src.data.providers.alpaca.parsers import parse_snapshot, parse_timestamp
+from src.data.providers.alpaca.parsers import parse_assets, parse_snapshot, parse_timestamp
 from src.data.resilience.circuit_breaker import BreakerState, CircuitBreaker
 from src.data.resilience.guard import ProviderGuard
 from src.data.resilience.rate_limiter import TokenBucket
@@ -123,3 +124,42 @@ async def test_get_news_parses_items() -> None:
 def test_unconfigured_without_keys() -> None:
     provider = make_provider(httpx.AsyncClient(), key="")
     assert not provider.configured
+
+
+ASSETS = [
+    {"symbol": "AAPL", "name": "Apple Inc. Common Stock", "exchange": "NASDAQ", "status": "active"},
+    {"symbol": "SPY", "name": "SPDR S&P 500", "exchange": "ARCA", "status": "active"},
+    {"symbol": "OTCX", "name": "Over the counter", "exchange": "OTC", "status": "active"},
+    {"symbol": "OLD", "name": "Delisted", "exchange": "NYSE", "status": "inactive"},
+    {"symbol": "", "exchange": "NYSE"},
+    "junk",
+]
+
+
+def test_parse_assets_keeps_active_listed_symbols() -> None:
+    symbols = parse_assets(ASSETS)
+    assert [(s.symbol, s.exchange) for s in symbols] == [("AAPL", "NASDAQ"), ("SPY", "ARCA")]
+    with pytest.raises(ProviderBadResponse):
+        parse_assets({"message": "nope"})
+
+
+@respx.mock
+async def test_list_symbols_reads_assets_from_the_matching_host() -> None:
+    paper = respx.get("https://paper-api.alpaca.markets/v2/assets").respond(200, json=ASSETS)
+    live = respx.get("https://api.alpaca.markets/v2/assets").respond(200, json=ASSETS)
+    custom = respx.get("https://assets.example/v2/assets").respond(200, json=[])
+    async with httpx.AsyncClient() as client:
+        assert len(await make_provider(client, key="PKTEST").list_symbols()) == 2
+        assert len(await make_provider(client, key="AKLIVE").list_symbols()) == 2
+        guard = ProviderGuard(
+            "alpaca", TokenBucket(1000), CircuitBreaker(), RetryPolicy(attempts=1)
+        )
+        configured = AlpacaProvider(
+            client, AlpacaConfig(assets_base_url="https://assets.example"), guard, "PK", "s"
+        )
+        assert await configured.list_symbols() == []
+    assert paper.called and live.called and custom.called
+    request = paper.calls.last.request
+    assert request.url.params["status"] == "active"
+    assert request.url.params["asset_class"] == "us_equity"
+    assert request.headers["APCA-API-KEY-ID"] == "PKTEST"

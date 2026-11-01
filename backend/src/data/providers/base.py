@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Protocol
 
-from src.core.domain.market import Bar, IndexQuote, NewsItem, Quote, ReferenceData
+from src.core.domain.market import Bar, IndexQuote, NewsItem, Quote, ReferenceData, SymbolInfo
 from src.data.resilience.circuit_breaker import BreakerState
 
 
@@ -35,6 +35,12 @@ class NewsProvider(ProviderInfo, Protocol):
     async def get_news(self, symbols: list[str], limit: int = 10) -> list[NewsItem]: ...
 
 
+class SymbolListProvider(ProviderInfo, Protocol):
+    async def list_symbols(self) -> list[SymbolInfo]:
+        """Every active US stock and ETF the provider knows (MD-09)."""
+        ...
+
+
 class IndexQuoteProvider(ProviderInfo, Protocol):
     async def get_index_quote(self, index_id: str, name: str, symbol: str) -> IndexQuote: ...
 
@@ -46,8 +52,8 @@ class ReferenceDataProvider(ProviderInfo, Protocol):
 # --- Roles the market service needs (implemented today by Alpaca / Alpha Vantage) ---
 
 
-class LiveMarketProvider(QuoteProvider, BarsProvider, NewsProvider, Protocol):
-    """Real-time quotes, price bars and news."""
+class LiveMarketProvider(QuoteProvider, BarsProvider, NewsProvider, SymbolListProvider, Protocol):
+    """Real-time quotes, price bars, news and the symbol list."""
 
 
 class ReferenceMarketProvider(IndexQuoteProvider, ReferenceDataProvider, Protocol):

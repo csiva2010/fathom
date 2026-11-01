@@ -59,6 +59,8 @@ def build_market_service(
         mock=providers.mock,
         ttl=settings.market.cache_ttl_seconds,
         indices=settings.market.indices,
+        sector_etfs=settings.market.sector_etfs,
+        movers_universe=settings.market.movers_universe,
     )
 
 
