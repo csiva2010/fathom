@@ -104,3 +104,11 @@ class UnknownSymbol(AppError):
         super().__init__(message)
         self.symbols = symbols
         self.suggestions = suggestions or []
+
+
+class LLMUnavailable(AppError):
+    """Every configured chat model failed or none is configured (NF-R02)."""
+
+    code = "llm_unavailable"
+    status_code = 503
+    retryable = True

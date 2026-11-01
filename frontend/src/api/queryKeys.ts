@@ -5,4 +5,6 @@ export const queryKeys = {
   health: ["health"] as const,
   marketOverview: ["market", "overview"] as const,
   quotes: (symbols: string[]) => ["market", "quotes", ...symbols] as const,
+  conversations: ["conversations"] as const,
+  conversation: (id: string) => ["conversations", id] as const,
 };

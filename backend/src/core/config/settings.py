@@ -128,13 +128,85 @@ class MarketConfig(BaseModel):
     warm_cache: WarmCacheConfig = Field(default_factory=WarmCacheConfig)
 
 
+class EmbeddingModelConfig(BaseModel):
+    """One embedding model and the Chroma collection that holds its vectors (KB-04).
+
+    Vectors from different models are not comparable, so each model gets its own collection.
+    """
+
+    provider: Literal["gemini", "openai"]
+    model: str
+    collection: str = Field(pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._-]{1,510}[a-zA-Z0-9]$")
+    # Texts embedded per minute during ingestion (each text counts as one request on the
+    # Gemini free tier). None = no pacing.
+    requests_per_minute: int | None = Field(default=None, gt=0)
+
+
+class RetrievalConfig(BaseModel):
+    """Hybrid retrieval knobs (KB-05, KB-06)."""
+
+    vector_k: int = Field(default=20, ge=1)
+    keyword_k: int = Field(default=20, ge=1)
+    rrf_k: int = Field(default=60, ge=1)
+    rerank_candidates: int = Field(default=20, ge=1)
+    top_n: int = Field(default=5, ge=1)
+    level_boost: float = Field(default=0.05, ge=0, le=1)
+
+
+class RerankerConfig(BaseModel):
+    # cross_encoder: local sentence-transformers model, loaded once (falls back to lexical
+    # if the package or weights are missing). lexical: query-term overlap, no model.
+    kind: Literal["cross_encoder", "lexical"] = "cross_encoder"
+    model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    # Relevance threshold per reranker; scores are 0..1. Below it a chunk is dropped.
+    cross_encoder_min_score: float = Field(default=0.02, ge=0, le=1)
+    lexical_min_score: float = Field(default=0.5, ge=0, le=1)
+
+
 class KnowledgeBaseConfig(BaseModel):
     source_dir: str = "data/kb"
     index_dir: str = "var/index"
+    vector_dir: str = "var/chroma"
     chunk_tokens: int = Field(default=500, gt=50)
     chunk_overlap: float = Field(default=0.15, ge=0, lt=0.5)
     categories: list[str] = Field(default_factory=list)
     levels: list[str] = Field(default_factory=lambda: ["beginner", "intermediate", "advanced"])
+    # First entry is the primary; the rest are query-time fallbacks, in order.
+    embeddings: list[EmbeddingModelConfig] = Field(default_factory=list)
+    embed_batch_size: int = Field(default=64, ge=1)
+    retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
+    reranker: RerankerConfig = Field(default_factory=RerankerConfig)
+
+
+class LlmModelConfig(BaseModel):
+    provider: Literal["gemini", "anthropic", "openai"]
+    model: str
+    temperature: float = Field(default=0.2, ge=0, le=2)
+    max_output_tokens: int = Field(default=1200, gt=0)
+    timeout_seconds: float = Field(default=30, gt=0)
+
+
+class LlmConfig(BaseModel):
+    """Chat models in fallback order (D1, NF-R02). Models without an API key are skipped."""
+
+    models: list[LlmModelConfig] = Field(default_factory=list)
+
+
+class WorkflowConfig(BaseModel):
+    """LangGraph workflow knobs (OR-01 to OR-07)."""
+
+    clarify_below_confidence: float = Field(default=0.6, ge=0, le=1)
+    agent_timeout_seconds: float = Field(default=20, gt=0)
+    agent_retries: int = Field(default=1, ge=0)
+    max_tool_rounds: int = Field(default=3, ge=0)
+    max_agents_per_turn: int = Field(default=3, ge=1)
+    history_messages: int = Field(default=8, ge=0)
+    max_focus_tickers: int = Field(default=3, ge=1)
+    max_message_chars: int = Field(default=4000, ge=100)
+    # Conversation memory (OR-05): a SQLite file for LangGraph checkpoints, kept apart from
+    # the app DB so the async checkpointer and the sync ORM never contend for one write
+    # lock. Empty = in memory (lost on restart).
+    checkpoint_path: str = ""
 
 
 class SeedConfig(BaseModel):
@@ -156,6 +228,8 @@ class Settings(BaseSettings):
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     market: MarketConfig = Field(default_factory=MarketConfig)
     kb: KnowledgeBaseConfig = Field(default_factory=KnowledgeBaseConfig)
+    llm: LlmConfig = Field(default_factory=LlmConfig)
+    workflow: WorkflowConfig = Field(default_factory=WorkflowConfig)
     seed: SeedConfig = Field(default_factory=SeedConfig)
 
     # Secrets: environment / .env only, never in config.yaml, never sent to the browser.
@@ -228,6 +302,16 @@ class Settings(BaseSettings):
     @property
     def alpha_vantage_configured(self) -> bool:
         return bool(self.alpha_vantage_api_key.get_secret_value())
+
+    def provider_api_key(self, provider: str) -> str:
+        """API key for an LLM or embedding provider ("" when not configured)."""
+        keys = {
+            "gemini": self.gemini_api_key,
+            "anthropic": self.anthropic_api_key,
+            "openai": self.openai_api_key,
+        }
+        secret = keys.get(provider)
+        return secret.get_secret_value() if secret else ""
 
 
 def resolve_path(path: str | Path) -> Path:

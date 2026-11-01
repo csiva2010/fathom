@@ -16,10 +16,12 @@ when code implements one.
 ```
 backend/                 Python 3.11+, FastAPI. Run every command from this folder.
   src/                   Course-prescribed layout (NF-Q02); keep these folder names.
-    agents/              Six agents on a shared BaseAgent (day 2+)
-    workflow/            LangGraph state, router, synthesizer, compliance (day 2+)
+    agents/              BaseAgent (prefetch + allow-listed tool loop) + finance_qa, market_analysis
+    workflow/            LangGraph: state, context, router, responses, agent_runner,
+                         synthesizer, compliance, graph, factory
     core/
       config/            Settings: config.yaml + .env merged by pydantic-settings
+      llm/               LLMGateway: ordered model fallback (Gemini -> Claude), structured output
       logging/           Structured JSON logs with request/user/thread context
       errors/            AppError hierarchy -> {error: {code, message, retryable}}
       domain/            Pydantic domain models shared across layers (market.py)
@@ -30,7 +32,8 @@ backend/                 Python 3.11+, FastAPI. Run every command from this fold
       providers/         alpaca/, alpha_vantage/, mock/ + chain.py (fallback order)
       resilience/        Token bucket, retry/backoff, circuit breaker, ProviderGuard
       cache/             In-process TTL cache with stale reads and request coalescing
-    rag/                 ingestion/ (front matter, loader, chunker, pipeline), keyword/ (BM25)
+    rag/                 ingestion/, keyword/ (BM25), embeddings, vector_store (Chroma),
+                         reranker, retriever (hybrid + RRF + threshold), glossary, knowledge_base
     web_app/             FastAPI app: routers/, auth/, middleware/, errors/, schemas/
     utils/               Small pure helpers
     mcp_server/          MCP tools over the REST API (day 5)
@@ -111,7 +114,14 @@ cd ../frontend && npm run gen:api
   production; `stub` signs everyone in as one fixed dev user and is refused when
   `app.env=production`. The frontend reads `GET /auth/config` to pick the landing button.
 - Tests mock HTTP with `respx` and use fakes for providers and Google; no test touches the
-  network. Keep backend coverage at or above 90%.
+  network. LLMs, embedders and rerankers use the fakes in `tests/fakes.py`
+  (`ScriptedChatModel`, `HashEmbedder`, `FixedReranker`). Keep backend coverage at or above 90%.
+- **Agents:** every agent extends `BaseAgent` and returns `AgentOutput`; register it in
+  `workflow/factory.py`. Tools are an allow-list per agent; tool results come from services.
+  Retrieved or provider text goes into prompts wrapped with `as_data` (prompt-injection guard).
+  Agent instances are shared across requests: per-run data for tools goes on `AgentRun.inputs`,
+  never on `self`. A new Pydantic type stored in graph state must be added to
+  `CHECKPOINT_TYPES` in `workflow/state.py` or the checkpointer won't load it.
 - Frontend: feature code lives in `features/<tab>/`; shared UI in `components/`; every view
   needs loading, empty and error states (UI-09). Use generated API types via `src/api/types.ts`.
 
@@ -121,8 +131,16 @@ cd ../frontend && npm run gen:api
   CI, provider layer (Alpaca, Alpha Vantage, mock) with cache, rate limit, retry, circuit
   breaker and freshness, market routes, KB format and loader, chunking, BM25 index, starter
   articles and glossary, React shell with landing, Market index cards and Profile status.
-- Day 2 to 3: LangGraph router and graph, Q&A and Market agents, chat with SSE, vector
-  embeddings (Gemini + OpenAI collections in ChromaDB), hybrid retrieval and reranker.
-- Day 3 to 5: remaining agents, synthesizer, compliance, fallbacks, Portfolio, Market and
-  Goals views, MCP server, KB to 100+ articles and 200+ glossary terms.
+- Day 2 to 3 (done except chat): LLM gateway, LangGraph graph (router, Send fan-out,
+  fallback, synthesizer, compliance), Finance Q&A and Market agents, vector embeddings
+  (Gemini + OpenAI collections in ChromaDB), hybrid retrieval and reranker. KB at 110
+  articles and 259 glossary terms.
+- Day 3 to 4 (done): Portfolio, Goal, News and Tax agents (all six registered);
+  conversations API with the chat answer streamed over SSE (`workflow/streaming.py` maps
+  graph runs to events; `routers/conversations.py`); SQLite checkpointer in its own file
+  (`workflow.checkpoint_path`, default `var/checkpoints.db`) opened by
+  `AppContainer.start()`; Chat tab with streamed answers, agent badges, source cards,
+  follow-ups and inline charts (`features/chat/`).
+- Day 4 to 5: Portfolio, Market and Goals views, MCP server, KB/Learn API endpoints,
+  feedback endpoint (CH-08).
 - Day 6 to 7: tests and evals, Learn tab, trace panel, Docker, docs, demo.

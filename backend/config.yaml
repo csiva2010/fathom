@@ -96,9 +96,29 @@ market:
 
 kb:
   source_dir: data/kb
-  index_dir: var/index
+  index_dir: var/index        # BM25 index + ingestion report
+  vector_dir: var/chroma      # persistent ChromaDB
   chunk_tokens: 500
   chunk_overlap: 0.15
+  # Each model gets its own collection (their vectors are not comparable). The first is
+  # primary; at query time the next is tried if it fails, then BM25 alone answers.
+  embeddings:
+    # Free tier allows 100 embed requests/min; 90 leaves headroom. Raise on a paid plan.
+    - { provider: gemini, model: gemini-embedding-2, collection: kb_gemini, requests_per_minute: 90 }
+    - { provider: openai, model: text-embedding-3-small, collection: kb_openai }
+  embed_batch_size: 64
+  retrieval:
+    vector_k: 20
+    keyword_k: 20
+    rrf_k: 60
+    rerank_candidates: 20
+    top_n: 5
+    level_boost: 0.05         # added to the rerank score of chunks at the user's level
+  reranker:
+    kind: cross_encoder       # cross_encoder | lexical (lexical needs no model download)
+    model: cross-encoder/ms-marco-MiniLM-L-6-v2
+    cross_encoder_min_score: 0.02
+    lexical_min_score: 0.5
   categories:
     - basics
     - stocks
@@ -114,6 +134,24 @@ kb:
     - beginner
     - intermediate
     - advanced
+
+# Chat models in fallback order (D1, NF-R02). Models whose API key is missing are skipped;
+# with none configured, agents still answer from retrieved sources and service data.
+llm:
+  models:
+    - { provider: gemini, model: gemini-flash-latest, temperature: 0.2 }
+    - { provider: anthropic, model: claude-sonnet-5-5, temperature: 0.2 }
+
+workflow:
+  clarify_below_confidence: 0.6   # router confidence below this asks a clarifying question
+  agent_timeout_seconds: 20
+  agent_retries: 1
+  max_tool_rounds: 3
+  max_agents_per_turn: 3
+  history_messages: 8             # recent messages the router and agents see
+  max_focus_tickers: 3
+  max_message_chars: 4000
+  checkpoint_path: var/checkpoints.db   # conversation memory; empty = in memory
 
 seed:
   dir: data/seed

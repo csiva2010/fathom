@@ -1,0 +1,6 @@
+# Optional: self-hosted cross-encoder reranker (kb.reranker.kind=cross_encoder).
+# Pulls in PyTorch. Without it the app logs a warning and uses the lexical reranker.
+# On Linux/Docker, install CPU-only torch first to avoid multi-GB CUDA wheels:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+-r requirements.txt
+sentence-transformers==6.2.0

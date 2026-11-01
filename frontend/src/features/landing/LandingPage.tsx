@@ -24,7 +24,7 @@ export function LandingPage() {
   const [params] = useSearchParams();
   const authError = AUTH_ERRORS[params.get("auth_error") ?? ""];
 
-  if (status === "signedIn") return <Navigate to="/market" replace />;
+  if (status === "signedIn") return <Navigate to="/chat" replace />;
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-emerald-50 to-white dark:from-slate-900 dark:to-slate-950">

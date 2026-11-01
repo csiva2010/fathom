@@ -38,6 +38,7 @@ def make_settings(tmp_path: Path, **overrides: object) -> Settings:
             "index_dir": str(tmp_path / "index"),
             "categories": ["basics", "tax"],
         },
+        "workflow": {"checkpoint_path": str(tmp_path / "checkpoints.db")},
         "session_secret": "test-secret-0123456789-abcdefghijklmnopqrstuvwxyz",
         "google_client_id": "",
         "google_client_secret": "",

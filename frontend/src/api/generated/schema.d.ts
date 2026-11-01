@@ -208,10 +208,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your conversations, newest first */
+        get: operations["list_conversations_api_v1_conversations_get"];
+        put?: never;
+        /** Start a conversation */
+        post: operations["create_conversation_api_v1_conversations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{conversation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A conversation's messages */
+        get: operations["get_conversation_api_v1_conversations__conversation_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete a conversation and its memory */
+        delete: operations["delete_conversation_api_v1_conversations__conversation_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{conversation_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send a message; the answer streams back as Server-Sent Events */
+        post: operations["send_message_api_v1_conversations__conversation_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AgentName
+         * @enum {string}
+         */
+        AgentName: "finance_qa" | "portfolio_analysis" | "market_analysis" | "goal_planning" | "news_synthesizer" | "tax_education";
+        /** AgentStartEvent */
+        AgentStartEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "agent_start";
+            agent: components["schemas"]["AgentName"];
+        };
+        /**
+         * Artifact
+         * @description Chart or table payload the UI renders next to an answer (CH-06).
+         */
+        Artifact: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "quote_card" | "price_chart" | "indicators" | "index_cards" | "movers" | "sector_table" | "portfolio_metrics" | "allocation" | "projection" | "example_allocation" | "news_list";
+            /** Title */
+            title: string;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+        };
+        /** ArtifactEvent */
+        ArtifactEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "artifact";
+            artifact: components["schemas"]["Artifact"];
+        };
         /**
          * AuthConfigOut
          * @description Public sign-in options so the landing page shows the right button.
@@ -246,10 +339,116 @@ export interface components {
             volume: number;
         };
         /**
+         * ChatMessage
+         * @description One message in a conversation, as the chat UI renders it.
+         */
+        ChatMessage: {
+            /** Id */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+            /**
+             * Kind
+             * @default answer
+             * @enum {string}
+             */
+            kind: "answer" | "clarification" | "redirect";
+            /** Agents */
+            agents?: components["schemas"]["AgentName"][];
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Artifacts */
+            artifacts?: components["schemas"]["Artifact"][];
+            /** Freshness */
+            freshness?: components["schemas"]["Freshness"][];
+            /** Follow Ups */
+            follow_ups?: string[];
+        };
+        /**
+         * Citation
+         * @description What the UI shows on a source card (CH-04).
+         */
+        Citation: {
+            /** Article Id */
+            article_id: string;
+            /** Title */
+            title: string;
+            /** Section */
+            section: string;
+            /** Source Name */
+            source_name: string;
+            /** Source Url */
+            source_url: string;
+        };
+        /**
+         * CitationEvent
+         * @description A source card; `number` matches the answer's [n] marker.
+         */
+        CitationEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "citation";
+            /** Number */
+            number: number;
+            citation: components["schemas"]["Citation"];
+        };
+        /** ConversationCreate */
+        ConversationCreate: {
+            /** Title */
+            title?: string | null;
+        };
+        /** ConversationDetail */
+        ConversationDetail: {
+            conversation: components["schemas"]["ConversationOut"];
+            /** Messages */
+            messages: components["schemas"]["ChatMessage"][];
+        };
+        /** ConversationList */
+        ConversationList: {
+            /** Conversations */
+            conversations: components["schemas"]["ConversationOut"][];
+        };
+        /** ConversationOut */
+        ConversationOut: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
          * DataStatus
          * @enum {string}
          */
         DataStatus: "live" | "cached" | "mock";
+        /**
+         * DoneEvent
+         * @description The finished, compliance-checked message. The client should render this one.
+         */
+        DoneEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "done";
+            message: components["schemas"]["ChatMessage"];
+        };
         /** ErrorBody */
         ErrorBody: {
             /** Code */
@@ -270,6 +469,26 @@ export interface components {
             error: components["schemas"]["ErrorBody"];
         };
         /**
+         * ErrorEvent
+         * @description The turn failed; uses the same fields as the REST error envelope.
+         */
+        ErrorEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "error";
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /**
+             * Retryable
+             * @default false
+             */
+            retryable: boolean;
+        };
+        /**
          * ExperienceLevel
          * @enum {string}
          */
@@ -287,6 +506,15 @@ export interface components {
              */
             as_of: string;
             status: components["schemas"]["DataStatus"];
+        };
+        /** FreshnessEvent */
+        FreshnessEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "freshness";
+            freshness: components["schemas"]["Freshness"];
         };
         /** HealthResponse */
         HealthResponse: {
@@ -361,6 +589,11 @@ export interface components {
             /** Is Guest */
             is_guest: boolean;
             profile: components["schemas"]["ProfileOut"];
+        };
+        /** MessageCreate */
+        MessageCreate: {
+            /** Content */
+            content: string;
         };
         /** NewsItem */
         NewsItem: {
@@ -485,10 +718,56 @@ export interface components {
             unknown_symbols: string[];
         };
         /**
+         * ReplaceEvent
+         * @description Supersedes everything streamed so far (a compliance rewrite, a retried agent).
+         */
+        ReplaceEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "replace";
+            /** Text */
+            text: string;
+        };
+        /**
          * RiskProfile
          * @enum {string}
          */
         RiskProfile: "conservative" | "moderate" | "aggressive";
+        /**
+         * RouteEvent
+         * @description The router's plan: which agents will answer (CH-03 badges show from here).
+         */
+        RouteEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "route";
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "answer" | "clarification" | "redirect";
+            /** Agents */
+            agents: components["schemas"]["AgentName"][];
+            /** Confidence */
+            confidence: number;
+        };
+        /**
+         * TokenEvent
+         * @description Text to append to the answer.
+         */
+        TokenEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "token";
+            /** Text */
+            text: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -961,6 +1240,298 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    list_conversations_api_v1_conversations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationList"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    create_conversation_api_v1_conversations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConversationCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_conversation_api_v1_conversations__conversation_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDetail"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    delete_conversation_api_v1_conversations__conversation_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    send_message_api_v1_conversations__conversation_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": unknown;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["ErrorEnvelope"];
                 };
             };
         };
