@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Dark mode follows the operating system preference (Tailwind's default `dark:` variant). */
+:root {
+  color-scheme: light dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}

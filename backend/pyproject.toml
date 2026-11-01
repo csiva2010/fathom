@@ -1,0 +1,51 @@
+[project]
+name = "ai-finance-assistant"
+version = "0.1.0"
+description = "Educational multi-agent finance assistant (FastAPI + LangGraph)"
+requires-python = ">=3.11"
+
+# Runtime dependencies are pinned in requirements.txt; dev tools in requirements-dev.txt.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["src/data/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["B008", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["src/data/migrations/versions/"]
+
+[[tool.mypy.overrides]]
+module = ["authlib.*", "rank_bm25.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-q"
+filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
+
+[tool.coverage.run]
+source = ["src", "scripts"]
+omit = ["src/data/migrations/*"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise SystemExit", "if __name__ == .__main__.:"]

@@ -1,0 +1,203 @@
+# Glossary used for hover definitions and the explain_term tool (KB-02).
+# Target: 200+ terms by day 5. Definitions are original, plain-language summaries.
+terms:
+  - term: Asset allocation
+    definition: How a portfolio is divided among asset classes such as stocks, bonds and cash. It is one of the biggest drivers of a portfolio's risk and return.
+    level: beginner
+    related: [Diversification, Rebalancing, Asset class]
+  - term: Asset class
+    definition: A group of investments that behave in similar ways, such as stocks, bonds, cash or real estate.
+    level: beginner
+    related: [Asset allocation]
+  - term: Bear market
+    definition: A period when a broad market index falls 20% or more from a recent high.
+    level: beginner
+    related: [Bull market, Correction]
+  - term: Benchmark
+    definition: An index or standard used to judge how an investment or portfolio performed, such as the S&P 500 for US large-company stocks.
+    level: beginner
+    related: [Index, S&P 500]
+  - term: Beta
+    definition: A measure of how much an investment tends to move compared with the overall market. A beta of 1.2 means it has historically moved about 20% more than the market.
+    level: intermediate
+    related: [Volatility, Risk]
+  - term: Bond
+    definition: A loan to a government or company that pays interest on a schedule and returns the principal at maturity.
+    level: beginner
+    related: [Coupon, Maturity, Yield]
+  - term: Bull market
+    definition: A sustained period of rising prices in a broad market, often defined as a 20% rise from a recent low.
+    level: beginner
+    related: [Bear market]
+  - term: Capital gain
+    definition: The profit from selling an investment for more than you paid. In taxable accounts, gains held over one year are usually taxed at lower long-term rates.
+    level: beginner
+    related: [Cost basis, Capital loss]
+  - term: Capital loss
+    definition: The loss from selling an investment for less than you paid. Losses can offset capital gains for tax purposes.
+    level: intermediate
+    related: [Capital gain, Wash sale]
+  - term: Compound interest
+    definition: Earning returns on both your original money and the returns it has already earned, so growth accelerates over time.
+    level: beginner
+    related: [Time horizon]
+  - term: Correction
+    definition: A decline of 10% to 20% from a recent market high.
+    level: beginner
+    related: [Bear market, Volatility]
+  - term: Cost basis
+    definition: What you originally paid for an investment, including fees. It is used to calculate gain or loss when you sell.
+    level: intermediate
+    related: [Capital gain]
+  - term: Coupon
+    definition: The interest payment a bond makes, usually stated as an annual percentage of its face value.
+    level: beginner
+    related: [Bond, Yield]
+  - term: Diversification
+    definition: Spreading money across many investments so that a problem with any one has a limited effect on the whole portfolio.
+    level: beginner
+    related: [Concentration risk, Asset allocation]
+  - term: Concentration risk
+    definition: The risk that comes from having a large share of a portfolio in one company, sector or country.
+    level: beginner
+    related: [Diversification]
+  - term: Dividend
+    definition: A payment a company makes to its shareholders, usually from profits and often paid quarterly.
+    level: beginner
+    related: [Dividend yield, Stock]
+  - term: Dividend yield
+    definition: A stock's or fund's annual dividends divided by its price, shown as a percentage.
+    level: beginner
+    related: [Dividend]
+  - term: Dollar-cost averaging
+    definition: Investing a fixed amount on a regular schedule regardless of price, which buys more shares when prices are low and fewer when they are high.
+    level: beginner
+    related: [Lump-sum investing]
+  - term: Duration
+    definition: A measure of how sensitive a bond's price is to interest-rate changes. Higher duration means larger price swings when rates move.
+    level: intermediate
+    related: [Bond, Interest rate risk]
+  - term: Emergency fund
+    definition: Cash set aside for unexpected expenses or lost income, commonly three to six months of essential costs.
+    level: beginner
+    related: [High-yield savings account]
+  - term: ETF
+    definition: An exchange-traded fund, a basket of securities that trades on an exchange like a single stock throughout the day.
+    level: beginner
+    related: [Index fund, Mutual fund, Expense ratio]
+  - term: Expense ratio
+    definition: The yearly fee a fund charges, as a percentage of the money you have invested in it. A 0.10% expense ratio costs $10 a year per $10,000.
+    level: beginner
+    related: [ETF, Mutual fund]
+  - term: High-yield savings account
+    definition: A bank savings account that pays a higher interest rate than a standard savings account, often offered by online banks.
+    level: beginner
+    related: [Emergency fund]
+  - term: Index
+    definition: A measure of the performance of a group of securities, such as the S&P 500, used as a scoreboard and benchmark.
+    level: beginner
+    related: [Index fund, Benchmark]
+  - term: Index fund
+    definition: A fund that aims to match the return of a market index by holding the same securities, usually at low cost.
+    level: beginner
+    related: [Index, ETF]
+  - term: Inflation
+    definition: The general rise in prices over time, which reduces what a dollar can buy.
+    level: beginner
+    related: [Real return]
+  - term: Interest rate risk
+    definition: The risk that bond prices fall because market interest rates rise.
+    level: intermediate
+    related: [Duration, Bond]
+  - term: IRA
+    definition: An individual retirement account with tax advantages that you open yourself, separate from an employer plan.
+    level: beginner
+    related: [Roth IRA, Traditional IRA]
+  - term: Liquidity
+    definition: How quickly and cheaply an asset can be turned into cash without affecting its price.
+    level: beginner
+    related: [Emergency fund]
+  - term: Market capitalization
+    definition: A company's total stock market value, calculated as share price times shares outstanding.
+    level: beginner
+    related: [Stock]
+  - term: Maturity
+    definition: The date when a bond's principal is repaid to the investor.
+    level: beginner
+    related: [Bond]
+  - term: Mutual fund
+    definition: A pooled investment that is bought and sold directly with the fund company once a day at its net asset value.
+    level: beginner
+    related: [ETF, Net asset value]
+  - term: Net asset value
+    definition: The per-share value of a fund, calculated as total assets minus liabilities divided by shares outstanding.
+    level: intermediate
+    related: [Mutual fund]
+  - term: Portfolio
+    definition: The full collection of investments a person or fund owns.
+    level: beginner
+    related: [Asset allocation]
+  - term: Real return
+    definition: Your return after subtracting inflation, which shows the change in actual buying power.
+    level: intermediate
+    related: [Inflation]
+  - term: Rebalancing
+    definition: Buying and selling to bring a portfolio back to its target allocation after market moves have shifted it.
+    level: beginner
+    related: [Asset allocation]
+  - term: Risk tolerance
+    definition: How much ups and downs in value you are willing and able to accept in pursuit of higher returns.
+    level: beginner
+    related: [Time horizon, Volatility]
+  - term: Roth IRA
+    definition: An IRA funded with after-tax money whose qualified withdrawals in retirement, including growth, are tax-free.
+    level: beginner
+    related: [IRA, Traditional IRA]
+  - term: S&P 500
+    definition: An index of about 500 large US companies weighted by market value, widely used as a gauge of the US stock market.
+    level: beginner
+    related: [Index, Benchmark]
+  - term: Sector
+    definition: A group of companies in a similar line of business, such as technology, health care or energy.
+    level: beginner
+    related: [Diversification]
+  - term: Stock
+    definition: A share of ownership in a company that may rise or fall in value and may pay dividends.
+    level: beginner
+    related: [Dividend, Market capitalization]
+  - term: Target-date fund
+    definition: A fund that automatically shifts from stocks toward bonds as a chosen retirement year approaches.
+    level: beginner
+    related: [Asset allocation, 401(k)]
+  - term: Time horizon
+    definition: How long you expect to keep money invested before you need it.
+    level: beginner
+    related: [Risk tolerance]
+  - term: Traditional IRA
+    definition: An IRA where contributions may be tax-deductible now and withdrawals in retirement are taxed as income.
+    level: beginner
+    related: [IRA, Roth IRA]
+  - term: Volatility
+    definition: How much and how quickly an investment's price moves up and down, often measured by standard deviation of returns.
+    level: intermediate
+    related: [Beta, Risk tolerance]
+  - term: Wash sale
+    definition: Selling an investment at a loss and buying the same or a substantially identical one within 30 days before or after, which disallows the loss for taxes at that time.
+    level: intermediate
+    related: [Capital loss]
+  - term: Yield
+    definition: The income an investment produces relative to its price, shown as a percentage.
+    level: beginner
+    related: [Coupon, Dividend yield]
+  - term: 401(k)
+    definition: An employer-sponsored US retirement plan that lets employees invest part of each paycheck with tax advantages, often with an employer match.
+    level: beginner
+    related: [Employer match, IRA]
+  - term: Employer match
+    definition: Money an employer adds to your retirement plan based on what you contribute, up to a limit.
+    level: beginner
+    related: [401(k), Vesting]
+  - term: Vesting
+    definition: The schedule by which you gain full ownership of employer contributions to your retirement plan.
+    level: intermediate
+    related: [Employer match]

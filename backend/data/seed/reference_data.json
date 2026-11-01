@@ -1,0 +1,42 @@
+{
+  "AAPL": { "name": "Apple Inc.", "asset_class": "stock", "sector": "Information Technology", "industry": "Consumer Electronics", "beta": 1.24 },
+  "MSFT": { "name": "Microsoft Corporation", "asset_class": "stock", "sector": "Information Technology", "industry": "Software", "beta": 0.9 },
+  "NVDA": { "name": "NVIDIA Corporation", "asset_class": "stock", "sector": "Information Technology", "industry": "Semiconductors", "beta": 1.68 },
+  "GOOGL": { "name": "Alphabet Inc. Class A", "asset_class": "stock", "sector": "Communication Services", "industry": "Internet Content & Information", "beta": 1.03 },
+  "AMZN": { "name": "Amazon.com, Inc.", "asset_class": "stock", "sector": "Consumer Discretionary", "industry": "Internet Retail", "beta": 1.15 },
+  "META": { "name": "Meta Platforms, Inc.", "asset_class": "stock", "sector": "Communication Services", "industry": "Internet Content & Information", "beta": 1.21 },
+  "TSLA": { "name": "Tesla, Inc.", "asset_class": "stock", "sector": "Consumer Discretionary", "industry": "Auto Manufacturers", "beta": 2.3 },
+  "JPM": { "name": "JPMorgan Chase & Co.", "asset_class": "stock", "sector": "Financials", "industry": "Banks", "beta": 1.1 },
+  "JNJ": { "name": "Johnson & Johnson", "asset_class": "stock", "sector": "Health Care", "industry": "Pharmaceuticals", "beta": 0.52 },
+  "KO": { "name": "The Coca-Cola Company", "asset_class": "stock", "sector": "Consumer Staples", "industry": "Beverages", "beta": 0.6 },
+  "PG": { "name": "Procter & Gamble", "asset_class": "stock", "sector": "Consumer Staples", "industry": "Household Products", "beta": 0.42 },
+  "XOM": { "name": "Exxon Mobil Corporation", "asset_class": "stock", "sector": "Energy", "industry": "Oil & Gas", "beta": 0.88 },
+  "SPY": { "name": "SPDR S&P 500 ETF Trust", "asset_class": "etf", "expense_ratio": 0.000945, "beta": 1.0, "sector_weights": [
+    { "sector": "Information Technology", "weight": 0.31 }, { "sector": "Financials", "weight": 0.13 }, { "sector": "Health Care", "weight": 0.11 },
+    { "sector": "Consumer Discretionary", "weight": 0.10 }, { "sector": "Communication Services", "weight": 0.09 }, { "sector": "Industrials", "weight": 0.08 },
+    { "sector": "Consumer Staples", "weight": 0.06 }, { "sector": "Energy", "weight": 0.04 }, { "sector": "Other", "weight": 0.08 } ] },
+  "VOO": { "name": "Vanguard S&P 500 ETF", "asset_class": "etf", "expense_ratio": 0.0003, "beta": 1.0, "sector_weights": [
+    { "sector": "Information Technology", "weight": 0.31 }, { "sector": "Financials", "weight": 0.13 }, { "sector": "Health Care", "weight": 0.11 },
+    { "sector": "Consumer Discretionary", "weight": 0.10 }, { "sector": "Communication Services", "weight": 0.09 }, { "sector": "Industrials", "weight": 0.08 },
+    { "sector": "Consumer Staples", "weight": 0.06 }, { "sector": "Energy", "weight": 0.04 }, { "sector": "Other", "weight": 0.08 } ] },
+  "VTI": { "name": "Vanguard Total Stock Market ETF", "asset_class": "etf", "expense_ratio": 0.0003, "beta": 1.02, "sector_weights": [
+    { "sector": "Information Technology", "weight": 0.30 }, { "sector": "Financials", "weight": 0.13 }, { "sector": "Health Care", "weight": 0.11 },
+    { "sector": "Consumer Discretionary", "weight": 0.10 }, { "sector": "Industrials", "weight": 0.10 }, { "sector": "Communication Services", "weight": 0.08 },
+    { "sector": "Other", "weight": 0.18 } ] },
+  "QQQ": { "name": "Invesco QQQ Trust", "asset_class": "etf", "expense_ratio": 0.002, "beta": 1.15, "sector_weights": [
+    { "sector": "Information Technology", "weight": 0.50 }, { "sector": "Communication Services", "weight": 0.16 }, { "sector": "Consumer Discretionary", "weight": 0.14 },
+    { "sector": "Health Care", "weight": 0.06 }, { "sector": "Other", "weight": 0.14 } ] },
+  "DIA": { "name": "SPDR Dow Jones Industrial Average ETF", "asset_class": "etf", "expense_ratio": 0.0016, "beta": 0.9 },
+  "VXUS": { "name": "Vanguard Total International Stock ETF", "asset_class": "etf", "expense_ratio": 0.0008, "beta": 0.85, "sector_weights": [
+    { "sector": "Financials", "weight": 0.21 }, { "sector": "Industrials", "weight": 0.15 }, { "sector": "Information Technology", "weight": 0.13 },
+    { "sector": "Consumer Discretionary", "weight": 0.11 }, { "sector": "Other", "weight": 0.40 } ] },
+  "BND": { "name": "Vanguard Total Bond Market ETF", "asset_class": "bond_etf", "expense_ratio": 0.0003, "beta": 0.05, "sector_weights": [ { "sector": "Fixed Income", "weight": 1.0 } ] },
+  "AGG": { "name": "iShares Core US Aggregate Bond ETF", "asset_class": "bond_etf", "expense_ratio": 0.0003, "beta": 0.05, "sector_weights": [ { "sector": "Fixed Income", "weight": 1.0 } ] },
+  "TLT": { "name": "iShares 20+ Year Treasury Bond ETF", "asset_class": "bond_etf", "expense_ratio": 0.0015, "beta": -0.1, "sector_weights": [ { "sector": "Fixed Income", "weight": 1.0 } ] },
+  "SCHD": { "name": "Schwab US Dividend Equity ETF", "asset_class": "etf", "expense_ratio": 0.0006, "beta": 0.8, "sector_weights": [
+    { "sector": "Financials", "weight": 0.18 }, { "sector": "Health Care", "weight": 0.16 }, { "sector": "Consumer Staples", "weight": 0.14 },
+    { "sector": "Industrials", "weight": 0.13 }, { "sector": "Energy", "weight": 0.12 }, { "sector": "Other", "weight": 0.27 } ] },
+  "VNQ": { "name": "Vanguard Real Estate ETF", "asset_class": "etf", "expense_ratio": 0.0013, "beta": 1.0, "sector_weights": [ { "sector": "Real Estate", "weight": 1.0 } ] },
+  "IWM": { "name": "iShares Russell 2000 ETF", "asset_class": "etf", "expense_ratio": 0.0019, "beta": 1.2 },
+  "GLD": { "name": "SPDR Gold Shares", "asset_class": "etf", "expense_ratio": 0.004, "beta": 0.1 }
+}

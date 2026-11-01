@@ -1,0 +1,8 @@
+terms:
+  - term: HSA
+    definition: A health savings account with tax-deductible contributions and tax-free qualified withdrawals.
+    level: intermediate
+    related: [High-deductible health plan]
+  - term: Compound interest
+    definition: Earning returns on both the original money and on the returns already earned.
+    level: beginner

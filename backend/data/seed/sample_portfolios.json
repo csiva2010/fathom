@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Three-Fund Starter",
+    "description": "A simple, broadly diversified mix of US stocks, international stocks and US bonds.",
+    "holdings": [
+      { "symbol": "VTI", "quantity": 40, "cost_basis": 230.0, "asset_class": "etf" },
+      { "symbol": "VXUS", "quantity": 60, "cost_basis": 57.0, "asset_class": "etf" },
+      { "symbol": "BND", "quantity": 50, "cost_basis": 72.5, "asset_class": "bond_etf" }
+    ]
+  },
+  {
+    "name": "Tech-Heavy Beginner",
+    "description": "A concentrated portfolio of large technology stocks, useful for discussing concentration risk.",
+    "holdings": [
+      { "symbol": "AAPL", "quantity": 15, "cost_basis": 175.0, "asset_class": "stock" },
+      { "symbol": "MSFT", "quantity": 8, "cost_basis": 330.0, "asset_class": "stock" },
+      { "symbol": "NVDA", "quantity": 20, "cost_basis": 95.0, "asset_class": "stock" },
+      { "symbol": "GOOGL", "quantity": 10, "cost_basis": 140.0, "asset_class": "stock" },
+      { "symbol": "AMZN", "quantity": 10, "cost_basis": 150.0, "asset_class": "stock" },
+      { "symbol": "QQQ", "quantity": 5, "cost_basis": 400.0, "asset_class": "etf" }
+    ]
+  },
+  {
+    "name": "Balanced Income",
+    "description": "A moderate mix of broad equity, dividend, real-estate and bond funds plus two dividend stocks.",
+    "holdings": [
+      { "symbol": "VOO", "quantity": 12, "cost_basis": 410.0, "asset_class": "etf" },
+      { "symbol": "SCHD", "quantity": 80, "cost_basis": 25.5, "asset_class": "etf" },
+      { "symbol": "VNQ", "quantity": 20, "cost_basis": 85.0, "asset_class": "etf" },
+      { "symbol": "BND", "quantity": 60, "cost_basis": 73.0, "asset_class": "bond_etf" },
+      { "symbol": "JNJ", "quantity": 15, "cost_basis": 155.0, "asset_class": "stock" },
+      { "symbol": "KO", "quantity": 30, "cost_basis": 60.0, "asset_class": "stock" }
+    ]
+  }
+]

@@ -1,0 +1,96 @@
+# Non-secret settings. Secrets live in .env (see .env.example).
+# Any value here can be overridden by an env var using "__" for nesting,
+# e.g. AUTH__MODE=stub or MARKET__ALPACA__FEED=iex.
+
+app:
+  name: AI Finance Assistant
+  env: development            # development | test | production
+  api_prefix: /api/v1
+  # Local ports come from WEB_PORT / API_PORT in .env. frontend_url and cors_origins are
+  # derived from WEB_PORT; set them (e.g. APP__FRONTEND_URL) only for a deployed domain.
+  # frontend_url: https://finance.example.com
+  # cors_origins: [https://finance.example.com]
+
+auth:
+  mode: google                # google | stub (stub is refused when app.env=production)
+  session_cookie_name: fa_session
+  session_ttl_hours: 12
+  cookie_secure: false        # set true behind HTTPS
+  # Defaults to <frontend_url>/api/v1/auth/google/callback. In dev the Vite server proxies
+  # /api to the backend, so the callback and cookie land on the web app's origin.
+  # google_redirect_uri: https://finance.example.com/api/v1/auth/google/callback
+  google_metadata_url: https://accounts.google.com/.well-known/openid-configuration
+  stub_user:
+    sub: stub-user-0001
+    email: dev.user@example.com
+    name: Dev User
+
+database:
+  url: sqlite:///./var/app.db
+  echo: false
+
+logging:
+  level: INFO
+  json: true
+
+market:
+  http_timeout_seconds: 10
+  alpaca:
+    data_base_url: https://data.alpaca.markets
+    feed: sip                 # sip = paid real-time; iex = free tier
+    requests_per_minute: 180
+  alpha_vantage:
+    base_url: https://www.alphavantage.co/query
+    requests_per_minute: 5    # raise to match your plan
+  retry:
+    attempts: 3
+    base_delay_seconds: 0.5
+    max_delay_seconds: 4.0
+  circuit_breaker:
+    failure_threshold: 5
+    reset_seconds: 60
+  cache_ttl_seconds:
+    quote: 60
+    bars_intraday: 3600
+    bars_daily: 86400
+    news: 900
+    index: 900
+    reference: 86400
+  # Alpha Vantage index coverage is a day-1 check; proxy_symbol is the ETF fallback.
+  indices:
+    - id: SPX
+      name: S&P 500
+      av_symbol: SPX
+      proxy_symbol: SPY
+    - id: IXIC
+      name: Nasdaq Composite
+      av_symbol: IXIC
+      proxy_symbol: QQQ
+    - id: DJI
+      name: Dow Jones Industrial Average
+      av_symbol: DJI
+      proxy_symbol: DIA
+
+kb:
+  source_dir: data/kb
+  index_dir: var/index
+  chunk_tokens: 500
+  chunk_overlap: 0.15
+  categories:
+    - basics
+    - stocks
+    - bonds
+    - funds_etfs
+    - retirement
+    - tax
+    - risk_diversification
+    - budgeting_saving
+    - market_mechanics
+    - behavioral_finance
+  levels:
+    - beginner
+    - intermediate
+    - advanced
+
+seed:
+  dir: data/seed
