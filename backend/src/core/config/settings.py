@@ -24,7 +24,7 @@ DEFAULT_ENV_FILE = BACKEND_ROOT / ".env"
 
 
 class AppConfig(BaseModel):
-    name: str = "AI Finance Assistant"
+    name: str = "Fathom · AI Finance Assistant"
     env: Literal["development", "test", "production"] = "development"
     api_prefix: str = "/api/v1"
     # Empty = derived from WEB_PORT for local dev. Set explicitly for a deployed domain.

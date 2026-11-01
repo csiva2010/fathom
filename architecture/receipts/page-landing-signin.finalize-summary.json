@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "sequence",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/csivakolundu/Documents/code/fathom/architecture/candidates/page-landing-signin.sequence.json",
+    "sha256": "95de01f23b11e6db6f600b6a4f0843a9a062090a89ea94cb5c93c0be9d65e036",
+    "bytes": 5530
+  },
+  "artifact": {
+    "path": "/Users/csivakolundu/Documents/code/fathom/architecture/page-landing-signin.html",
+    "sha256": "4c992a45f036a3cd1ccd1b9cc993c371f8f8157878d476a416371f93643945b8",
+    "bytes": 841584
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-landing-signin.finalize.json",
+    "summaryReceipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-landing-signin.finalize-summary.json",
+    "browserCheckReceipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-landing-signin.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-01T18:35:19.877Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2235,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

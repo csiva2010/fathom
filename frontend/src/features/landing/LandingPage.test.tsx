@@ -51,6 +51,14 @@ describe("Guest sign-in (AUTH__MODE=guest)", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(/turned off/i);
   });
 
+  it("introduces Fathom and explains the name", async () => {
+    mockFetch({ "GET /auth/config": () => ({ body: GUEST_MODE }), "GET /me": unauthenticated });
+    renderApp("/");
+    expect(await screen.findByText("The AI Finance Assistant")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Why “Fathom”?" })).toBeInTheDocument();
+    expect(screen.getByText(/sailor's measure of depth/)).toBeInTheDocument();
+  });
+
   it("labels guest accounts on the profile tab", async () => {
     mockFetch({ "GET /me": () => ({ body: GUEST }), "GET /health": () => ({ body: HEALTH }) });
     renderApp("/profile");

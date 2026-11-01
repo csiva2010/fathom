@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Fathom: End-to-End System Architecture",
+    "output": "architecture/system-architecture.html",
+    "quality_profile": "showcase",
+    "repository": { "url": "git@github.com:csiva2010/fathom.git", "link_mode": "local-only", "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd" },
+    "views": [
+      { "id": "chat-path", "label": "Chat turn", "focus": ["user", "spa", "api", "workflow", "agents", "llm", "rag", "services", "checkpoints"], "note": "POST /conversations/{id}/messages streams graph events back over SSE." },
+      { "id": "market-path", "label": "Market data", "focus": ["api", "services", "chain", "marketapis"], "note": "Cache, then Alpaca/Alpha Vantage, then stale cache, then mock; every value stamped with Freshness." },
+      { "id": "mcp-path", "label": "Claude Desktop (MCP)", "focus": ["desktop", "mcp", "api"], "note": "Thin stdio server; calls only the REST API with a personal access token." }
+    ]
+  },
+  "components": [
+    { "id": "appdb", "type": "database", "label": "app.db (SQLite)", "sublabel": "users, portfolios, goals, convos", "pos": [570, 40], "size": [170, 64], "sources": [{ "path": "backend/config.yaml", "line": 29, "label": "database url" }, { "path": "backend/src/workflow/context.py", "line": 79, "end_line": 126, "label": "DbContextLoader" }] },
+    { "id": "checkpoints", "type": "database", "label": "checkpoints.db", "sublabel": "LangGraph thread memory", "pos": [850, 40], "size": [170, 64], "sources": [{ "path": "backend/src/web_app/container.py", "line": 90, "end_line": 102, "label": "AsyncSqliteSaver" }] },
+    { "id": "llm", "type": "cloud", "label": "LLM Gateway", "sublabel": "Gemini, then Claude fallback", "pos": [1130, 40], "size": [180, 64], "sources": [{ "path": "backend/src/core/llm/gateway.py", "line": 35, "end_line": 104 }, { "path": "backend/config.yaml", "line": 138, "end_line": 143, "label": "model order" }] },
+
+    { "id": "user", "type": "external", "label": "User", "sublabel": "browser", "pos": [40, 208], "size": [130, 64] },
+    { "id": "spa", "type": "frontend", "label": "React SPA", "sublabel": "Vite + TanStack Query", "tag": "7 tabs", "pos": [260, 200], "size": [170, 80], "sources": [{ "path": "frontend/src/app/routes.tsx", "line": 14, "end_line": 36 }, { "path": "frontend/src/api/client.ts", "line": 41 }, { "path": "frontend/src/lib/auth/AuthProvider.tsx", "line": 16, "end_line": 58 }] },
+    { "id": "api", "type": "backend", "label": "FastAPI /api/v1", "sublabel": "routers + CurrentUserDep", "tag": "cookie / PAT", "pos": [570, 200], "size": [170, 80], "sources": [{ "path": "backend/src/web_app/main.py", "line": 37, "end_line": 107, "label": "app + routers" }, { "path": "backend/src/web_app/auth/current_user.py", "line": 29, "end_line": 59, "label": "session check" }] },
+    { "id": "workflow", "type": "backend", "label": "LangGraph Workflow", "sublabel": "router, synth, compliance", "pos": [850, 200], "size": [170, 80], "sources": [{ "path": "backend/src/workflow/graph.py", "line": 78, "end_line": 118 }, { "path": "backend/src/workflow/streaming.py", "line": 195, "end_line": 258, "label": "SSE events" }] },
+    { "id": "agents", "type": "backend", "label": "Six Agents", "sublabel": "QA, portfolio, market, goal, news, tax", "pos": [1130, 200], "size": [180, 80], "sources": [{ "path": "backend/src/workflow/factory.py", "line": 28, "end_line": 48 }, { "path": "backend/src/agents/base_agent.py", "line": 160, "end_line": 245 }] },
+
+    { "id": "desktop", "type": "external", "label": "Claude Desktop", "sublabel": "MCP client", "pos": [40, 400], "size": [130, 64] },
+    { "id": "mcp", "type": "backend", "label": "MCP Server", "sublabel": "stdio, 7 read-only tools", "pos": [260, 400], "size": [170, 64], "sources": [{ "path": "backend/src/mcp_server/__init__.py", "line": 1 }] },
+    { "id": "google", "type": "security", "label": "Google OIDC", "sublabel": "sign-in (or guest/stub)", "pos": [570, 400], "size": [170, 64], "sources": [{ "path": "backend/src/web_app/routers/auth.py", "line": 57, "end_line": 90 }] },
+    { "id": "services", "type": "backend", "label": "Services Layer", "sublabel": "MarketDataService, portfolio analytics, projections", "pos": [930, 400], "size": [380, 64], "sources": [{ "path": "backend/src/core/services/market/market_data_service.py", "line": 1, "end_line": 5 }, { "path": "backend/src/core/services/portfolio_service.py", "line": 39, "end_line": 56 }, { "path": "backend/src/core/services/projections.py", "line": 117 }] },
+    { "id": "rag", "type": "backend", "label": "Knowledge Base", "sublabel": "BM25 + vectors, RRF, rerank", "pos": [1430, 400], "size": [180, 64], "sources": [{ "path": "backend/src/rag/retriever.py", "line": 99, "end_line": 128 }, { "path": "backend/src/rag/knowledge_base.py", "line": 35, "end_line": 77 }] },
+
+    { "id": "chain", "type": "backend", "label": "ProviderChain", "sublabel": "TTL cache, stale, mock", "pos": [1035, 580], "size": [170, 64], "sources": [{ "path": "backend/src/data/providers/chain.py", "line": 84, "end_line": 122 }] },
+    { "id": "marketapis", "type": "cloud", "label": "Alpaca / Alpha Vantage", "sublabel": "market data APIs", "pos": [1025, 740], "size": [190, 64], "sources": [{ "path": "backend/config.yaml", "line": 39, "end_line": 46 }] },
+    { "id": "kbstore", "type": "database", "label": "KB files + index", "sublabel": "data/kb, BM25, var/chroma", "pos": [1430, 740], "size": [180, 64], "sources": [{ "path": "backend/config.yaml", "line": 100, "end_line": 108 }] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "FastAPI process (backend/src)", "wraps": ["api", "workflow", "agents", "services", "rag", "chain", "google"] }
+  ],
+  "connections": [
+    { "id": "user-spa", "from": "user", "to": "spa", "label": "uses", "variant": "emphasis" },
+    { "id": "spa-api", "from": "spa", "to": "api", "label": "REST + SSE", "variant": "emphasis" },
+    { "id": "api-workflow", "from": "api", "to": "workflow", "label": "chat turn", "variant": "emphasis" },
+    { "id": "workflow-agents", "from": "workflow", "to": "agents", "label": "Send fan-out", "variant": "emphasis" },
+    { "id": "agents-llm", "from": "agents", "to": "llm", "label": "tool loop", "fromSide": "top", "toSide": "bottom" },
+    { "id": "workflow-llm", "from": "workflow", "to": "llm", "label": "route/synth", "fromSide": "right", "toSide": "left" },
+    { "id": "workflow-checkpoints", "from": "workflow", "to": "checkpoints", "label": "save state", "fromSide": "top", "toSide": "bottom" },
+    { "id": "workflow-appdb", "from": "workflow", "to": "appdb", "label": "load context", "fromSide": "top", "toSide": "right" },
+    { "id": "api-appdb", "from": "api", "to": "appdb", "label": "SQLAlchemy", "fromSide": "top", "toSide": "bottom" },
+    { "id": "api-google", "from": "api", "to": "google", "label": "OAuth code", "variant": "security", "fromSide": "bottom", "toSide": "top" },
+    { "id": "api-services", "from": "api", "to": "services", "label": "market, analysis", "fromSide": "right", "toSide": "left" },
+    { "id": "agents-services", "from": "agents", "to": "services", "label": "tools", "fromSide": "bottom", "toSide": "top" },
+    { "id": "agents-rag", "from": "agents", "to": "rag", "label": "retrieve", "fromSide": "right", "toSide": "top" },
+    { "id": "rag-kbstore", "from": "rag", "to": "kbstore", "label": "reads", "fromSide": "bottom", "toSide": "top" },
+    { "id": "services-chain", "from": "services", "to": "chain", "label": "data type", "fromSide": "bottom", "toSide": "top" },
+    { "id": "chain-marketapis", "from": "chain", "to": "marketapis", "label": "HTTPS", "fromSide": "bottom", "toSide": "top" },
+    { "id": "desktop-mcp", "from": "desktop", "to": "mcp", "label": "stdio" },
+    { "id": "mcp-api", "from": "mcp", "to": "api", "label": "Bearer PAT", "variant": "security", "fromSide": "right", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Request path", "items": ["SPA calls /api/v1 through the Vite proxy; the session is an HttpOnly cookie", "CurrentUserDep resolves the user from the cookie or a Bearer access token, never the body", "Chat answers stream back as Server-Sent Events"] },
+    { "dot": "violet", "title": "Agent graph", "items": ["load_context, router, then Send fan-out to agents in parallel", "fallback, synthesizer, compliance, END; advice requests are redirected", "Agents reason; numbers come from services (agents reason, services compute)"] },
+    { "dot": "emerald", "title": "Degrade, don't crash", "items": ["Market data: fresh cache, providers in order, stale cache, then mock", "Every market value carries Freshness (live, cached, mock)", "LLM gateway falls back Gemini to Claude"] },
+    { "dot": "amber", "title": "Knowledge base", "items": ["Learn tab reads the article catalog and glossary from the in-memory KB", "Hybrid retrieval: BM25 + Chroma vectors fused with RRF, then reranked"] }
+  ]
+}

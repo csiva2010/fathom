@@ -36,7 +36,8 @@ backend/                 Python 3.11+, FastAPI. Run every command from this fold
                          reranker, retriever (hybrid + RRF + threshold), glossary, knowledge_base
     web_app/             FastAPI app: routers/, auth/, middleware/, errors/, schemas/
     utils/               Small pure helpers
-    mcp_server/          MCP tools over the REST API (day 5)
+    mcp_server/          MCP server for Claude Desktop: stdio, calls the REST API with a
+                         personal access token (api_client.py, server.py, __main__.py)
   data/kb/<category>/    KB articles (Markdown + YAML front matter) and glossary.yaml
   data/seed/             Sample portfolios, reference data, mock base prices
   scripts/               ingest_kb, seed_db, check_providers, export_openapi
@@ -101,8 +102,12 @@ cd ../frontend && npm run gen:api
 - **Degrade, don't crash.** Provider failures fall back to stale cache, then mock data
   (news falls back to empty, never invented). Only definitive errors such as `UnknownSymbol`
   reach the user.
-- **User identity comes only from the verified session cookie** (`CurrentUserDep`), never
-  from a request body. Scope every user-data query by that id.
+- **User identity comes only from the verified session cookie or access token**
+  (`CurrentUserDep`), never from a request body. Scope every user-data query by that id.
+  Routes that manage credentials use `SessionUserDep`, which refuses access tokens.
+- **The MCP server stays thin:** it imports nothing from the rest of `src` and only calls the
+  REST API. A new tool needs a REST endpoint first; tests are in `tests/unit/mcp_server` and
+  `tests/integration/test_mcp_end_to_end.py`.
 - **Secrets live only in `backend/.env`** (see `.env.example`). Non-secret settings go in
   `backend/config.yaml`. Nested values can be overridden with `__`, e.g. `AUTH__MODE=stub`.
   Nothing secret goes to the frontend; the frontend `.env` holds only the dev proxy target.
@@ -147,5 +152,10 @@ cd ../frontend && npm run gen:api
   benchmark line), Market (watchlist in localStorage, price chart with ranges, indicators,
   movers, sectors), Goals (risk questionnaire GL-01, CRUD, projection band, live slider via
   `POST /goals/project`) and Learn (`/kb/articles`, `/kb/glossary`). Shared SVG charts live
-  in `components/charts/`. Still to do: MCP server, feedback endpoint (CH-08).
+  in `components/charts/`.
+- Day 5 (MCP done): personal access tokens (`/me/tokens`, hashed in `api_tokens`, shown once,
+  managed only from a cookie session; `Authorization: Bearer` accepted by `CurrentUserDep`),
+  Profile "Claude Desktop access" card, `GET /kb/search`, `POST /portfolios/analyze`, and the
+  MCP server (`python -m src.mcp_server`, env `FINANCE_API_URL` + `FINANCE_API_TOKEN`; seven
+  read-only tools; setup in README). Still to do: feedback endpoint (CH-08).
 - Day 6 to 7: tests and evals, Learn tab, trace panel, Docker, docs, demo.

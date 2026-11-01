@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "sequence",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/csivakolundu/Documents/code/fathom/architecture/candidates/page-learn.sequence.json",
+    "sha256": "59ca0021e3f4aeb426da5693c4a4e76db94914a974f366ba884ff77331d669c4",
+    "bytes": 4278
+  },
+  "artifact": {
+    "path": "/Users/csivakolundu/Documents/code/fathom/architecture/page-learn.html",
+    "sha256": "44dde72e93e337db039c7f0a541a47d5dc6950e83e55d0dc3d0ef1f9760a88f2",
+    "bytes": 837404
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-learn.finalize.json",
+    "summaryReceipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-learn.finalize-summary.json",
+    "browserCheckReceipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-learn.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-01T18:35:19.877Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2053,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

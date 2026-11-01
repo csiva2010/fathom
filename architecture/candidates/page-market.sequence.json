@@ -1,0 +1,272 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Market Page: Watchlist, Charts and Movers",
+    "output": "architecture/page-market.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "MarketPage",
+      "sublabel": "useMarketData",
+      "sources": [
+        {
+          "path": "frontend/src/features/market/hooks/useMarketData.ts"
+        },
+        {
+          "path": "frontend/src/features/market/hooks/useMarketOverview.ts"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "localStorage",
+      "sublabel": "watchlist",
+      "sources": [
+        {
+          "path": "frontend/src/features/market/hooks/useMarketData.ts",
+          "line": 50,
+          "end_line": 72
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Market router",
+      "sublabel": "/market",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/market.py",
+          "line": 28,
+          "end_line": 114
+        }
+      ]
+    },
+    {
+      "id": "mds",
+      "type": "backend",
+      "label": "MarketDataService",
+      "sublabel": "cache + chain",
+      "sources": [
+        {
+          "path": "backend/src/core/services/market/market_data_service.py",
+          "line": 105,
+          "end_line": 374
+        },
+        {
+          "path": "backend/src/data/providers/chain.py",
+          "line": 84,
+          "end_line": 122
+        }
+      ]
+    },
+    {
+      "id": "prov",
+      "type": "cloud",
+      "label": "Alpaca / Alpha Vantage",
+      "sublabel": "or mock",
+      "sources": [
+        {
+          "path": "backend/src/data/providers/base.py"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 513,
+      "label": "Overview"
+    },
+    {
+      "from": 526,
+      "to": 681,
+      "label": "Symbol detail"
+    },
+    {
+      "from": 694,
+      "to": 817,
+      "label": "Add to watchlist"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "spa",
+      "y": 175,
+      "label": "open /market",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "spa",
+      "to": "store",
+      "y": 207,
+      "label": "read watchlist",
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "spa",
+      "to": "api",
+      "y": 239,
+      "label": "GET overview, movers, sectors",
+      "variant": "emphasis",
+      "note": "Movers and sectors refetch every 60 seconds."
+    },
+    {
+      "id": "m4",
+      "from": "spa",
+      "to": "api",
+      "y": 305,
+      "label": "GET /market/quotes?symbols",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m5",
+      "from": "api",
+      "to": "mds",
+      "y": 337,
+      "label": "get_indices, quotes, movers",
+      "variant": "default"
+    },
+    {
+      "id": "m6",
+      "from": "mds",
+      "to": "prov",
+      "y": 369,
+      "label": "fetch on cache miss",
+      "variant": "default",
+      "note": "Fresh cache, then providers in order, then stale cache, then mock."
+    },
+    {
+      "id": "m7",
+      "from": "prov",
+      "to": "mds",
+      "y": 435,
+      "label": "bars and quotes",
+      "variant": "return"
+    },
+    {
+      "id": "m8",
+      "from": "mds",
+      "to": "api",
+      "y": 467,
+      "label": "values + Freshness",
+      "variant": "return"
+    },
+    {
+      "id": "m9",
+      "from": "api",
+      "to": "spa",
+      "y": 499,
+      "label": "cards with FreshnessBadge",
+      "variant": "return"
+    },
+    {
+      "id": "m10",
+      "from": "user",
+      "to": "spa",
+      "y": 539,
+      "label": "pick symbol and range",
+      "variant": "default"
+    },
+    {
+      "id": "m11",
+      "from": "spa",
+      "to": "api",
+      "y": 571,
+      "label": "GET /history/{sym}?range",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m12",
+      "from": "spa",
+      "to": "api",
+      "y": 603,
+      "label": "GET /indicators/{sym}",
+      "variant": "default"
+    },
+    {
+      "id": "m13",
+      "from": "api",
+      "to": "mds",
+      "y": 635,
+      "label": "history + compute_indicators",
+      "variant": "default"
+    },
+    {
+      "id": "m14",
+      "from": "api",
+      "to": "spa",
+      "y": 667,
+      "label": "price bars, indicators",
+      "variant": "return"
+    },
+    {
+      "id": "m15",
+      "from": "user",
+      "to": "spa",
+      "y": 707,
+      "label": "search ticker",
+      "variant": "default"
+    },
+    {
+      "id": "m16",
+      "from": "spa",
+      "to": "api",
+      "y": 739,
+      "label": "GET /market/symbols?q",
+      "variant": "default"
+    },
+    {
+      "id": "m17",
+      "from": "api",
+      "to": "spa",
+      "y": 771,
+      "label": "matches",
+      "variant": "return"
+    },
+    {
+      "id": "m18",
+      "from": "spa",
+      "to": "store",
+      "y": 803,
+      "label": "save watchlist",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Degrade, don't crash",
+      "items": [
+        "Provider failures fall back to stale cache, then mock; only UnknownSymbol reaches the user"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "One entry point",
+      "items": [
+        "Routers ask MarketDataService for a data type, never a provider"
+      ]
+    }
+  ]
+}

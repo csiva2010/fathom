@@ -76,6 +76,8 @@ def test_cross_origin_post_is_rejected(signed_in: TestClient) -> None:
 
 def test_invalid_cookie_and_deleted_user(signed_in: TestClient) -> None:
     container = signed_in.app.state.container  # type: ignore[attr-defined]
+    # set() alone would add a second fa_session (other domain) next to the valid one.
+    signed_in.cookies.clear()
     signed_in.cookies.set("fa_session", "garbage")
     assert signed_in.get(f"{API}/me").status_code == 401
 

@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Landing Page: Sign-in Flow",
+    "output": "architecture/page-landing-signin.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "LandingPage",
+      "sublabel": "AuthProvider",
+      "sources": [
+        {
+          "path": "frontend/src/lib/auth/AuthProvider.tsx",
+          "line": 16,
+          "end_line": 49
+        },
+        {
+          "path": "frontend/src/lib/auth/RequireAuth.tsx",
+          "line": 8,
+          "end_line": 13
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Auth router",
+      "sublabel": "/auth, /me",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/auth.py",
+          "line": 39,
+          "end_line": 98
+        },
+        {
+          "path": "backend/src/web_app/auth/current_user.py",
+          "line": 29,
+          "end_line": 59
+        }
+      ]
+    },
+    {
+      "id": "google",
+      "type": "security",
+      "label": "Google OIDC",
+      "sublabel": "consent + identity",
+      "sources": [
+        {
+          "path": "backend/src/web_app/auth/google_client.py"
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "app.db",
+      "sublabel": "users table",
+      "sources": [
+        {
+          "path": "backend/src/data/db/repositories/user_repository.py"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 353,
+      "label": "Who am I?"
+    },
+    {
+      "from": 366,
+      "to": 619,
+      "label": "Google mode"
+    },
+    {
+      "from": 632,
+      "to": 819,
+      "label": "Guest mode"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "spa",
+      "y": 175,
+      "label": "open /",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "spa",
+      "to": "api",
+      "y": 207,
+      "label": "GET /auth/config",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "api",
+      "to": "spa",
+      "y": 239,
+      "label": "mode: google | guest | stub",
+      "variant": "return"
+    },
+    {
+      "id": "m4",
+      "from": "spa",
+      "to": "api",
+      "y": 271,
+      "label": "GET /me",
+      "variant": "default"
+    },
+    {
+      "id": "m5",
+      "from": "api",
+      "to": "spa",
+      "y": 303,
+      "label": "401: show sign-in button",
+      "variant": "return",
+      "note": "No valid session cookie, so the landing page stays; RequireAuth redirects any other route here."
+    },
+    {
+      "id": "m6",
+      "from": "user",
+      "to": "spa",
+      "y": 379,
+      "label": "Sign in with Google",
+      "variant": "default"
+    },
+    {
+      "id": "m7",
+      "from": "spa",
+      "to": "api",
+      "y": 411,
+      "label": "GET /auth/google/login",
+      "variant": "emphasis",
+      "note": "Full-page redirect. In stub mode the API upserts the fixed dev user and skips Google."
+    },
+    {
+      "id": "m8",
+      "from": "api",
+      "to": "google",
+      "y": 477,
+      "label": "302 to consent screen",
+      "variant": "security"
+    },
+    {
+      "id": "m9",
+      "from": "google",
+      "to": "api",
+      "y": 509,
+      "label": "GET /auth/google/callback",
+      "variant": "security"
+    },
+    {
+      "id": "m10",
+      "from": "api",
+      "to": "google",
+      "y": 541,
+      "label": "exchange code, fetch identity",
+      "variant": "security"
+    },
+    {
+      "id": "m11",
+      "from": "api",
+      "to": "db",
+      "y": 573,
+      "label": "upsert user",
+      "variant": "default"
+    },
+    {
+      "id": "m12",
+      "from": "api",
+      "to": "spa",
+      "y": 605,
+      "label": "Set-Cookie session, 302 /chat",
+      "variant": "return"
+    },
+    {
+      "id": "m13",
+      "from": "user",
+      "to": "spa",
+      "y": 645,
+      "label": "Continue as guest",
+      "variant": "default"
+    },
+    {
+      "id": "m14",
+      "from": "spa",
+      "to": "api",
+      "y": 677,
+      "label": "POST /auth/guest",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m15",
+      "from": "api",
+      "to": "db",
+      "y": 709,
+      "label": "create isolated guest user",
+      "variant": "default"
+    },
+    {
+      "id": "m16",
+      "from": "api",
+      "to": "spa",
+      "y": 741,
+      "label": "204 + session cookie",
+      "variant": "return"
+    },
+    {
+      "id": "m17",
+      "from": "spa",
+      "to": "api",
+      "y": 773,
+      "label": "GET /me (refetch)",
+      "variant": "default"
+    },
+    {
+      "id": "m18",
+      "from": "api",
+      "to": "spa",
+      "y": 805,
+      "label": "user: app shell opens",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Session",
+      "items": [
+        "The HttpOnly session cookie is invisible to JavaScript; GET /me answers whether you are signed in",
+        "CurrentUserDep verifies the cookie on every request and refreshes it near expiry"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Modes",
+      "items": [
+        "google (default), guest (one new user per visitor), stub (dev only, refused in production)"
+      ]
+    }
+  ]
+}

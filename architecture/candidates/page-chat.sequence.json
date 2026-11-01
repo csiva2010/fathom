@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Chat Page: Streaming Multi-Agent Answer",
+    "output": "architecture/page-chat.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "ChatPage",
+      "sublabel": "useChat",
+      "sources": [
+        {
+          "path": "frontend/src/features/chat/hooks/useChat.ts",
+          "line": 40,
+          "end_line": 105
+        },
+        {
+          "path": "frontend/src/api/endpoints/chat.ts",
+          "line": 25,
+          "end_line": 47
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Conversations",
+      "sublabel": "router + SSE",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/conversations.py",
+          "line": 59,
+          "end_line": 144
+        }
+      ]
+    },
+    {
+      "id": "graph",
+      "type": "backend",
+      "label": "LangGraph",
+      "sublabel": "workflow",
+      "sources": [
+        {
+          "path": "backend/src/workflow/graph.py",
+          "line": 78,
+          "end_line": 118
+        },
+        {
+          "path": "backend/src/workflow/streaming.py",
+          "line": 195,
+          "end_line": 258
+        }
+      ]
+    },
+    {
+      "id": "agents",
+      "type": "backend",
+      "label": "Agents",
+      "sublabel": "BaseAgent x6",
+      "sources": [
+        {
+          "path": "backend/src/agents/base_agent.py",
+          "line": 194,
+          "end_line": 245
+        },
+        {
+          "path": "backend/src/workflow/factory.py",
+          "line": 28,
+          "end_line": 48
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "Services + KB",
+      "sublabel": "tool results",
+      "sources": [
+        {
+          "path": "backend/src/core/services/market/market_data_service.py",
+          "line": 1,
+          "end_line": 5
+        },
+        {
+          "path": "backend/src/rag/retriever.py",
+          "line": 99,
+          "end_line": 128
+        }
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "cloud",
+      "label": "LLM Gateway",
+      "sublabel": "Gemini, Claude",
+      "sources": [
+        {
+          "path": "backend/src/core/llm/gateway.py",
+          "line": 35,
+          "end_line": 104
+        }
+      ]
+    },
+    {
+      "id": "ckpt",
+      "type": "database",
+      "label": "SQLite",
+      "sublabel": "app.db, checkpoints",
+      "sources": [
+        {
+          "path": "backend/src/web_app/container.py",
+          "line": 90,
+          "end_line": 102
+        },
+        {
+          "path": "backend/src/workflow/context.py",
+          "line": 79,
+          "end_line": 126
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 351,
+      "label": "Start turn"
+    },
+    {
+      "from": 364,
+      "to": 525,
+      "label": "Route"
+    },
+    {
+      "from": 538,
+      "to": 725,
+      "label": "Agents (parallel)"
+    },
+    {
+      "from": 738,
+      "to": 895,
+      "label": "Finish"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "spa",
+      "y": 175,
+      "label": "ask a question",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "spa",
+      "to": "api",
+      "y": 207,
+      "label": "POST /conversations",
+      "variant": "default",
+      "note": "New chat only."
+    },
+    {
+      "id": "m3",
+      "from": "spa",
+      "to": "api",
+      "y": 273,
+      "label": "POST /{id}/messages (SSE)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m4",
+      "from": "api",
+      "to": "ckpt",
+      "y": 305,
+      "label": "record turn (owned convo)",
+      "variant": "default"
+    },
+    {
+      "id": "m5",
+      "from": "api",
+      "to": "graph",
+      "y": 337,
+      "label": "astream(thread_id)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m6",
+      "from": "graph",
+      "to": "ckpt",
+      "y": 377,
+      "label": "load thread + user context",
+      "variant": "default",
+      "note": "Profile, portfolio, goals."
+    },
+    {
+      "id": "m7",
+      "from": "graph",
+      "to": "llm",
+      "y": 443,
+      "label": "router: RoutePlan",
+      "variant": "default"
+    },
+    {
+      "id": "m8",
+      "from": "api",
+      "to": "spa",
+      "y": 475,
+      "label": "event: route, agent_start",
+      "variant": "dashed",
+      "note": "Advice or unclear: no agents."
+    },
+    {
+      "id": "m9",
+      "from": "graph",
+      "to": "agents",
+      "y": 551,
+      "label": "Send fan-out",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m10",
+      "from": "agents",
+      "to": "tools",
+      "y": 583,
+      "label": "allow-listed tool calls",
+      "variant": "default"
+    },
+    {
+      "id": "m11",
+      "from": "tools",
+      "to": "agents",
+      "y": 615,
+      "label": "numbers + Freshness, citations",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "agents",
+      "to": "llm",
+      "y": 647,
+      "label": "reason and explain",
+      "variant": "default"
+    },
+    {
+      "id": "m13",
+      "from": "api",
+      "to": "spa",
+      "y": 679,
+      "label": "event: token (streamed text)",
+      "variant": "dashed"
+    },
+    {
+      "id": "m14",
+      "from": "agents",
+      "to": "graph",
+      "y": 711,
+      "label": "AgentOutput + artifacts",
+      "variant": "return"
+    },
+    {
+      "id": "m15",
+      "from": "graph",
+      "to": "llm",
+      "y": 751,
+      "label": "synthesize, compliance check",
+      "variant": "default",
+      "note": "Educational framing only."
+    },
+    {
+      "id": "m16",
+      "from": "graph",
+      "to": "ckpt",
+      "y": 817,
+      "label": "save checkpoint",
+      "variant": "default"
+    },
+    {
+      "id": "m17",
+      "from": "api",
+      "to": "spa",
+      "y": 849,
+      "label": "citation, freshness, done",
+      "variant": "return"
+    },
+    {
+      "id": "m18",
+      "from": "spa",
+      "to": "user",
+      "y": 881,
+      "label": "answer, sources, charts",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Graph",
+      "items": [
+        "load_context, router, Send fan-out, fallback, synthesizer, compliance, END",
+        "A failed agent becomes a NodeError; the user is told that part is unavailable"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Streaming",
+      "items": [
+        "stream_turn maps graph updates to SSE events and never raises; failures arrive as an error event",
+        "Leaving the page aborts the fetch; the server still finishes the turn"
+      ]
+    }
+  ]
+}

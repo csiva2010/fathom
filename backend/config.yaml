@@ -3,7 +3,7 @@
 # e.g. AUTH__MODE=stub or MARKET__ALPACA__FEED=iex.
 
 app:
-  name: AI Finance Assistant
+  name: Fathom · AI Finance Assistant
   env: development            # development | test | production
   api_prefix: /api/v1
   # Local ports come from WEB_PORT / API_PORT in .env. frontend_url and cors_origins are

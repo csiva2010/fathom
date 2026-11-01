@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from src.core.domain.market import AssetClass
+from src.core.domain.market import AssetClass, PriceRange
 from src.utils.holdings_csv import MAX_BYTES, MAX_ROWS
 
 
@@ -50,3 +50,10 @@ class CsvImportOut(BaseModel):
 
     holdings: list[HoldingIn]
     errors: list[str]
+
+
+class AnalyzeHoldingsIn(BaseModel):
+    """Holdings to analyze without saving them (the MCP analyze_portfolio tool)."""
+
+    holdings: list[HoldingIn] = Field(min_length=1, max_length=MAX_ROWS)
+    range: PriceRange = Field(default=PriceRange.Y1, description="Benchmark window")

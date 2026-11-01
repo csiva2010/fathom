@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Fathom</title>
+  <rect width="32" height="32" rx="8" fill="#047857"/>
+  <path d="M4.5 9.5c1.9 0 1.9-2.2 3.8-2.2s1.9 2.2 3.8 2.2 1.9-2.2 3.9-2.2 1.9 2.2 3.8 2.2 1.9-2.2 3.8-2.2 1.9 2.2 3.8 2.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M8 15h2.5M8 20h2.5M8 25h2.5" stroke="#6ee7b7" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M16 9.5v8" stroke="#d1fae5" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M12.4 18.6c0-1.1 1.6-1.6 3.6-1.6s3.6.5 3.6 1.6L16.6 25.6a.65.65 0 0 1-1.2 0z" fill="#fff"/>
+</svg>

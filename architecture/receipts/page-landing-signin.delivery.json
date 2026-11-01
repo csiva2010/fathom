@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "493af064-993e-4533-975a-f649d8cab877",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/csivakolundu/Documents/code/fathom/architecture/candidates/page-landing-signin.sequence.json",
+  "output": "/Users/csivakolundu/Documents/code/fathom/architecture/page-landing-signin.html",
+  "specification": {
+    "sha256": "95de01f23b11e6db6f600b6a4f0843a9a062090a89ea94cb5c93c0be9d65e036",
+    "bytes": 5530
+  },
+  "artifact": {
+    "sha256": "4c992a45f036a3cd1ccd1b9cc993c371f8f8157878d476a416371f93643945b8",
+    "bytes": 841584
+  }
+}

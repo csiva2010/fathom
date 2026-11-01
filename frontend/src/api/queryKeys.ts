@@ -15,6 +15,7 @@ export const queryKeys = {
   goals: ["goals"] as const,
   projection: (inputs: unknown) => ["goals", "projection", inputs] as const,
   riskQuestionnaire: ["me", "risk-questionnaire"] as const,
+  tokens: ["me", "tokens"] as const,
   articles: (filters: unknown) => ["kb", "articles", filters] as const,
   article: (id: string) => ["kb", "article", id] as const,
   glossary: (q: string) => ["kb", "glossary", q] as const,

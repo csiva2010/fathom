@@ -3,10 +3,13 @@
 Users see their own portfolios and the read-only samples. The analysis comes from
 `PortfolioAnalysisService`, the same service the Portfolio agent uses, so the view and
 chat agree. The most recently saved portfolio is what the agents load (PF-07).
+`POST /portfolios/analyze` analyzes holdings without saving them, for the MCP
+analyze_portfolio tool (MCP-01).
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Annotated
 
 from fastapi import APIRouter, Query, Response, status
@@ -17,13 +20,14 @@ from src.core.domain.portfolio import PortfolioAnalysis
 from src.core.domain.risk import RiskProfile
 from src.core.errors import ValidationFailed
 from src.core.services.market.symbols import normalise_symbol
-from src.data.db.models import Portfolio
+from src.data.db.models import Holding, Portfolio
 from src.data.db.repositories.portfolio_repository import HoldingInput, PortfolioRepository
 from src.data.db.repositories.user_repository import ProfileRepository
 from src.utils.holdings_csv import parse_holdings_csv
-from src.web_app.auth.current_user import CurrentUserDep
+from src.web_app.auth.current_user import CurrentUser, CurrentUserDep
 from src.web_app.dependencies import DbDep, MarketDep, PortfoliosDep
 from src.web_app.schemas.portfolios import (
+    AnalyzeHoldingsIn,
     CsvImportIn,
     CsvImportOut,
     HoldingIn,
@@ -57,7 +61,7 @@ def _out(portfolio: Portfolio) -> PortfolioOut:
     )
 
 
-async def _validated(body: PortfolioIn, market: MarketDep) -> list[HoldingInput]:
+async def _validated(rows: list[HoldingIn], market: MarketDep) -> list[HoldingInput]:
     """Normalised holdings; unknown tickers are rejected with suggestions (MD-09)."""
     holdings = [
         HoldingInput(
@@ -66,7 +70,7 @@ async def _validated(body: PortfolioIn, market: MarketDep) -> list[HoldingInput]
             cost_basis=h.cost_basis,
             asset_class=h.asset_class.value if h.asset_class else None,
         )
-        for h in body.holdings
+        for h in rows
     ]
     check = await market.validate_symbols(list(dict.fromkeys(h.symbol for h in holdings)))
     if check.unknown:
@@ -93,7 +97,7 @@ def list_portfolios(user: CurrentUserDep, db: DbDep) -> PortfolioList:
 async def create_portfolio(
     body: PortfolioIn, user: CurrentUserDep, db: DbDep, market: MarketDep
 ) -> PortfolioOut:
-    holdings = await _validated(body, market)
+    holdings = await _validated(body.holdings, market)
     portfolio = PortfolioRepository(db).create(
         user.id, body.name.strip(), body.description.strip(), holdings
     )
@@ -118,6 +122,22 @@ def import_csv(body: CsvImportIn, _user: CurrentUserDep) -> CsvImportOut:
     )
 
 
+@router.post(
+    "/analyze",
+    response_model=PortfolioAnalysis,
+    summary="Analyze holdings without saving them",
+)
+async def analyze_holdings(
+    body: AnalyzeHoldingsIn,
+    user: CurrentUserDep,
+    db: DbDep,
+    market: MarketDep,
+    portfolios: PortfoliosDep,
+) -> PortfolioAnalysis:
+    holdings = await _validated(body.holdings, market)
+    return await _analyze(holdings, user, db, portfolios, body.range)
+
+
 @router.get("/{portfolio_id}", response_model=PortfolioOut, summary="One portfolio")
 def get_portfolio(portfolio_id: str, user: CurrentUserDep, db: DbDep) -> PortfolioOut:
     return _out(PortfolioRepository(db).get_visible(user.id, portfolio_id))
@@ -131,7 +151,7 @@ async def update_portfolio(
 ) -> PortfolioOut:
     repo = PortfolioRepository(db)
     portfolio = repo.get_owned(user.id, portfolio_id)
-    holdings = await _validated(body, market)
+    holdings = await _validated(body.holdings, market)
     repo.replace(portfolio, body.name.strip(), body.description.strip(), holdings)
     db.commit()
     return _out(portfolio)
@@ -162,6 +182,16 @@ async def analyze_portfolio(
     ] = PriceRange.Y1,
 ) -> PortfolioAnalysis:
     portfolio = PortfolioRepository(db).get_visible(user.id, portfolio_id)
+    return await _analyze(portfolio.holdings, user, db, portfolios, range_)
+
+
+async def _analyze(
+    rows: Sequence[HoldingInput | Holding],
+    user: CurrentUser,
+    db: DbDep,
+    portfolios: PortfoliosDep,
+    range_: PriceRange,
+) -> PortfolioAnalysis:
     saved = ProfileRepository(db).get_or_create(user.id).risk_profile
     holdings = [
         AnalysisHolding(
@@ -170,7 +200,7 @@ async def analyze_portfolio(
             cost_basis=h.cost_basis,
             asset_class=AssetClass(h.asset_class) if h.asset_class in ASSET_CLASSES else None,
         )
-        for h in portfolio.holdings
+        for h in rows
     ]
     return await portfolios.analyze(
         holdings, risk_profile=RiskProfile(saved) if saved else None, benchmark_range=range_

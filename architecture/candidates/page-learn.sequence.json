@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Learn Page: Articles and Glossary",
+    "output": "architecture/page-learn.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "Learn pages",
+      "sublabel": "useLearn",
+      "sources": [
+        {
+          "path": "frontend/src/features/learn/hooks/useLearn.ts"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "KB router",
+      "sublabel": "/kb",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/kb.py",
+          "line": 49,
+          "end_line": 94
+        }
+      ]
+    },
+    {
+      "id": "kb",
+      "type": "backend",
+      "label": "KnowledgeBase",
+      "sublabel": "catalog, glossary",
+      "sources": [
+        {
+          "path": "backend/src/rag/knowledge_base.py",
+          "line": 29,
+          "end_line": 77
+        }
+      ]
+    },
+    {
+      "id": "files",
+      "type": "database",
+      "label": "data/kb",
+      "sublabel": "Markdown + glossary",
+      "sources": [
+        {
+          "path": "backend/src/rag/knowledge_base.py",
+          "line": 42,
+          "end_line": 67
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 225,
+      "label": "Startup"
+    },
+    {
+      "from": 238,
+      "to": 361,
+      "label": "Browse"
+    },
+    {
+      "from": 374,
+      "to": 531,
+      "label": "Read"
+    },
+    {
+      "from": 544,
+      "to": 667,
+      "label": "Glossary"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "kb",
+      "to": "files",
+      "y": 175,
+      "label": "load articles + glossary",
+      "variant": "default",
+      "note": "Runs once when the API starts; builds the BM25 index if missing."
+    },
+    {
+      "id": "m2",
+      "from": "user",
+      "to": "spa",
+      "y": 251,
+      "label": "open /learn, filter",
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "spa",
+      "to": "api",
+      "y": 283,
+      "label": "GET /kb/articles?category&level&q",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m4",
+      "from": "api",
+      "to": "kb",
+      "y": 315,
+      "label": "catalog.search",
+      "variant": "default"
+    },
+    {
+      "id": "m5",
+      "from": "api",
+      "to": "spa",
+      "y": 347,
+      "label": "articles + category counts",
+      "variant": "return"
+    },
+    {
+      "id": "m6",
+      "from": "user",
+      "to": "spa",
+      "y": 387,
+      "label": "open /learn/:articleId",
+      "variant": "default"
+    },
+    {
+      "id": "m7",
+      "from": "spa",
+      "to": "api",
+      "y": 419,
+      "label": "GET /kb/articles/{id}",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m8",
+      "from": "api",
+      "to": "kb",
+      "y": 451,
+      "label": "catalog.get",
+      "variant": "default",
+      "note": "Missing ids raise NotFound, rendered as the error envelope."
+    },
+    {
+      "id": "m9",
+      "from": "api",
+      "to": "spa",
+      "y": 517,
+      "label": "article body_md",
+      "variant": "return"
+    },
+    {
+      "id": "m10",
+      "from": "user",
+      "to": "spa",
+      "y": 557,
+      "label": "search a term",
+      "variant": "default"
+    },
+    {
+      "id": "m11",
+      "from": "spa",
+      "to": "api",
+      "y": 589,
+      "label": "GET /kb/glossary?q",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m12",
+      "from": "api",
+      "to": "kb",
+      "y": 621,
+      "label": "glossary.search",
+      "variant": "default"
+    },
+    {
+      "id": "m13",
+      "from": "api",
+      "to": "spa",
+      "y": 653,
+      "label": "matching terms",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Same KB as chat",
+      "items": [
+        "The Finance Q&A, News and Tax agents retrieve from this knowledge base",
+        "Learn reads the catalog directly; no LLM is involved"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "357c5559-088c-4afd-bf8d-12775079947b",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/csivakolundu/Documents/code/fathom/architecture/candidates/page-chat.sequence.json",
+  "output": "/Users/csivakolundu/Documents/code/fathom/architecture/page-chat.html",
+  "specification": {
+    "sha256": "54634efa6c1fc1c9afee5de3b655189bd2ee3a7f63b91f27c79254f529311e1b",
+    "bytes": 6950
+  },
+  "artifact": {
+    "sha256": "7310d7328cc11cd33d62b64afa6cf028745b1f86c5f570a845c33e392bf973fb",
+    "bytes": 848076
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "sequence",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/csivakolundu/Documents/code/fathom/architecture/candidates/page-portfolio.sequence.json",
+    "sha256": "e4ddb16636afb85c0a71969b59c67ef22900a678ec6d09ee1467b48f2f30d708",
+    "bytes": 5920
+  },
+  "artifact": {
+    "path": "/Users/csivakolundu/Documents/code/fathom/architecture/page-portfolio.html",
+    "sha256": "a04c5dd67bc0e974728da6d20959da9bc57b2b1e722eb4a0e6fed7eea4e41201",
+    "bytes": 843172
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-portfolio.finalize.json",
+    "summaryReceipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-portfolio.finalize-summary.json",
+    "browserCheckReceipt": "/Users/csivakolundu/Documents/code/fathom/architecture/page-portfolio.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-01T18:35:19.877Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2017,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

@@ -13,6 +13,10 @@ export type ProfileUpdate = Schemas["ProfileUpdate"];
 export type ExperienceLevel = Schemas["ExperienceLevel"];
 export type RiskProfile = Schemas["RiskProfile"];
 
+export type ApiToken = Schemas["ApiTokenOut"];
+export type ApiTokenCreated = Schemas["ApiTokenCreated"];
+export type ApiTokenList = Schemas["ApiTokenList"];
+
 export type Health = Schemas["HealthResponse"];
 export type ProviderHealth = Schemas["ProviderHealth"];
 

@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Portfolio Page: Holdings and Analysis",
+    "output": "architecture/page-portfolio.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "PortfolioPage",
+      "sublabel": "usePortfolios",
+      "sources": [
+        {
+          "path": "frontend/src/features/portfolio/hooks/usePortfolios.ts"
+        },
+        {
+          "path": "frontend/src/api/endpoints/portfolios.ts"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Portfolios router",
+      "sublabel": "/portfolios",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/portfolios.py",
+          "line": 83,
+          "end_line": 177
+        }
+      ]
+    },
+    {
+      "id": "svc",
+      "type": "backend",
+      "label": "Portfolio service",
+      "sublabel": "analytics",
+      "sources": [
+        {
+          "path": "backend/src/core/services/portfolio_service.py",
+          "line": 39,
+          "end_line": 56
+        },
+        {
+          "path": "backend/src/core/services/portfolio_analytics.py"
+        }
+      ]
+    },
+    {
+      "id": "mds",
+      "type": "backend",
+      "label": "MarketDataService",
+      "sublabel": "ProviderChain",
+      "sources": [
+        {
+          "path": "backend/src/core/services/market/market_data_service.py",
+          "line": 105,
+          "end_line": 186
+        },
+        {
+          "path": "backend/src/data/providers/chain.py",
+          "line": 84,
+          "end_line": 122
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "app.db",
+      "sublabel": "portfolios, holdings",
+      "sources": [
+        {
+          "path": "backend/src/data/db/repositories/portfolio_repository.py"
+        },
+        {
+          "path": "backend/src/data/db/models/portfolio.py"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 285,
+      "label": "Load"
+    },
+    {
+      "from": 298,
+      "to": 617,
+      "label": "Analyze"
+    },
+    {
+      "from": 630,
+      "to": 851,
+      "label": "Edit or import"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "spa",
+      "y": 175,
+      "label": "open /portfolio",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "spa",
+      "to": "api",
+      "y": 207,
+      "label": "GET /portfolios",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "api",
+      "to": "db",
+      "y": 239,
+      "label": "own portfolios + samples",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "api",
+      "to": "spa",
+      "y": 271,
+      "label": "portfolio list",
+      "variant": "return"
+    },
+    {
+      "id": "m5",
+      "from": "spa",
+      "to": "api",
+      "y": 311,
+      "label": "GET /{id}/analysis?range=1Y",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m6",
+      "from": "api",
+      "to": "db",
+      "y": 343,
+      "label": "holdings + risk profile",
+      "variant": "default",
+      "note": "get_visible: the portfolio must belong to the user or be a sample."
+    },
+    {
+      "id": "m7",
+      "from": "api",
+      "to": "svc",
+      "y": 409,
+      "label": "analyze(holdings)",
+      "variant": "default"
+    },
+    {
+      "id": "m8",
+      "from": "svc",
+      "to": "mds",
+      "y": 441,
+      "label": "quotes, reference, history",
+      "variant": "default",
+      "note": "Fetched concurrently with asyncio.gather, including the benchmark."
+    },
+    {
+      "id": "m9",
+      "from": "mds",
+      "to": "svc",
+      "y": 507,
+      "label": "Sourced values + Freshness",
+      "variant": "return"
+    },
+    {
+      "id": "m10",
+      "from": "svc",
+      "to": "api",
+      "y": 539,
+      "label": "metrics, allocation, risk",
+      "variant": "return"
+    },
+    {
+      "id": "m11",
+      "from": "api",
+      "to": "spa",
+      "y": 571,
+      "label": "PortfolioAnalysis",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "spa",
+      "to": "user",
+      "y": 603,
+      "label": "donut, sectors, benchmark",
+      "variant": "return"
+    },
+    {
+      "id": "m13",
+      "from": "user",
+      "to": "spa",
+      "y": 643,
+      "label": "paste CSV or edit holdings",
+      "variant": "default"
+    },
+    {
+      "id": "m14",
+      "from": "spa",
+      "to": "api",
+      "y": 675,
+      "label": "POST /portfolios/import",
+      "variant": "default",
+      "note": "Parses the CSV for review only; nothing is saved yet."
+    },
+    {
+      "id": "m15",
+      "from": "spa",
+      "to": "api",
+      "y": 741,
+      "label": "POST or PUT /portfolios",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m16",
+      "from": "api",
+      "to": "mds",
+      "y": 773,
+      "label": "validate symbols",
+      "variant": "default"
+    },
+    {
+      "id": "m17",
+      "from": "api",
+      "to": "db",
+      "y": 805,
+      "label": "save holdings",
+      "variant": "default"
+    },
+    {
+      "id": "m18",
+      "from": "api",
+      "to": "spa",
+      "y": 837,
+      "label": "PortfolioOut; refetch",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Agents reason, services compute",
+      "items": [
+        "Every metric comes from pure functions in core/services; the UI only renders"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Freshness",
+      "items": [
+        "Prices may be live, cached or mock; each is labelled in the UI"
+      ]
+    }
+  ]
+}

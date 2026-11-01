@@ -1,6 +1,7 @@
 import { Navigate, useSearchParams } from "react-router-dom";
 
 import { DisclaimerBar } from "@/components/layout/DisclaimerBar";
+import { LogoMark } from "@/components/layout/Logo";
 import { useAuth } from "@/lib/auth/useAuth";
 
 import { SignInButton } from "./components/SignInButton";
@@ -29,8 +30,14 @@ export function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-emerald-50 to-white dark:from-slate-900 dark:to-slate-950">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 py-16">
-        <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">AI Finance Assistant</p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <div className="flex items-center gap-3">
+          <LogoMark className="h-11 w-11" />
+          <div>
+            <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Fathom</p>
+            <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">The AI Finance Assistant</p>
+          </div>
+        </div>
+        <h1 className="mt-8 text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
           Learn investing without the jargon.
         </h1>
         <p className="mt-4 text-lg text-slate-700 dark:text-slate-300">
@@ -48,7 +55,18 @@ export function LandingPage() {
           <SignInButton />
         </div>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2">
+        <aside aria-labelledby="name-heading" className="mt-10 border-l-4 border-emerald-600 pl-4">
+          <h2 id="name-heading" className="text-sm font-semibold text-slate-900 dark:text-white">
+            Why “Fathom”?
+          </h2>
+          <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
+            A <em>fathom</em> is a sailor's measure of depth, six feet, taken by lowering a weighted line until it
+            touches bottom. To <em>fathom</em> something is to understand it all the way down. Fathom helps you get
+            to the bottom of money questions, one plain-language answer at a time.
+          </p>
+        </aside>
+
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2">
           {FEATURES.map(([title, text]) => (
             <li key={title} className="rounded-xl border border-slate-200 bg-white/70 p-4 dark:border-slate-800 dark:bg-slate-900/60">
               <p className="font-medium text-slate-900 dark:text-white">{title}</p>

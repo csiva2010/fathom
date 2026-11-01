@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "202cf744-18e8-492c-83b4-892a5adec1a5",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/csivakolundu/Documents/code/fathom/architecture/candidates/page-profile.sequence.json",
+  "output": "/Users/csivakolundu/Documents/code/fathom/architecture/page-profile.html",
+  "specification": {
+    "sha256": "034595ddc1c00fee25cdbaef939e471c77df0d251a2a08678b3e81cd1dae4d3c",
+    "bytes": 5463
+  },
+  "artifact": {
+    "sha256": "f79461317e8d21be9ab75fd33ec6b5db793f32f19018d0c8ab08ef46f5fe9795",
+    "bytes": 842923
+  }
+}

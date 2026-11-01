@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Goals Page: Risk Profile and Projections",
+    "output": "architecture/page-goals.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "GoalsPage",
+      "sublabel": "useGoals",
+      "sources": [
+        {
+          "path": "frontend/src/features/goals/hooks/useGoals.ts",
+          "line": 1,
+          "end_line": 50
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Goals + Me",
+      "sublabel": "routers",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/goals.py",
+          "line": 76,
+          "end_line": 109
+        },
+        {
+          "path": "backend/src/web_app/routers/me.py",
+          "line": 63,
+          "end_line": 83
+        }
+      ]
+    },
+    {
+      "id": "calc",
+      "type": "backend",
+      "label": "Pure services",
+      "sublabel": "projections, risk",
+      "sources": [
+        {
+          "path": "backend/src/core/services/projections.py",
+          "line": 117
+        },
+        {
+          "path": "backend/src/core/services/risk_questionnaire.py"
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "app.db",
+      "sublabel": "goals, profiles",
+      "sources": [
+        {
+          "path": "backend/src/data/db/repositories/goal_repository.py"
+        },
+        {
+          "path": "backend/src/data/db/models/profile.py"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 317,
+      "label": "Load"
+    },
+    {
+      "from": 330,
+      "to": 517,
+      "label": "Risk questionnaire"
+    },
+    {
+      "from": 530,
+      "to": 687,
+      "label": "Live slider"
+    },
+    {
+      "from": 700,
+      "to": 791,
+      "label": "Save"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "spa",
+      "y": 175,
+      "label": "open /goals",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "spa",
+      "to": "api",
+      "y": 207,
+      "label": "GET /goals",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "api",
+      "to": "db",
+      "y": 239,
+      "label": "goals for user",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "api",
+      "to": "calc",
+      "y": 271,
+      "label": "project each goal",
+      "variant": "default"
+    },
+    {
+      "id": "m5",
+      "from": "api",
+      "to": "spa",
+      "y": 303,
+      "label": "goals with projections",
+      "variant": "return"
+    },
+    {
+      "id": "m6",
+      "from": "spa",
+      "to": "api",
+      "y": 343,
+      "label": "GET /me/risk-questionnaire",
+      "variant": "default"
+    },
+    {
+      "id": "m7",
+      "from": "user",
+      "to": "spa",
+      "y": 375,
+      "label": "answer questions",
+      "variant": "default"
+    },
+    {
+      "id": "m8",
+      "from": "spa",
+      "to": "api",
+      "y": 407,
+      "label": "POST /me/risk-questionnaire",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m9",
+      "from": "api",
+      "to": "calc",
+      "y": 439,
+      "label": "score_answers",
+      "variant": "default"
+    },
+    {
+      "id": "m10",
+      "from": "api",
+      "to": "db",
+      "y": 471,
+      "label": "save risk profile",
+      "variant": "default"
+    },
+    {
+      "id": "m11",
+      "from": "api",
+      "to": "spa",
+      "y": 503,
+      "label": "risk profile",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "user",
+      "to": "spa",
+      "y": 543,
+      "label": "drag amount or date",
+      "variant": "default"
+    },
+    {
+      "id": "m13",
+      "from": "spa",
+      "to": "api",
+      "y": 575,
+      "label": "POST /goals/project",
+      "variant": "emphasis",
+      "note": "Nothing is saved; keepPreviousData holds the last chart while it updates."
+    },
+    {
+      "id": "m14",
+      "from": "api",
+      "to": "calc",
+      "y": 641,
+      "label": "project_goal, allocation",
+      "variant": "default"
+    },
+    {
+      "id": "m15",
+      "from": "api",
+      "to": "spa",
+      "y": 673,
+      "label": "projection band",
+      "variant": "return"
+    },
+    {
+      "id": "m16",
+      "from": "spa",
+      "to": "api",
+      "y": 713,
+      "label": "POST or PUT /goals",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m17",
+      "from": "api",
+      "to": "db",
+      "y": 745,
+      "label": "write goal",
+      "variant": "default"
+    },
+    {
+      "id": "m18",
+      "from": "api",
+      "to": "spa",
+      "y": 777,
+      "label": "GoalOut; refetch list",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Numbers",
+      "items": [
+        "Projections and risk scores are tested pure functions; the example allocation is educational, not advice"
+      ]
+    }
+  ]
+}

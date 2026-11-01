@@ -1,5 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
+import { Logo } from "./Logo";
 import { NAV_ITEMS } from "./navItems";
 import { UserMenu } from "./UserMenu";
 
@@ -7,7 +8,9 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-        <span className="font-semibold text-slate-900 dark:text-white">AI Finance Assistant</span>
+        <Link to="/chat" aria-label="Fathom home" className="rounded-md focus-visible:outline-2 focus-visible:outline-emerald-600">
+          <Logo />
+        </Link>
         <nav aria-label="Main" className="order-3 -mx-1 flex w-full gap-1 overflow-x-auto sm:order-none sm:w-auto">
           {NAV_ITEMS.map((item) => (
             <NavLink

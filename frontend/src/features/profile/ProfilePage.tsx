@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useAuth } from "@/lib/auth/useAuth";
 
+import { AccessTokensCard } from "./components/AccessTokensCard";
 import { AccountCard } from "./components/AccountCard";
 import { SystemStatusCard } from "./components/SystemStatusCard";
 
@@ -13,6 +14,7 @@ export function ProfilePage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <AccountCard user={user} />
         <SystemStatusCard />
+        <AccessTokensCard />
       </div>
     </section>
   );

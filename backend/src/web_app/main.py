@@ -23,7 +23,17 @@ from src.web_app.container import AppContainer
 from src.web_app.errors.handlers import register_error_handlers
 from src.web_app.middleware.origin_check import OriginCheckMiddleware
 from src.web_app.middleware.request_context import RequestContextMiddleware
-from src.web_app.routers import auth, conversations, goals, health, kb, market, me, portfolios
+from src.web_app.routers import (
+    api_tokens,
+    auth,
+    conversations,
+    goals,
+    health,
+    kb,
+    market,
+    me,
+    portfolios,
+)
 from src.web_app.schemas.errors import ErrorEnvelope
 
 log = get_logger(__name__)
@@ -100,6 +110,7 @@ def create_app(settings: Settings | None = None, container: AppContainer | None 
     app.include_router(health.router, prefix=prefix)
     app.include_router(auth.router, prefix=prefix)
     app.include_router(me.router, prefix=prefix, responses=error_responses)
+    app.include_router(api_tokens.router, prefix=prefix, responses=error_responses)
     app.include_router(market.router, prefix=prefix, responses=error_responses)
     app.include_router(conversations.router, prefix=prefix, responses=error_responses)
     app.include_router(portfolios.router, prefix=prefix, responses=error_responses)

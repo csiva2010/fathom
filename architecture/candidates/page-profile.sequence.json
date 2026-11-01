@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Profile Page: Status and Claude Desktop Access",
+    "output": "architecture/page-profile.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@github.com:csiva2010/fathom.git",
+      "link_mode": "local-only",
+      "revision": "841f7568a6c9152824aeefd0b6656fc645c58ffd"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser"
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "ProfilePage",
+      "sublabel": "useHealth, tokens",
+      "sources": [
+        {
+          "path": "frontend/src/features/profile/hooks/useHealth.ts"
+        },
+        {
+          "path": "frontend/src/lib/auth/AuthProvider.tsx",
+          "line": 40,
+          "end_line": 49
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Me, Health, Tokens",
+      "sublabel": "routers",
+      "sources": [
+        {
+          "path": "backend/src/web_app/routers/health.py",
+          "line": 17,
+          "end_line": 33
+        },
+        {
+          "path": "backend/src/web_app/routers/me.py",
+          "line": 43,
+          "end_line": 60
+        }
+      ]
+    },
+    {
+      "id": "mds",
+      "type": "backend",
+      "label": "MarketDataService",
+      "sublabel": "provider status",
+      "sources": [
+        {
+          "path": "backend/src/core/services/market/market_data_service.py",
+          "line": 374
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "app.db",
+      "sublabel": "users, api_tokens",
+      "sources": [
+        {
+          "path": "backend/src/data/db/models/user.py"
+        },
+        {
+          "path": "backend/src/data/db/models/api_token.py"
+        }
+      ]
+    },
+    {
+      "id": "desktop",
+      "type": "external",
+      "label": "Claude Desktop",
+      "sublabel": "MCP server"
+    }
+  ],
+  "segments": [
+    {
+      "from": 162,
+      "to": 349,
+      "label": "Status"
+    },
+    {
+      "from": 362,
+      "to": 583,
+      "label": "Access tokens"
+    },
+    {
+      "from": 596,
+      "to": 721,
+      "label": "MCP use"
+    },
+    {
+      "from": 734,
+      "to": 825,
+      "label": "Revoke or sign out"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "spa",
+      "y": 175,
+      "label": "open /profile",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "spa",
+      "to": "api",
+      "y": 207,
+      "label": "GET /me",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "spa",
+      "to": "api",
+      "y": 239,
+      "label": "GET /health",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "api",
+      "to": "db",
+      "y": 271,
+      "label": "ping database",
+      "variant": "default"
+    },
+    {
+      "id": "m5",
+      "from": "api",
+      "to": "mds",
+      "y": 303,
+      "label": "provider_status",
+      "variant": "default"
+    },
+    {
+      "id": "m6",
+      "from": "api",
+      "to": "spa",
+      "y": 335,
+      "label": "profile, providers, circuits",
+      "variant": "return"
+    },
+    {
+      "id": "m7",
+      "from": "spa",
+      "to": "api",
+      "y": 375,
+      "label": "GET /me/tokens",
+      "variant": "security",
+      "note": "SessionUserDep: token routes refuse access tokens and need the cookie session."
+    },
+    {
+      "id": "m8",
+      "from": "user",
+      "to": "spa",
+      "y": 441,
+      "label": "create token",
+      "variant": "default"
+    },
+    {
+      "id": "m9",
+      "from": "spa",
+      "to": "api",
+      "y": 473,
+      "label": "POST /me/tokens",
+      "variant": "security"
+    },
+    {
+      "id": "m10",
+      "from": "api",
+      "to": "db",
+      "y": 505,
+      "label": "store token hash",
+      "variant": "default"
+    },
+    {
+      "id": "m11",
+      "from": "api",
+      "to": "spa",
+      "y": 537,
+      "label": "token, shown once",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "spa",
+      "to": "user",
+      "y": 569,
+      "label": "Claude Desktop config",
+      "variant": "return"
+    },
+    {
+      "id": "m13",
+      "from": "desktop",
+      "to": "api",
+      "y": 609,
+      "label": "REST call, Bearer token",
+      "variant": "security",
+      "note": "The MCP server runs over stdio and only calls the REST API."
+    },
+    {
+      "id": "m14",
+      "from": "api",
+      "to": "db",
+      "y": 675,
+      "label": "verify hash, load user",
+      "variant": "default"
+    },
+    {
+      "id": "m15",
+      "from": "api",
+      "to": "desktop",
+      "y": 707,
+      "label": "JSON tool result",
+      "variant": "return"
+    },
+    {
+      "id": "m16",
+      "from": "spa",
+      "to": "api",
+      "y": 747,
+      "label": "DELETE /me/tokens/{id}",
+      "variant": "default"
+    },
+    {
+      "id": "m17",
+      "from": "spa",
+      "to": "api",
+      "y": 779,
+      "label": "POST /auth/logout",
+      "variant": "default"
+    },
+    {
+      "id": "m18",
+      "from": "api",
+      "to": "spa",
+      "y": 811,
+      "label": "cookie cleared",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Credentials",
+      "items": [
+        "Tokens are hashed in api_tokens and shown only once",
+        "Revoking a token cuts off Claude Desktop immediately"
+      ]
+    }
+  ]
+}

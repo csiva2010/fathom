@@ -1,4 +1,4 @@
-# AI Finance Assistant
+# Fathom · AI Finance Assistant
 
 An educational, multi-agent finance assistant. It explains concepts in plain language,
 analyzes a portfolio you enter, shows live market context, and helps plan goals at your
@@ -21,10 +21,12 @@ React SPA (frontend/) ──REST, session cookie──▶ FastAPI (backend/src/w
                                                   ├─ SQLite via SQLAlchemy + Alembic (Postgres-ready)
                                                   ├─ RAG (rag/): BM25 + ChromaDB vectors (Gemini, OpenAI fallback)
                                                   │    └─ reciprocal rank fusion → cross-encoder rerank → threshold
-                                                  └─ LangGraph workflow (workflow/)
+                                                  ├─ LangGraph workflow (workflow/)
                                                        load_context → router ─┬─ advice redirect / clarify
                                                                               └─ agents in parallel (Send)
-                                                       → fallback → synthesizer → compliance
+                                                  │    → fallback → synthesizer → compliance
+                                                  └─ Personal access tokens (Bearer) for MCP
+Claude Desktop ──stdio──▶ MCP server (backend/src/mcp_server) ──REST, Bearer token──▶ same API
 ```
 
 LLM calls go through one gateway (`core/llm`) that tries Gemini Flash, then Claude. With no
@@ -146,6 +148,60 @@ The self-hosted cross-encoder reranker is optional because it needs PyTorch:
 Without it, retrieval logs a warning and uses a lexical reranker (`kb.reranker` in
 `config.yaml`).
 
+## Claude Desktop (MCP server)
+
+`backend/src/mcp_server` is a small MCP server that Claude Desktop launches over stdio. It
+calls this app's REST API with a personal access token, so Claude Desktop sees your
+portfolios and goals and gets the same numbers as the web app. Provider and LLM keys never
+leave the backend.
+
+| Tool | Backed by |
+|---|---|
+| `get_quote(symbols)` | `GET /market/quotes` |
+| `get_market_overview()` | `GET /market/overview`, `/market/sectors`, `/market/movers` |
+| `list_portfolios()` | `GET /portfolios` |
+| `analyze_portfolio(portfolio_id? \| holdings?, benchmark_range)` | `GET /portfolios/{id}/analysis` or `POST /portfolios/analyze`; with neither, your latest saved portfolio |
+| `project_goal(target_amount, years \| target_date, ...)` | `POST /goals/project`; risk profile defaults to your saved one |
+| `search_knowledge_base(query, category?)` | `GET /kb/search` (the chat's hybrid retriever) |
+| `explain_term(term)` | `GET /kb/glossary/{term}` |
+
+Every tool is read-only, its description carries the educational disclaimer, and market
+results include `freshness`.
+
+Setup:
+
+1. Start the API (and the web app) as usual.
+2. Open **Profile → Claude Desktop access** and create a token. It is shown once; only its
+   hash is stored. Tokens can be revoked there, and a token can't create or revoke tokens.
+3. In Claude Desktop, open **Settings → Developer → Edit Config** and add the block the
+   Profile page shows, with your checkout's absolute path:
+
+   ```json
+   {
+     "mcpServers": {
+       "finance-assistant": {
+         "command": "/abs/path/to/fathom/backend/.venv/bin/python",
+         "args": ["-m", "src.mcp_server"],
+         "env": {
+           "PYTHONPATH": "/abs/path/to/fathom/backend",
+           "FINANCE_API_URL": "http://localhost:5173/api/v1",
+           "FINANCE_API_TOKEN": "fa_pat_..."
+         }
+       }
+     }
+   }
+   ```
+
+   `FINANCE_API_URL` is the web app's origin plus `/api/v1` (use your `WEB_PORT`, or the
+   deployed domain). Pointing at `API_PORT` directly also works.
+4. Restart Claude Desktop. The tools appear under the connectors (tools) menu; try "Analyze
+   my portfolio" or "What does SIPC protect?". Server logs are in Claude Desktop's MCP log
+   files (`~/Library/Logs/Claude/mcp-server-finance-assistant.log` on macOS).
+
+The token authenticates as you, so the backend must be reachable from the machine running
+Claude Desktop. If the token is rejected, the tools say so; create a new one and update the
+config.
+
 ## Troubleshooting
 
 - **Port already in use**: change `WEB_PORT` / `API_PORT` in both `backend/.env` and
@@ -154,6 +210,9 @@ Without it, retrieval logs a warning and uses a lexical reranker (`kb.reranker` 
   `API_PORT`; make sure the two `.env` files agree and the API actually started.
 - **401 on every call after sign-in**: the session cookie must be same-origin; open the app via
   the Vite URL, not the API port.
+- **Claude Desktop shows no finance tools**: check the MCP log above. "Set FINANCE_API_URL
+  and FINANCE_API_TOKEN" means the `env` block is missing; `No module named src` means
+  `PYTHONPATH` doesn't point at `backend/`.
 - **Market cards say "Sample data"**: market keys are missing or the provider is down; check
   the Profile tab's System status or run `scripts.check_providers`.
 

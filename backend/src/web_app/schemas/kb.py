@@ -4,7 +4,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from src.rag.models import GlossaryTerm
+from src.rag.models import Citation, GlossaryTerm
 
 
 class CategoryOut(BaseModel):
@@ -39,3 +39,17 @@ class ArticleOut(ArticleSummary):
 class GlossaryList(BaseModel):
     terms: list[GlossaryTerm]
     total: int
+
+
+class KbSearchHit(BaseModel):
+    citation: Citation
+    text: str
+    score: float  # reranker relevance, 0..1
+
+
+class KbSearchOut(BaseModel):
+    """Retrieved passages for a question (KB-05). Empty `results` means nothing relevant."""
+
+    query: str
+    mode: str  # "hybrid:<collection>" or "keyword"
+    results: list[KbSearchHit]
