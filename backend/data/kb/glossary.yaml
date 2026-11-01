@@ -1,203 +1,1849 @@
 # Glossary used for hover definitions and the explain_term tool (KB-02).
-# Target: 200+ terms by day 5. Definitions are original, plain-language summaries.
+# Definitions are original, plain-language summaries. `aliases` are alternate names
+# (abbreviations, spellings) that resolve to the same entry.
 terms:
-  - term: Asset allocation
-    definition: How a portfolio is divided among asset classes such as stocks, bonds and cash. It is one of the biggest drivers of a portfolio's risk and return.
-    level: beginner
-    related: [Diversification, Rebalancing, Asset class]
-  - term: Asset class
-    definition: A group of investments that behave in similar ways, such as stocks, bonds, cash or real estate.
-    level: beginner
-    related: [Asset allocation]
-  - term: Bear market
-    definition: A period when a broad market index falls 20% or more from a recent high.
-    level: beginner
-    related: [Bull market, Correction]
-  - term: Benchmark
-    definition: An index or standard used to judge how an investment or portfolio performed, such as the S&P 500 for US large-company stocks.
-    level: beginner
-    related: [Index, S&P 500]
-  - term: Beta
-    definition: A measure of how much an investment tends to move compared with the overall market. A beta of 1.2 means it has historically moved about 20% more than the market.
-    level: intermediate
-    related: [Volatility, Risk]
-  - term: Bond
-    definition: A loan to a government or company that pays interest on a schedule and returns the principal at maturity.
-    level: beginner
-    related: [Coupon, Maturity, Yield]
-  - term: Bull market
-    definition: A sustained period of rising prices in a broad market, often defined as a 20% rise from a recent low.
-    level: beginner
-    related: [Bear market]
-  - term: Capital gain
-    definition: The profit from selling an investment for more than you paid. In taxable accounts, gains held over one year are usually taxed at lower long-term rates.
-    level: beginner
-    related: [Cost basis, Capital loss]
-  - term: Capital loss
-    definition: The loss from selling an investment for less than you paid. Losses can offset capital gains for tax purposes.
-    level: intermediate
-    related: [Capital gain, Wash sale]
-  - term: Compound interest
-    definition: Earning returns on both your original money and the returns it has already earned, so growth accelerates over time.
-    level: beginner
-    related: [Time horizon]
-  - term: Correction
-    definition: A decline of 10% to 20% from a recent market high.
-    level: beginner
-    related: [Bear market, Volatility]
-  - term: Cost basis
-    definition: What you originally paid for an investment, including fees. It is used to calculate gain or loss when you sell.
-    level: intermediate
-    related: [Capital gain]
-  - term: Coupon
-    definition: The interest payment a bond makes, usually stated as an annual percentage of its face value.
-    level: beginner
-    related: [Bond, Yield]
-  - term: Diversification
-    definition: Spreading money across many investments so that a problem with any one has a limited effect on the whole portfolio.
-    level: beginner
-    related: [Concentration risk, Asset allocation]
-  - term: Concentration risk
-    definition: The risk that comes from having a large share of a portfolio in one company, sector or country.
-    level: beginner
-    related: [Diversification]
-  - term: Dividend
-    definition: A payment a company makes to its shareholders, usually from profits and often paid quarterly.
-    level: beginner
-    related: [Dividend yield, Stock]
-  - term: Dividend yield
-    definition: A stock's or fund's annual dividends divided by its price, shown as a percentage.
-    level: beginner
-    related: [Dividend]
-  - term: Dollar-cost averaging
-    definition: Investing a fixed amount on a regular schedule regardless of price, which buys more shares when prices are low and fewer when they are high.
-    level: beginner
-    related: [Lump-sum investing]
-  - term: Duration
-    definition: A measure of how sensitive a bond's price is to interest-rate changes. Higher duration means larger price swings when rates move.
-    level: intermediate
-    related: [Bond, Interest rate risk]
-  - term: Emergency fund
-    definition: Cash set aside for unexpected expenses or lost income, commonly three to six months of essential costs.
-    level: beginner
-    related: [High-yield savings account]
-  - term: ETF
-    definition: An exchange-traded fund, a basket of securities that trades on an exchange like a single stock throughout the day.
-    level: beginner
-    related: [Index fund, Mutual fund, Expense ratio]
-  - term: Expense ratio
-    definition: The yearly fee a fund charges, as a percentage of the money you have invested in it. A 0.10% expense ratio costs $10 a year per $10,000.
-    level: beginner
-    related: [ETF, Mutual fund]
-  - term: High-yield savings account
-    definition: A bank savings account that pays a higher interest rate than a standard savings account, often offered by online banks.
-    level: beginner
-    related: [Emergency fund]
-  - term: Index
-    definition: A measure of the performance of a group of securities, such as the S&P 500, used as a scoreboard and benchmark.
-    level: beginner
-    related: [Index fund, Benchmark]
-  - term: Index fund
-    definition: A fund that aims to match the return of a market index by holding the same securities, usually at low cost.
-    level: beginner
-    related: [Index, ETF]
-  - term: Inflation
-    definition: The general rise in prices over time, which reduces what a dollar can buy.
-    level: beginner
-    related: [Real return]
-  - term: Interest rate risk
-    definition: The risk that bond prices fall because market interest rates rise.
-    level: intermediate
-    related: [Duration, Bond]
-  - term: IRA
-    definition: An individual retirement account with tax advantages that you open yourself, separate from an employer plan.
-    level: beginner
-    related: [Roth IRA, Traditional IRA]
-  - term: Liquidity
-    definition: How quickly and cheaply an asset can be turned into cash without affecting its price.
-    level: beginner
-    related: [Emergency fund]
-  - term: Market capitalization
-    definition: A company's total stock market value, calculated as share price times shares outstanding.
-    level: beginner
-    related: [Stock]
-  - term: Maturity
-    definition: The date when a bond's principal is repaid to the investor.
-    level: beginner
-    related: [Bond]
-  - term: Mutual fund
-    definition: A pooled investment that is bought and sold directly with the fund company once a day at its net asset value.
-    level: beginner
-    related: [ETF, Net asset value]
-  - term: Net asset value
-    definition: The per-share value of a fund, calculated as total assets minus liabilities divided by shares outstanding.
-    level: intermediate
-    related: [Mutual fund]
-  - term: Portfolio
-    definition: The full collection of investments a person or fund owns.
-    level: beginner
-    related: [Asset allocation]
-  - term: Real return
-    definition: Your return after subtracting inflation, which shows the change in actual buying power.
-    level: intermediate
-    related: [Inflation]
-  - term: Rebalancing
-    definition: Buying and selling to bring a portfolio back to its target allocation after market moves have shifted it.
-    level: beginner
-    related: [Asset allocation]
-  - term: Risk tolerance
-    definition: How much ups and downs in value you are willing and able to accept in pursuit of higher returns.
-    level: beginner
-    related: [Time horizon, Volatility]
-  - term: Roth IRA
-    definition: An IRA funded with after-tax money whose qualified withdrawals in retirement, including growth, are tax-free.
-    level: beginner
-    related: [IRA, Traditional IRA]
-  - term: S&P 500
-    definition: An index of about 500 large US companies weighted by market value, widely used as a gauge of the US stock market.
-    level: beginner
-    related: [Index, Benchmark]
-  - term: Sector
-    definition: A group of companies in a similar line of business, such as technology, health care or energy.
-    level: beginner
-    related: [Diversification]
-  - term: Stock
-    definition: A share of ownership in a company that may rise or fall in value and may pay dividends.
-    level: beginner
-    related: [Dividend, Market capitalization]
-  - term: Target-date fund
-    definition: A fund that automatically shifts from stocks toward bonds as a chosen retirement year approaches.
-    level: beginner
-    related: [Asset allocation, 401(k)]
-  - term: Time horizon
-    definition: How long you expect to keep money invested before you need it.
-    level: beginner
-    related: [Risk tolerance]
-  - term: Traditional IRA
-    definition: An IRA where contributions may be tax-deductible now and withdrawals in retirement are taxed as income.
-    level: beginner
-    related: [IRA, Roth IRA]
-  - term: Volatility
-    definition: How much and how quickly an investment's price moves up and down, often measured by standard deviation of returns.
-    level: intermediate
-    related: [Beta, Risk tolerance]
-  - term: Wash sale
-    definition: Selling an investment at a loss and buying the same or a substantially identical one within 30 days before or after, which disallows the loss for taxes at that time.
-    level: intermediate
-    related: [Capital loss]
-  - term: Yield
-    definition: The income an investment produces relative to its price, shown as a percentage.
-    level: beginner
-    related: [Coupon, Dividend yield]
-  - term: 401(k)
-    definition: An employer-sponsored US retirement plan that lets employees invest part of each paycheck with tax advantages, often with an employer match.
-    level: beginner
-    related: [Employer match, IRA]
-  - term: Employer match
-    definition: Money an employer adds to your retirement plan based on what you contribute, up to a limit.
-    level: beginner
-    related: [401(k), Vesting]
-  - term: Vesting
-    definition: The schedule by which you gain full ownership of employer contributions to your retirement plan.
-    level: intermediate
-    related: [Employer match]
+- term: 200-day moving average
+  definition: The average closing price over the past 200 trading days, a common gauge of the long-term
+    trend.
+  level: intermediate
+  related:
+  - Moving average
+  - 50-day moving average
+  aliases:
+  - 200-day average
+- term: 4% rule
+  definition: A guideline that withdrawing 4% of a portfolio in year one, then adjusting for inflation,
+    historically lasted about 30 years.
+  level: intermediate
+  related:
+  - Safe withdrawal rate
+  aliases:
+  - four percent rule
+- term: 401(k)
+  definition: An employer-sponsored US retirement plan that lets employees invest part of each paycheck
+    with tax advantages, often with an employer match.
+  level: beginner
+  related:
+  - Employer match
+  - IRA
+  aliases:
+  - 401k
+  - 401 k
+- term: 403(b)
+  definition: A workplace retirement plan for employees of public schools, colleges and many nonprofits.
+    It works much like a 401(k).
+  level: beginner
+  related:
+  - 401(k)
+  - 457(b)
+- term: 457(b)
+  definition: A retirement plan offered mainly by state and local governments. Governmental 457(b) withdrawals
+    after leaving the employer avoid the 10% early withdrawal tax.
+  level: intermediate
+  related:
+  - 403(b)
+  - 401(k)
+- term: 50-day moving average
+  definition: The average closing price over the past 50 trading days, a common gauge of the short- to
+    medium-term trend.
+  level: intermediate
+  related:
+  - Moving average
+  - 200-day moving average
+  aliases:
+  - 50-day average
+- term: 50/30/20 rule
+  definition: A budgeting guideline that splits after-tax income into 50% needs, 30% wants and 20% savings
+    and debt payoff.
+  level: beginner
+  related:
+  - Budget
+- term: 52-week range
+  definition: The lowest and highest prices a security traded at over the past year.
+  level: beginner
+  related:
+  - Volatility
+  aliases:
+  - 52-week high
+  - 52-week low
+- term: 529 plan
+  definition: A tax-advantaged account for education savings. Growth is tax-free and withdrawals for qualified
+    education expenses are not taxed.
+  level: beginner
+  related:
+  - Qualified expenses
+  - Roth IRA
+  aliases:
+  - '529'
+- term: Active management
+  definition: An investing approach where a manager picks securities or times trades to try to beat a
+    benchmark, usually at higher cost than index funds.
+  level: intermediate
+  related:
+  - Passive investing
+  - Index fund
+  aliases:
+  - active investing
+- term: Anchoring
+  definition: A bias where people rely too heavily on a first number, such as a purchase price, when making
+    later judgments.
+  level: intermediate
+  related:
+  - Behavioral finance
+  - Confirmation bias
+  aliases:
+  - anchoring bias
+- term: Annual percentage rate
+  definition: The yearly cost of borrowing, including interest and certain fees, used to compare loans
+    and credit cards.
+  level: beginner
+  related:
+  - Annual percentage yield
+  - Interest rate
+  aliases:
+  - APR
+- term: Annual percentage yield
+  definition: The yearly return on a deposit including the effect of compounding, used to compare savings
+    accounts and CDs.
+  level: beginner
+  related:
+  - Annual percentage rate
+  - Compound interest
+  aliases:
+  - APY
+- term: Annuity
+  definition: A contract with an insurance company that pays income now or later in exchange for a lump
+    sum or series of payments.
+  level: intermediate
+  related:
+  - Income annuity
+  - Surrender charge
+- term: Ask price
+  definition: The lowest price a seller is currently willing to accept for a security.
+  level: beginner
+  related:
+  - Bid price
+  - Bid-ask spread
+  aliases:
+  - ask
+  - offer price
+- term: Asset allocation
+  definition: How a portfolio is divided among asset classes such as stocks, bonds and cash. It is one
+    of the biggest drivers of a portfolio's risk and return.
+  level: beginner
+  related:
+  - Diversification
+  - Rebalancing
+  - Asset class
+- term: Asset class
+  definition: A group of investments that behave in similar ways, such as stocks, bonds, cash or real
+    estate.
+  level: beginner
+  related:
+  - Asset allocation
+- term: Authorized participant
+  definition: A large financial firm that can create or redeem ETF shares directly with the fund, keeping
+    the ETF's price close to its net asset value.
+  level: advanced
+  related:
+  - ETF
+  - Net asset value
+- term: Backdoor Roth IRA
+  definition: A two-step strategy where a high earner makes a nondeductible traditional IRA contribution
+    and then converts it to a Roth IRA.
+  level: advanced
+  related:
+  - Roth conversion
+  - Pro-rata rule
+  aliases:
+  - backdoor roth
+- term: Balance transfer
+  definition: Moving a credit card balance to another card, often one with a low introductory rate. Usually
+    involves a transfer fee.
+  level: beginner
+  related:
+  - Credit card
+  - Annual percentage rate
+- term: Balanced fund
+  definition: A fund that holds both stocks and bonds in a set proportion, providing a diversified mix
+    in one investment.
+  level: beginner
+  related:
+  - Asset allocation
+  - Target-date fund
+- term: Basis point
+  definition: One hundredth of a percentage point (0.01%). Often used to describe small changes in interest
+    rates or fees.
+  level: intermediate
+  related:
+  - Expense ratio
+  - Interest rate
+  aliases:
+  - bps
+  - bp
+- term: Bear market
+  definition: A period when a broad market index falls 20% or more from a recent high.
+  level: beginner
+  related:
+  - Bull market
+  - Correction
+- term: Behavioral finance
+  definition: The study of how emotions and mental shortcuts affect financial decisions, often leading
+    to predictable mistakes.
+  level: beginner
+  related:
+  - Loss aversion
+  - Herd behavior
+- term: Benchmark
+  definition: An index or standard used to judge how an investment or portfolio performed, such as the
+    S&P 500 for US large-company stocks.
+  level: beginner
+  related:
+  - Index
+  - S&P 500
+- term: Beta
+  definition: A measure of how much an investment tends to move compared with the overall market. A beta
+    of 1.2 means it has historically moved about 20% more than the market.
+  level: intermediate
+  related:
+  - Volatility
+  - Risk
+- term: Bid price
+  definition: The highest price a buyer is currently willing to pay for a security.
+  level: beginner
+  related:
+  - Ask price
+  - Bid-ask spread
+  aliases:
+  - bid
+- term: Bid-ask spread
+  definition: The difference between the bid and ask prices. It is a hidden cost of trading and is narrow
+    for heavily traded securities.
+  level: intermediate
+  related:
+  - Bid price
+  - Ask price
+  - Liquidity
+  aliases:
+  - spread
+- term: Blue-chip stock
+  definition: Shares of a large, well-established company with a long record of stable performance.
+  level: beginner
+  related:
+  - Large cap
+  - Stock
+  aliases:
+  - blue chip
+- term: Bond
+  definition: A loan to a government or company that pays interest on a schedule and returns the principal
+    at maturity.
+  level: beginner
+  related:
+  - Coupon
+  - Maturity
+  - Yield
+- term: Bond fund
+  definition: A mutual fund or ETF that holds many bonds. Unlike an individual bond, it has no maturity
+    date.
+  level: beginner
+  related:
+  - Bond
+  - Duration
+- term: Bond ladder
+  definition: A set of bonds or CDs maturing in different years, so money comes due at regular intervals.
+  level: intermediate
+  related:
+  - Certificate of deposit
+  - Maturity
+  aliases:
+  - CD ladder
+  - ladder
+- term: Book value
+  definition: A company's assets minus its liabilities as shown on its balance sheet.
+  level: intermediate
+  related:
+  - Price-to-book ratio
+- term: Breakeven inflation rate
+  definition: The inflation rate at which a regular Treasury and a TIPS of the same maturity would earn
+    the same return.
+  level: advanced
+  related:
+  - TIPS
+  - Inflation
+- term: Brokerage account
+  definition: An account at a broker-dealer used to buy and sell investments such as stocks, bonds and
+    funds.
+  level: beginner
+  related:
+  - Taxable account
+  - Margin account
+  aliases:
+  - brokerage
+- term: Budget
+  definition: A plan for income and spending that shows where money goes and how much is left for saving.
+  level: beginner
+  related:
+  - 50/30/20 rule
+  - Sinking fund
+- term: Bull market
+  definition: A sustained period of rising prices in a broad market, often defined as a 20% rise from
+    a recent low.
+  level: beginner
+  related:
+  - Bear market
+- term: Buyback
+  definition: When a company repurchases its own shares, reducing the number outstanding.
+  level: intermediate
+  related:
+  - Earnings per share
+  - Stock split
+  aliases:
+  - share buyback
+  - stock repurchase
+- term: Callable bond
+  definition: A bond the issuer can repay before maturity, usually when interest rates fall.
+  level: intermediate
+  related:
+  - Bond
+  - Yield to maturity
+- term: Capital gain
+  definition: The profit from selling an investment for more than you paid. In taxable accounts, gains
+    held over one year are usually taxed at lower long-term rates.
+  level: beginner
+  related:
+  - Cost basis
+  - Capital loss
+- term: Capital gains distribution
+  definition: A payout from a fund of profits it made selling securities. Taxable to shareholders in taxable
+    accounts.
+  level: intermediate
+  related:
+  - Mutual fund
+  - Capital gain
+- term: Capital loss
+  definition: The loss from selling an investment for less than you paid. Losses can offset capital gains
+    for tax purposes.
+  level: intermediate
+  related:
+  - Capital gain
+  - Wash sale
+- term: Cash account
+  definition: A brokerage account where purchases must be paid in full, with no borrowing.
+  level: beginner
+  related:
+  - Margin account
+  - Brokerage account
+- term: Catch-up contribution
+  definition: An extra amount people aged 50 or older can contribute to retirement accounts above the
+    normal limit.
+  level: beginner
+  related:
+  - 401(k)
+  - IRA
+  aliases:
+  - catch-up contributions
+- term: Certificate of deposit
+  definition: A bank deposit that pays a fixed rate for a set term, with a penalty for early withdrawal.
+  level: beginner
+  related:
+  - Bond ladder
+  - FDIC
+  aliases:
+  - CD
+  - certificate of deposit (CD)
+- term: Circuit breaker
+  definition: A temporary trading halt triggered when a market index falls by a set percentage in one
+    day.
+  level: intermediate
+  related:
+  - Volatility
+  - Stock exchange
+  aliases:
+  - market-wide circuit breaker
+- term: Closing price
+  definition: The last price at which a security traded in the regular trading session.
+  level: beginner
+  related:
+  - Previous close
+  aliases:
+  - close
+- term: Commission
+  definition: A fee paid to a broker for executing a trade. Many US brokers no longer charge commissions
+    on online stock and ETF trades.
+  level: beginner
+  related:
+  - Brokerage account
+- term: Common stock
+  definition: Ordinary shares that give owners a claim on profits and usually voting rights, but are paid
+    last in a bankruptcy.
+  level: beginner
+  related:
+  - Preferred stock
+  - Stock
+- term: Compound interest
+  definition: Earning returns on both your original money and the returns it has already earned, so growth
+    accelerates over time.
+  level: beginner
+  related:
+  - Time horizon
+- term: Concentration risk
+  definition: The risk that comes from having a large share of a portfolio in one company, sector or country.
+  level: beginner
+  related:
+  - Diversification
+- term: Confirmation bias
+  definition: The tendency to favor information that supports what you already believe and ignore what
+    contradicts it.
+  level: intermediate
+  related:
+  - Behavioral finance
+  - Overconfidence bias
+- term: Consumer Price Index
+  definition: A monthly measure of the average change in prices US consumers pay for a basket of goods
+    and services.
+  level: beginner
+  related:
+  - Inflation
+  aliases:
+  - CPI
+- term: Corporate bond
+  definition: A bond issued by a company. It usually pays more than a Treasury because of credit risk.
+  level: intermediate
+  related:
+  - Bond
+  - Credit rating
+- term: Correction
+  definition: A decline of 10% to 20% from a recent market high.
+  level: beginner
+  related:
+  - Bear market
+  - Volatility
+- term: Correlation
+  definition: A measure from -1 to +1 of how closely two investments move together. Low correlation improves
+    diversification.
+  level: intermediate
+  related:
+  - Diversification
+  - Modern portfolio theory
+- term: Cost basis
+  definition: What you originally paid for an investment, including fees. It is used to calculate gain
+    or loss when you sell.
+  level: intermediate
+  related:
+  - Capital gain
+- term: Coupon
+  definition: The interest payment a bond makes, usually stated as an annual percentage of its face value.
+  level: beginner
+  related:
+  - Bond
+  - Yield
+- term: Credit card
+  definition: A card that lets you borrow up to a limit. Paying the full statement balance by the due
+    date usually avoids interest.
+  level: beginner
+  related:
+  - Annual percentage rate
+  - Grace period
+- term: Credit rating
+  definition: A grade from an agency such as S&P or Moody's that reflects a bond issuer's ability to repay.
+  level: intermediate
+  related:
+  - Investment grade
+  - High-yield bond
+- term: Credit report
+  definition: A record of your borrowing and repayment history kept by credit bureaus.
+  level: beginner
+  related:
+  - Credit score
+- term: Credit risk
+  definition: The chance that a borrower or bond issuer fails to make promised payments.
+  level: intermediate
+  related:
+  - Credit rating
+  - Default
+  aliases:
+  - default risk
+- term: Credit score
+  definition: A number, often 300 to 850, that estimates how likely you are to repay debt. Lenders use
+    it to set approval and rates.
+  level: beginner
+  related:
+  - Credit utilization
+  - Credit report
+  aliases:
+  - FICO score
+- term: Credit spread
+  definition: The extra yield a corporate bond pays over a Treasury of similar maturity, reflecting its
+    credit risk.
+  level: advanced
+  related:
+  - Corporate bond
+  - Credit risk
+- term: Credit union
+  definition: A member-owned financial cooperative offering banking services; deposits are insured by
+    the NCUA.
+  level: beginner
+  related:
+  - FDIC
+- term: Credit utilization
+  definition: The share of available revolving credit you are using. Lower utilization generally helps
+    a credit score.
+  level: beginner
+  related:
+  - Credit score
+- term: Currency risk
+  definition: The chance that exchange-rate changes reduce the value of foreign investments in dollar
+    terms.
+  level: intermediate
+  related:
+  - International stocks
+  aliases:
+  - exchange rate risk
+- term: Day order
+  definition: An order that expires if it is not filled by the end of the trading day.
+  level: beginner
+  related:
+  - Good-til-canceled order
+  - Limit order
+- term: Debt avalanche
+  definition: Paying off debts in order of highest interest rate first, which minimizes total interest.
+  level: beginner
+  related:
+  - Debt snowball
+  aliases:
+  - avalanche method
+- term: Debt snowball
+  definition: Paying off debts in order of smallest balance first, to build momentum with quick wins.
+  level: beginner
+  related:
+  - Debt avalanche
+  aliases:
+  - snowball method
+- term: Default
+  definition: Failure to make required interest or principal payments on a debt.
+  level: intermediate
+  related:
+  - Credit risk
+- term: Defined benefit plan
+  definition: A pension that promises a set retirement income based on salary and years of service.
+  level: beginner
+  related:
+  - Defined contribution plan
+  - Pension
+- term: Defined contribution plan
+  definition: A retirement plan, such as a 401(k), where the benefit depends on contributions and investment
+    results.
+  level: beginner
+  related:
+  - Defined benefit plan
+  - 401(k)
+- term: Deflation
+  definition: A general decline in prices, the opposite of inflation.
+  level: intermediate
+  related:
+  - Inflation
+- term: Developed markets
+  definition: Countries with mature economies and established financial markets, such as Japan, the UK
+    and Germany.
+  level: intermediate
+  related:
+  - Emerging markets
+  - International stocks
+- term: Disposition effect
+  definition: The tendency to sell winning investments too early and hold losing ones too long.
+  level: advanced
+  related:
+  - Loss aversion
+- term: Diversification
+  definition: Spreading money across many investments so that a problem with any one has a limited effect
+    on the whole portfolio.
+  level: beginner
+  related:
+  - Concentration risk
+  - Asset allocation
+- term: Dividend
+  definition: A payment a company makes to its shareholders, usually from profits and often paid quarterly.
+  level: beginner
+  related:
+  - Dividend yield
+  - Stock
+- term: Dividend reinvestment
+  definition: Automatically using dividends to buy more shares of the same investment.
+  level: beginner
+  related:
+  - Dividend
+  - Compound interest
+  aliases:
+  - DRIP
+- term: Dividend yield
+  definition: A stock's or fund's annual dividends divided by its price, shown as a percentage.
+  level: beginner
+  related:
+  - Dividend
+- term: Dollar-cost averaging
+  definition: Investing a fixed amount on a regular schedule regardless of price, which buys more shares
+    when prices are low and fewer when they are high.
+  level: beginner
+  related:
+  - Lump-sum investing
+  aliases:
+  - DCA
+  - dollar cost averaging
+- term: Dow Jones Industrial Average
+  definition: A price-weighted index of 30 large US companies, one of the oldest stock market indexes.
+  level: beginner
+  related:
+  - S&P 500
+  - Index
+  aliases:
+  - Dow
+  - DJIA
+- term: Down payment
+  definition: The upfront cash paid when buying a home; the rest is financed with a mortgage.
+  level: beginner
+  related:
+  - Mortgage
+  - Private mortgage insurance
+- term: Drawdown
+  definition: A decline from a peak to a later low, usually shown as a percentage.
+  level: intermediate
+  related:
+  - Maximum drawdown
+  - Volatility
+- term: Duration
+  definition: A measure of how sensitive a bond's price is to interest-rate changes. Higher duration means
+    larger price swings when rates move.
+  level: intermediate
+  related:
+  - Bond
+  - Interest rate risk
+- term: Earnings per share
+  definition: A company's profit divided by its shares outstanding.
+  level: intermediate
+  related:
+  - Price-to-earnings ratio
+  aliases:
+  - EPS
+- term: Earnings report
+  definition: A company's quarterly or annual release of results such as revenue, profit and outlook.
+  level: intermediate
+  related:
+  - Earnings per share
+  - Guidance
+  aliases:
+  - earnings
+- term: Effective tax rate
+  definition: Total tax divided by total income. It is always lower than the marginal rate.
+  level: beginner
+  related:
+  - Marginal tax rate
+  - Tax bracket
+- term: Emergency fund
+  definition: Cash set aside for unexpected expenses or lost income, commonly three to six months of essential
+    costs.
+  level: beginner
+  related:
+  - High-yield savings account
+- term: Emerging markets
+  definition: Developing economies such as China, India and Brazil, with higher growth potential and higher
+    risk.
+  level: intermediate
+  related:
+  - Developed markets
+  - International stocks
+- term: Employer match
+  definition: Money an employer adds to your retirement plan based on what you contribute, up to a limit.
+  level: beginner
+  related:
+  - 401(k)
+  - Vesting
+- term: Equal-weight index
+  definition: An index that gives every member the same weight, rather than weighting by market value.
+  level: intermediate
+  related:
+  - Index
+  - Market-cap weighting
+- term: Equity
+  definition: Ownership in a company, usually in the form of stock. Also, the value of an asset minus
+    what you owe on it.
+  level: beginner
+  related:
+  - Stock
+- term: ETF
+  definition: An exchange-traded fund, a basket of securities that trades on an exchange like a single
+    stock throughout the day.
+  level: beginner
+  related:
+  - Index fund
+  - Mutual fund
+  - Expense ratio
+  aliases:
+  - exchange-traded fund
+  - exchange traded fund
+  - ETFs
+- term: Ex-dividend date
+  definition: The date on or after which a buyer of a stock will not receive the next dividend.
+  level: intermediate
+  related:
+  - Dividend
+- term: Exchange
+  definition: A marketplace where securities are bought and sold, such as the NYSE or Nasdaq.
+  level: beginner
+  related:
+  - Stock
+  - Market maker
+  aliases:
+  - stock exchange
+- term: Expense ratio
+  definition: The yearly fee a fund charges, as a percentage of the money you have invested in it. A 0.10%
+    expense ratio costs $10 a year per $10,000.
+  level: beginner
+  related:
+  - ETF
+  - Mutual fund
+- term: FDIC
+  definition: The Federal Deposit Insurance Corporation, which insures bank deposits up to legal limits
+    if a bank fails.
+  level: beginner
+  related:
+  - SIPC
+  - High-yield savings account
+  aliases:
+  - Federal Deposit Insurance Corporation
+  - FDIC insurance
+- term: Federal funds rate
+  definition: The interest rate banks charge each other for overnight loans, targeted by the Federal Reserve.
+  level: intermediate
+  related:
+  - Federal Reserve
+  - Interest rate
+  aliases:
+  - fed funds rate
+- term: Federal Reserve
+  definition: The central bank of the United States. It sets short-term interest rates to pursue stable
+    prices and maximum employment.
+  level: beginner
+  related:
+  - Federal funds rate
+  - Inflation
+  aliases:
+  - the Fed
+  - Fed
+- term: Fiduciary
+  definition: A person or firm legally required to act in a client's best interest.
+  level: intermediate
+  related:
+  - Financial adviser
+- term: Financial adviser
+  definition: A professional who gives investment or financial planning advice, often for a fee or commission.
+  level: beginner
+  related:
+  - Fiduciary
+  aliases:
+  - financial advisor
+- term: FINRA
+  definition: The Financial Industry Regulatory Authority, which oversees US broker-dealers.
+  level: intermediate
+  related:
+  - SEC
+  aliases:
+  - Financial Industry Regulatory Authority
+- term: Fixed income
+  definition: Investments that pay set amounts on a schedule, such as bonds and CDs.
+  level: beginner
+  related:
+  - Bond
+  - Certificate of deposit
+- term: FOMO
+  definition: 'Fear of missing out: the urge to buy something because others seem to be profiting from
+    it.'
+  level: beginner
+  related:
+  - Herd behavior
+  aliases:
+  - fear of missing out
+- term: Fractional share
+  definition: Less than one full share of a stock or ETF, letting investors buy with small dollar amounts.
+  level: beginner
+  related:
+  - Stock
+  aliases:
+  - fractional shares
+- term: Front-end load
+  definition: A sales charge some mutual funds take when you buy shares.
+  level: intermediate
+  related:
+  - Sales load
+  - Mutual fund
+- term: Full retirement age
+  definition: The age at which you can receive your full Social Security retirement benefit; 67 for people
+    born in 1960 or later.
+  level: beginner
+  related:
+  - Social Security
+  aliases:
+  - FRA
+- term: Fundamental analysis
+  definition: Evaluating a company by studying its business, financial statements and valuation.
+  level: intermediate
+  related:
+  - Price-to-earnings ratio
+  - Technical analysis
+- term: GDP
+  definition: Gross domestic product, the total value of goods and services an economy produces.
+  level: beginner
+  related:
+  - Recession
+  aliases:
+  - gross domestic product
+- term: General obligation bond
+  definition: A municipal bond backed by the issuer's taxing power.
+  level: intermediate
+  related:
+  - Municipal bond
+  - Revenue bond
+- term: Glide path
+  definition: The planned shift of a target-date fund from stocks toward bonds as its target year approaches.
+  level: intermediate
+  related:
+  - Target-date fund
+- term: Good-til-canceled order
+  definition: An order that stays open until it is filled or canceled, subject to the broker's time limit.
+  level: intermediate
+  related:
+  - Day order
+  - Limit order
+  aliases:
+  - GTC order
+- term: Grace period
+  definition: The time between a credit card statement and its due date. Paying in full within it usually
+    avoids interest.
+  level: beginner
+  related:
+  - Credit card
+- term: Growth stock
+  definition: A stock of a company expected to grow faster than average, usually priced high relative
+    to current earnings.
+  level: intermediate
+  related:
+  - Value stock
+  - Price-to-earnings ratio
+  aliases:
+  - growth stocks
+- term: Guidance
+  definition: A company's own forecast of future results, often shared with earnings reports.
+  level: intermediate
+  related:
+  - Earnings report
+- term: Health savings account
+  definition: A tax-advantaged account for medical costs, paired with a high-deductible health plan. Contributions,
+    growth and qualified withdrawals are tax-free.
+  level: beginner
+  related:
+  - High-deductible health plan
+  aliases:
+  - HSA
+- term: Hedge
+  definition: An investment made to reduce the risk of losses in another position.
+  level: advanced
+  related:
+  - Short selling
+  aliases:
+  - hedging
+- term: Herd behavior
+  definition: Following what other investors are doing instead of your own analysis, which can inflate
+    bubbles and deepen crashes.
+  level: beginner
+  related:
+  - FOMO
+  - Behavioral finance
+  aliases:
+  - herding
+- term: High-deductible health plan
+  definition: A health plan with a higher deductible that makes you eligible to contribute to an HSA.
+  level: intermediate
+  related:
+  - Health savings account
+  aliases:
+  - HDHP
+- term: High-yield bond
+  definition: A bond rated below investment grade that pays more interest to compensate for higher default
+    risk.
+  level: intermediate
+  related:
+  - Investment grade
+  - Credit rating
+  aliases:
+  - junk bond
+- term: High-yield savings account
+  definition: A bank savings account that pays a higher interest rate than a standard savings account,
+    often offered by online banks.
+  level: beginner
+  related:
+  - Emergency fund
+- term: I bond
+  definition: A US savings bond whose rate combines a fixed rate with an inflation rate that resets every
+    six months.
+  level: beginner
+  related:
+  - TIPS
+  - Savings bond
+  aliases:
+  - Series I bond
+  - I bonds
+- term: Income annuity
+  definition: An annuity that turns a lump sum into guaranteed payments, often for life.
+  level: intermediate
+  related:
+  - Annuity
+  aliases:
+  - immediate annuity
+- term: Index
+  definition: A measure of the performance of a group of securities, such as the S&P 500, used as a scoreboard
+    and benchmark.
+  level: beginner
+  related:
+  - Index fund
+  - Benchmark
+- term: Index fund
+  definition: A fund that aims to match the return of a market index by holding the same securities, usually
+    at low cost.
+  level: beginner
+  related:
+  - Index
+  - ETF
+- term: Indexed annuity
+  definition: An annuity whose returns are linked to a market index with a floor and a cap.
+  level: advanced
+  related:
+  - Annuity
+- term: Inflation
+  definition: The general rise in prices over time, which reduces what a dollar can buy.
+  level: beginner
+  related:
+  - Real return
+- term: Inflation risk
+  definition: The risk that returns fail to keep up with rising prices, reducing purchasing power.
+  level: beginner
+  related:
+  - Inflation
+  - Real return
+  aliases:
+  - purchasing power risk
+- term: Interest rate
+  definition: The cost of borrowing money, or the return for lending it, expressed as a yearly percentage.
+  level: beginner
+  related:
+  - Annual percentage rate
+  - Federal funds rate
+- term: Interest rate risk
+  definition: The risk that bond prices fall because market interest rates rise.
+  level: intermediate
+  related:
+  - Duration
+  - Bond
+- term: International stocks
+  definition: Shares of companies based outside the investor's home country.
+  level: intermediate
+  related:
+  - Developed markets
+  - Emerging markets
+  - Currency risk
+  aliases:
+  - international stock
+  - foreign stocks
+- term: Inverse ETF
+  definition: An ETF that aims to deliver the opposite of an index's daily return.
+  level: advanced
+  related:
+  - Leveraged ETF
+  - Short selling
+- term: Inverted yield curve
+  definition: When short-term interest rates are higher than long-term rates. It has often preceded recessions.
+  level: advanced
+  related:
+  - Yield curve
+  - Recession
+- term: Investment grade
+  definition: A credit rating of BBB-/Baa3 or higher, indicating lower default risk.
+  level: intermediate
+  related:
+  - Credit rating
+  - High-yield bond
+- term: IPO
+  definition: 'An initial public offering: a company''s first sale of shares to the public.'
+  level: intermediate
+  related:
+  - Lock-up period
+  - Stock
+  aliases:
+  - initial public offering
+- term: IRA
+  definition: An individual retirement account with tax advantages that you open yourself, separate from
+    an employer plan.
+  level: beginner
+  related:
+  - Roth IRA
+  - Traditional IRA
+  aliases:
+  - individual retirement account
+- term: Large cap
+  definition: A company with a large market value, roughly $10 billion or more.
+  level: beginner
+  related:
+  - Market capitalization
+  - Small cap
+  aliases:
+  - large-cap
+- term: Leverage
+  definition: Using borrowed money to increase an investment's size, magnifying both gains and losses.
+  level: advanced
+  related:
+  - Margin account
+  - Leveraged ETF
+- term: Leveraged ETF
+  definition: An ETF that aims for a multiple of an index's daily return. Long-term results can differ
+    greatly from that multiple.
+  level: advanced
+  related:
+  - Leverage
+  - Inverse ETF
+- term: Limit order
+  definition: An order to buy or sell at a set price or better. It controls the price but may not execute.
+  level: beginner
+  related:
+  - Market order
+  - Stop order
+- term: Liquidity
+  definition: How quickly and cheaply an asset can be turned into cash without affecting its price.
+  level: beginner
+  related:
+  - Emergency fund
+- term: Liquidity risk
+  definition: The risk that you cannot sell an investment quickly at a fair price.
+  level: intermediate
+  related:
+  - Liquidity
+- term: Lock-up period
+  definition: A period after an IPO during which insiders cannot sell their shares.
+  level: intermediate
+  related:
+  - IPO
+- term: Long-term capital gain
+  definition: Profit on an investment held more than one year, taxed at lower rates than ordinary income.
+  level: beginner
+  related:
+  - Short-term capital gain
+  - Capital gain
+- term: Loss aversion
+  definition: The tendency to feel losses more strongly than equal gains, which can lead to panic selling.
+  level: beginner
+  related:
+  - Behavioral finance
+  - Disposition effect
+- term: Lump-sum investing
+  definition: Investing an available amount all at once rather than spreading it out over time. It has
+    historically beaten gradual investing more often than not.
+  level: intermediate
+  related:
+  - Dollar-cost averaging
+  aliases:
+  - lump sum
+- term: Margin account
+  definition: A brokerage account that lets you borrow from the broker to buy securities, using them as
+    collateral.
+  level: advanced
+  related:
+  - Margin call
+  - Leverage
+  aliases:
+  - margin
+- term: Margin call
+  definition: A demand from a broker to add money or securities when account equity falls below the required
+    level.
+  level: advanced
+  related:
+  - Margin account
+- term: Marginal tax rate
+  definition: The tax rate on your next dollar of income; the top bracket your income reaches.
+  level: beginner
+  related:
+  - Effective tax rate
+  - Tax bracket
+- term: Market capitalization
+  definition: A company's total stock market value, calculated as share price times shares outstanding.
+  level: beginner
+  related:
+  - Stock
+  aliases:
+  - market cap
+- term: Market maker
+  definition: A firm that continuously offers to buy and sell a security, providing liquidity and earning
+    the spread.
+  level: intermediate
+  related:
+  - Bid-ask spread
+  - Liquidity
+- term: Market order
+  definition: An order to buy or sell immediately at the best available price. The price is not guaranteed.
+  level: beginner
+  related:
+  - Limit order
+  - Stop order
+- term: Market risk
+  definition: The risk that a whole market falls, affecting most investments at once. It cannot be diversified
+    away.
+  level: beginner
+  related:
+  - Systematic risk
+  - Diversification
+- term: Market timing
+  definition: Trying to move in and out of the market based on predictions of future prices.
+  level: beginner
+  related:
+  - Dollar-cost averaging
+  - Time horizon
+- term: Market-cap weighting
+  definition: Weighting index members by market value, so the largest companies have the most influence.
+  level: intermediate
+  related:
+  - Market capitalization
+  - Equal-weight index
+  aliases:
+  - cap-weighted
+- term: Maturity
+  definition: The date when a bond's principal is repaid to the investor.
+  level: beginner
+  related:
+  - Bond
+- term: Maximum drawdown
+  definition: The largest peak-to-trough decline over a period, shown as a percentage.
+  level: intermediate
+  related:
+  - Drawdown
+  - Volatility
+  aliases:
+  - max drawdown
+- term: Mental accounting
+  definition: Treating money differently depending on its source or label, even though all dollars are
+    interchangeable.
+  level: intermediate
+  related:
+  - Behavioral finance
+- term: Mid cap
+  definition: A company with a medium market value, roughly $2 billion to $10 billion.
+  level: beginner
+  related:
+  - Market capitalization
+  aliases:
+  - mid-cap
+- term: Modern portfolio theory
+  definition: A framework showing that combining assets with low correlation can reduce risk for a given
+    expected return.
+  level: advanced
+  related:
+  - Correlation
+  - Diversification
+  aliases:
+  - MPT
+- term: Money market account
+  definition: An FDIC-insured bank deposit account that usually pays more than regular savings. Not the
+    same as a money market fund.
+  level: beginner
+  related:
+  - Money market fund
+  - FDIC
+- term: Money market fund
+  definition: A mutual fund that holds very short-term, high-quality debt and aims to keep a stable $1
+    share price.
+  level: beginner
+  related:
+  - Money market account
+  - Mutual fund
+- term: Mortgage
+  definition: A loan used to buy real estate, secured by the property.
+  level: beginner
+  related:
+  - Down payment
+  - Private mortgage insurance
+- term: Moving average
+  definition: The average price over a set number of recent days, such as 50 or 200, used to show trends.
+  level: intermediate
+  related:
+  - 50-day moving average
+  - 200-day moving average
+  aliases:
+  - simple moving average
+  - SMA
+- term: Municipal bond
+  definition: A bond issued by a state or local government. Interest is usually free from federal income
+    tax.
+  level: intermediate
+  related:
+  - General obligation bond
+  - Revenue bond
+  aliases:
+  - muni
+  - munis
+- term: Mutual fund
+  definition: A pooled investment that is bought and sold directly with the fund company once a day at
+    its net asset value.
+  level: beginner
+  related:
+  - ETF
+  - Net asset value
+  aliases:
+  - mutual funds
+- term: Nasdaq
+  definition: A US stock exchange known for listing many technology companies; also the name of its indexes.
+  level: beginner
+  related:
+  - Exchange
+  - Index
+  aliases:
+  - Nasdaq Composite
+- term: Net asset value
+  definition: The per-share value of a fund, calculated as total assets minus liabilities divided by shares
+    outstanding.
+  level: intermediate
+  related:
+  - Mutual fund
+  aliases:
+  - NAV
+- term: Net worth
+  definition: Everything you own minus everything you owe.
+  level: beginner
+  related:
+  - Budget
+- term: Nominal return
+  definition: An investment's return before adjusting for inflation.
+  level: intermediate
+  related:
+  - Real return
+  - Inflation
+- term: Order book
+  definition: The list of outstanding buy and sell orders for a security at different prices.
+  level: advanced
+  related:
+  - Bid-ask spread
+  - Liquidity
+- term: Ordinary income
+  definition: Income such as wages and interest taxed at regular income tax rates.
+  level: beginner
+  related:
+  - Marginal tax rate
+- term: Overconfidence bias
+  definition: Overestimating one's own knowledge or ability to predict markets, often leading to excessive
+    trading.
+  level: intermediate
+  related:
+  - Behavioral finance
+  - Confirmation bias
+  aliases:
+  - overconfidence
+- term: Passive investing
+  definition: Investing to match a market index rather than beat it, usually through low-cost index funds.
+  level: beginner
+  related:
+  - Index fund
+  - Active management
+  aliases:
+  - passive management
+- term: Pay yourself first
+  definition: Saving a set amount as soon as you are paid, before spending on anything else.
+  level: beginner
+  related:
+  - Budget
+- term: Pension
+  definition: A retirement plan that pays a regular income, usually based on salary and years of service.
+  level: beginner
+  related:
+  - Defined benefit plan
+- term: Portfolio
+  definition: The full collection of investments a person or fund owns.
+  level: beginner
+  related:
+  - Asset allocation
+- term: Preferred stock
+  definition: Shares that usually pay a fixed dividend and rank ahead of common stock, typically without
+    voting rights.
+  level: intermediate
+  related:
+  - Common stock
+- term: Previous close
+  definition: A security's closing price from the prior trading day, used to calculate today's change.
+  level: beginner
+  related:
+  - Closing price
+- term: Price-to-book ratio
+  definition: Share price divided by book value per share.
+  level: intermediate
+  related:
+  - Book value
+  - Value stock
+  aliases:
+  - P/B ratio
+- term: Price-to-earnings ratio
+  definition: Share price divided by earnings per share, a common valuation measure.
+  level: intermediate
+  related:
+  - Earnings per share
+  - Valuation
+  aliases:
+  - P/E ratio
+  - PE ratio
+  - P/E
+- term: Principal
+  definition: The original amount invested or borrowed, not counting interest or returns.
+  level: beginner
+  related:
+  - Bond
+  - Interest rate
+- term: Private mortgage insurance
+  definition: Insurance many lenders require when a conventional home loan's down payment is under 20%.
+  level: intermediate
+  related:
+  - Down payment
+  - Mortgage
+  aliases:
+  - PMI
+- term: Pro-rata rule
+  definition: An IRS rule that treats IRA conversions as coming proportionally from pre-tax and after-tax
+    money across all traditional IRAs.
+  level: advanced
+  related:
+  - Backdoor Roth IRA
+  - Roth conversion
+- term: Prospectus
+  definition: A legal document describing a fund or security offering, including objectives, fees and
+    risks.
+  level: intermediate
+  related:
+  - Expense ratio
+  - Mutual fund
+- term: Qualified dividend
+  definition: A dividend that meets IRS rules to be taxed at long-term capital gains rates.
+  level: intermediate
+  related:
+  - Dividend
+  - Long-term capital gain
+  aliases:
+  - qualified dividends
+- term: Qualified expenses
+  definition: Costs that tax rules allow to be paid from an account tax-free, such as tuition for a 529
+    plan.
+  level: beginner
+  related:
+  - 529 plan
+  - Health savings account
+- term: Real return
+  definition: Your return after subtracting inflation, which shows the change in actual buying power.
+  level: intermediate
+  related:
+  - Inflation
+  aliases:
+  - inflation-adjusted return
+- term: Rebalancing
+  definition: Buying and selling to bring a portfolio back to its target allocation after market moves
+    have shifted it.
+  level: beginner
+  related:
+  - Asset allocation
+- term: Recency bias
+  definition: Giving too much weight to recent events and assuming they will continue.
+  level: intermediate
+  related:
+  - Behavioral finance
+  - Market timing
+- term: Recession
+  definition: A significant, widespread decline in economic activity lasting more than a few months.
+  level: beginner
+  related:
+  - GDP
+  - Bear market
+- term: REIT
+  definition: 'A real estate investment trust: a company that owns or finances income-producing real estate
+    and pays out most of its income as dividends.'
+  level: intermediate
+  related:
+  - Dividend
+  - Sector
+  aliases:
+  - real estate investment trust
+- term: Required minimum distribution
+  definition: The minimum yearly withdrawal required from most tax-deferred retirement accounts once you
+    reach the required age.
+  level: intermediate
+  related:
+  - Traditional IRA
+  - 401(k)
+  aliases:
+  - RMD
+  - RMDs
+- term: Revenue bond
+  definition: A municipal bond repaid from a specific project's revenue, such as tolls or utility fees.
+  level: intermediate
+  related:
+  - Municipal bond
+  - General obligation bond
+- term: Risk
+  definition: The chance that an investment's results differ from what you expect, including losing money.
+  level: beginner
+  related:
+  - Volatility
+  - Risk tolerance
+  - Market risk
+  aliases:
+  - investment risk
+- term: Risk capacity
+  definition: How much financial loss you can absorb without endangering your goals.
+  level: beginner
+  related:
+  - Risk tolerance
+- term: Risk premium
+  definition: The extra return investors expect for taking on more risk than a safe investment.
+  level: intermediate
+  related:
+  - Risk tolerance
+  - Stock
+- term: Risk tolerance
+  definition: How much ups and downs in value you are willing and able to accept in pursuit of higher
+    returns.
+  level: beginner
+  related:
+  - Time horizon
+  - Volatility
+- term: Robo-adviser
+  definition: An online service that builds and manages a portfolio automatically, usually for a low fee.
+  level: beginner
+  related:
+  - Financial adviser
+  - Rebalancing
+  aliases:
+  - robo-advisor
+  - robo advisor
+- term: Rollover
+  definition: Moving retirement savings from one account to another, such as from a 401(k) to an IRA,
+    without taxes if done correctly.
+  level: intermediate
+  related:
+  - 401(k)
+  - IRA
+  aliases:
+  - 401(k) rollover
+- term: Roth 401(k)
+  definition: A 401(k) option where contributions are made after tax and qualified withdrawals are tax-free.
+  level: intermediate
+  related:
+  - 401(k)
+  - Roth IRA
+- term: Roth conversion
+  definition: Moving money from a traditional IRA or plan into a Roth account, paying income tax on the
+    pre-tax amount converted.
+  level: advanced
+  related:
+  - Roth IRA
+  - Backdoor Roth IRA
+- term: Roth IRA
+  definition: An IRA funded with after-tax money whose qualified withdrawals in retirement, including
+    growth, are tax-free.
+  level: beginner
+  related:
+  - IRA
+  - Traditional IRA
+- term: Rule of 72
+  definition: 'A shortcut for doubling time: divide 72 by the annual growth rate to estimate years to
+    double.'
+  level: beginner
+  related:
+  - Compound interest
+- term: S&P 500
+  definition: An index of about 500 large US companies weighted by market value, widely used as a gauge
+    of the US stock market.
+  level: beginner
+  related:
+  - Index
+  - Benchmark
+  aliases:
+  - S&P
+  - SP500
+  - S and P 500
+- term: Safe withdrawal rate
+  definition: The share of a portfolio that can be withdrawn each year with a low chance of running out
+    of money.
+  level: intermediate
+  related:
+  - 4% rule
+  - Sequence of returns risk
+- term: Sales load
+  definition: A commission some mutual funds charge when you buy or sell shares.
+  level: intermediate
+  related:
+  - Front-end load
+  - Mutual fund
+  aliases:
+  - load
+- term: Savings bond
+  definition: A low-risk US government bond sold directly to individuals that cannot be traded.
+  level: beginner
+  related:
+  - I bond
+  aliases:
+  - savings bonds
+  - EE bond
+- term: SEC
+  definition: The Securities and Exchange Commission, the federal agency that regulates US securities
+    markets.
+  level: beginner
+  related:
+  - FINRA
+  aliases:
+  - Securities and Exchange Commission
+- term: Sector
+  definition: A group of companies in a similar line of business, such as technology, health care or energy.
+  level: beginner
+  related:
+  - Diversification
+- term: SEP IRA
+  definition: A retirement plan for the self-employed and small businesses where the employer contributes
+    a percentage of pay.
+  level: intermediate
+  related:
+  - Solo 401(k)
+  - IRA
+- term: Sequence of returns risk
+  definition: The danger that poor returns early in retirement, while withdrawing, cause lasting damage
+    to a portfolio.
+  level: advanced
+  related:
+  - Safe withdrawal rate
+  aliases:
+  - sequence risk
+- term: Settlement
+  definition: The final transfer of securities and cash after a trade; US stock trades settle one business
+    day later (T+1).
+  level: intermediate
+  related:
+  - Exchange
+  aliases:
+  - T+1
+- term: Sharpe ratio
+  definition: A measure of return earned per unit of volatility above a risk-free rate.
+  level: advanced
+  related:
+  - Standard deviation
+  - Volatility
+- term: Short selling
+  definition: Borrowing shares and selling them, hoping to buy them back cheaper later. Losses can be
+    unlimited.
+  level: advanced
+  related:
+  - Short squeeze
+  - Margin account
+  aliases:
+  - shorting
+  - short sale
+- term: Short squeeze
+  definition: A rapid price rise in a heavily shorted stock as short sellers rush to buy back shares.
+  level: advanced
+  related:
+  - Short selling
+- term: Short-term capital gain
+  definition: Profit on an investment held one year or less, taxed as ordinary income.
+  level: beginner
+  related:
+  - Long-term capital gain
+  - Capital gain
+- term: Sinking fund
+  definition: Money saved gradually for a specific, expected expense, such as car repairs or annual insurance.
+  level: beginner
+  related:
+  - Emergency fund
+  - Budget
+- term: SIPC
+  definition: The Securities Investor Protection Corporation, which protects brokerage customers if a
+    member firm fails, up to limits. It does not cover market losses.
+  level: intermediate
+  related:
+  - FDIC
+  - Brokerage account
+  aliases:
+  - Securities Investor Protection Corporation
+- term: Small cap
+  definition: A company with a small market value, roughly $250 million to $2 billion.
+  level: beginner
+  related:
+  - Market capitalization
+  - Large cap
+  aliases:
+  - small-cap
+- term: Social Security
+  definition: The US government program that pays retirement, disability and survivor benefits funded
+    by payroll taxes.
+  level: beginner
+  related:
+  - Full retirement age
+- term: Solo 401(k)
+  definition: A 401(k) for self-employed people with no employees other than a spouse, allowing both employee
+    and employer contributions.
+  level: intermediate
+  related:
+  - SEP IRA
+  - 401(k)
+  aliases:
+  - one-participant 401(k)
+- term: Standard deduction
+  definition: A fixed amount that reduces taxable income for people who do not itemize deductions.
+  level: beginner
+  related:
+  - Taxable income
+- term: Standard deviation
+  definition: A statistic measuring how widely returns vary around their average; the usual measure of
+    volatility.
+  level: intermediate
+  related:
+  - Volatility
+- term: Stock
+  definition: A share of ownership in a company that may rise or fall in value and may pay dividends.
+  level: beginner
+  related:
+  - Dividend
+  - Market capitalization
+- term: Stock market index
+  definition: A measure of the performance of a group of stocks, such as the S&P 500 or the Dow Jones
+    Industrial Average.
+  level: beginner
+  related:
+  - Index
+  - S&P 500
+- term: Stock split
+  definition: Dividing each share into several, lowering the price per share without changing the company's
+    total value.
+  level: intermediate
+  related:
+  - Buyback
+  - Market capitalization
+  aliases:
+  - split
+- term: Stop order
+  definition: An order that becomes a market order once a set trigger price is reached, often used to
+    limit losses.
+  level: intermediate
+  related:
+  - Market order
+  - Limit order
+  aliases:
+  - stop-loss order
+  - stop loss
+- term: Surrender charge
+  definition: A fee for withdrawing from an annuity or insurance product during its early years.
+  level: intermediate
+  related:
+  - Annuity
+- term: Systematic risk
+  definition: Risk that affects the whole market and cannot be removed by diversification.
+  level: intermediate
+  related:
+  - Market risk
+  - Beta
+- term: Target-date fund
+  definition: A fund that automatically shifts from stocks toward bonds as a chosen retirement year approaches.
+  level: beginner
+  related:
+  - Asset allocation
+  - 401(k)
+  aliases:
+  - target date fund
+  - TDF
+- term: Tax bracket
+  definition: A range of income taxed at a particular rate in a progressive tax system.
+  level: beginner
+  related:
+  - Marginal tax rate
+  - Effective tax rate
+- term: Tax-advantaged account
+  definition: An account with special tax treatment, such as a 401(k), IRA, HSA or 529 plan.
+  level: beginner
+  related:
+  - 401(k)
+  - IRA
+- term: Tax-loss harvesting
+  definition: Selling investments at a loss in a taxable account to offset gains and reduce taxes, while
+    staying invested.
+  level: intermediate
+  related:
+  - Wash sale
+  - Capital loss
+- term: Taxable account
+  definition: A regular investment account where dividends, interest and realized gains are taxed each
+    year.
+  level: beginner
+  related:
+  - Brokerage account
+  - Tax-advantaged account
+  aliases:
+  - taxable brokerage account
+- term: Taxable income
+  definition: Income that is subject to tax after deductions and adjustments.
+  level: beginner
+  related:
+  - Standard deduction
+  - Tax bracket
+- term: Technical analysis
+  definition: Studying price charts and trading volume to look for patterns, rather than company fundamentals.
+  level: intermediate
+  related:
+  - Fundamental analysis
+  - Moving average
+- term: Ticker symbol
+  definition: A short code that identifies a security on an exchange, such as AAPL or SPY.
+  level: beginner
+  related:
+  - Stock
+  aliases:
+  - ticker
+- term: Time horizon
+  definition: How long you expect to keep money invested before you need it.
+  level: beginner
+  related:
+  - Risk tolerance
+- term: TIPS
+  definition: Treasury Inflation-Protected Securities, US government bonds whose principal rises with
+    inflation.
+  level: intermediate
+  related:
+  - Inflation
+  - I bond
+  aliases:
+  - Treasury Inflation-Protected Securities
+- term: Total return
+  definition: An investment's full return including price change plus dividends or interest.
+  level: beginner
+  related:
+  - Dividend
+  - Yield
+- term: Traditional IRA
+  definition: An IRA where contributions may be tax-deductible now and withdrawals in retirement are taxed
+    as income.
+  level: beginner
+  related:
+  - IRA
+  - Roth IRA
+- term: Treasury bill
+  definition: A short-term US government security maturing in one year or less, sold at a discount.
+  level: beginner
+  related:
+  - Treasury bond
+  - Treasury note
+  aliases:
+  - T-bill
+  - T-bills
+- term: Treasury bond
+  definition: A US government security maturing in 20 or 30 years that pays interest every six months.
+  level: beginner
+  related:
+  - Treasury note
+  - Treasury bill
+  aliases:
+  - T-bond
+  - Treasuries
+- term: Treasury note
+  definition: A US government security maturing in 2 to 10 years that pays interest every six months.
+  level: beginner
+  related:
+  - Treasury bill
+  - Treasury bond
+  aliases:
+  - T-note
+- term: Turnover
+  definition: How much of a fund's holdings are bought and sold in a year. High turnover can mean higher
+    costs and taxes.
+  level: intermediate
+  related:
+  - Expense ratio
+  - Active management
+  aliases:
+  - portfolio turnover
+- term: Underwriter
+  definition: An investment bank that helps a company sell new securities, such as in an IPO.
+  level: advanced
+  related:
+  - IPO
+- term: Valuation
+  definition: An estimate of what an investment is worth, often using ratios such as P/E.
+  level: intermediate
+  related:
+  - Price-to-earnings ratio
+  - Price-to-book ratio
+- term: Value stock
+  definition: A stock priced low relative to earnings, book value or cash flow.
+  level: intermediate
+  related:
+  - Growth stock
+  - Price-to-book ratio
+  aliases:
+  - value stocks
+- term: Variable annuity
+  definition: An annuity whose value depends on investment sub-accounts, often with high fees and surrender
+    charges.
+  level: advanced
+  related:
+  - Annuity
+  - Surrender charge
+- term: Vesting
+  definition: The schedule by which you gain full ownership of employer contributions to your retirement
+    plan.
+  level: intermediate
+  related:
+  - Employer match
+- term: VIX
+  definition: The Cboe Volatility Index, which measures expected 30-day volatility of the S&P 500; often
+    called the fear gauge.
+  level: intermediate
+  related:
+  - Volatility
+  aliases:
+  - volatility index
+  - fear gauge
+- term: Volatility
+  definition: How much and how quickly an investment's price moves up and down, often measured by standard
+    deviation of returns.
+  level: intermediate
+  related:
+  - Beta
+  - Risk tolerance
+- term: Wash sale
+  definition: Selling an investment at a loss and buying the same or a substantially identical one within
+    30 days before or after, which disallows the loss for taxes at that time.
+  level: intermediate
+  related:
+  - Capital loss
+  aliases:
+  - wash sale rule
+- term: Yield
+  definition: The income an investment produces relative to its price, shown as a percentage.
+  level: beginner
+  related:
+  - Coupon
+  - Dividend yield
+- term: Yield curve
+  definition: A chart of interest rates across bond maturities, usually for Treasuries.
+  level: advanced
+  related:
+  - Inverted yield curve
+  - Interest rate
+- term: Yield to maturity
+  definition: The total annual return on a bond if bought at today's price and held to maturity with all
+    payments made.
+  level: intermediate
+  related:
+  - Yield
+  - Bond
+  aliases:
+  - YTM
+- term: Zero-coupon bond
+  definition: A bond that pays no periodic interest and is sold at a discount, paying face value at maturity.
+  level: advanced
+  related:
+  - Bond
+  - Duration

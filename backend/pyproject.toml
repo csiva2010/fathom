@@ -25,7 +25,7 @@ plugins = ["pydantic.mypy"]
 exclude = ["src/data/migrations/versions/"]
 
 [[tool.mypy.overrides]]
-module = ["authlib.*", "rank_bm25.*"]
+module = ["authlib.*", "rank_bm25.*", "sentence_transformers.*", "torch.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

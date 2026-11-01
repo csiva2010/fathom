@@ -32,10 +32,11 @@ def load_glossary(path: Path) -> GlossaryResult:
         except ValidationError as error:
             result.errors.append(f"glossary entry {position}: {error.errors()[0]['msg']}")
             continue
-        key = term.term.lower()
-        if key in seen:
-            result.errors.append(f"glossary entry {position}: duplicate term '{term.term}'")
+        names = [term.term.lower(), *(a.lower() for a in term.aliases)]
+        clash = next((n for n in names if n in seen), None)
+        if clash is not None:
+            result.errors.append(f"glossary entry {position}: duplicate term or alias '{clash}'")
             continue
-        seen.add(key)
+        seen.update(names)
         result.terms.append(term)
     return result

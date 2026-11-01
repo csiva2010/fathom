@@ -4,9 +4,11 @@ An educational, multi-agent finance assistant. It explains concepts in plain lan
 analyzes a portfolio you enter, shows live market context, and helps plan goals at your
 risk level. It never gives personalized investment advice.
 
-> **Status: day 1 of the one-week build plan.** Sign-in, configuration, database, CI,
-> the market-data layer and the knowledge-base pipeline are in place. Agents and chat arrive
-> from day 2. See `docs/` for the PRD and technical design.
+> **Status: day 3 of the one-week build plan.** Sign-in, configuration, database, CI, the
+> market-data layer, the knowledge base (110 articles, 259 glossary terms) with hybrid
+> retrieval, and the LangGraph workflow with the Finance Q&A and Market Analysis agents are in
+> place. The chat endpoint (SSE) and the remaining four agents come next. See `docs/` for the
+> PRD and technical design.
 
 ## Architecture (today)
 
@@ -17,8 +19,17 @@ React SPA (frontend/) ──REST, session cookie──▶ FastAPI (backend/src/w
                                                   │    └─ ProviderChain: cache → Alpaca / Alpha Vantage → stale cache → mock
                                                   │         └─ rate limit · retry/backoff · circuit breaker
                                                   ├─ SQLite via SQLAlchemy + Alembic (Postgres-ready)
-                                                  └─ KB ingestion → BM25 keyword index (vectors on day 2)
+                                                  ├─ RAG (rag/): BM25 + ChromaDB vectors (Gemini, OpenAI fallback)
+                                                  │    └─ reciprocal rank fusion → cross-encoder rerank → threshold
+                                                  └─ LangGraph workflow (workflow/)
+                                                       load_context → router ─┬─ advice redirect / clarify
+                                                                              └─ agents in parallel (Send)
+                                                       → fallback → synthesizer → compliance
 ```
+
+LLM calls go through one gateway (`core/llm`) that tries Gemini Flash, then Claude. With no
+LLM key set, the router falls back to keyword rules and agents answer from retrieved sources
+and service data, so the app still works.
 
 ## Prerequisites
 
@@ -121,6 +132,19 @@ Articles live in `backend/data/kb/<category>/<id>.md` with YAML front matter (`i
 `backend/data/kb/glossary.yaml`. Ingestion fails on any missing or invalid field; use
 `--lenient` to skip bad files while drafting. Content is written in our own words from
 public sources (Investor.gov, FINRA, IRS, CFPB, Bogleheads).
+
+`scripts.ingest_kb` rebuilds the BM25 index and one ChromaDB collection per embedding model
+that has an API key (`GEMINI_API_KEY`, `OPENAI_API_KEY`); `--keyword-only` skips embeddings.
+If the index is missing at startup, the API builds the keyword index itself.
+
+The self-hosted cross-encoder reranker is optional because it needs PyTorch:
+
+```bash
+.venv/bin/pip install -r requirements-reranker.txt   # weights download on first use
+```
+
+Without it, retrieval logs a warning and uses a lexical reranker (`kb.reranker` in
+`config.yaml`).
 
 ## Troubleshooting
 

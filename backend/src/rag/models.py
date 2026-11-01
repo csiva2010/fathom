@@ -44,6 +44,7 @@ class GlossaryTerm(BaseModel):
     definition: str = Field(min_length=10)
     level: str = "beginner"
     related: list[str] = Field(default_factory=list)
+    aliases: list[str] = Field(default_factory=list)  # e.g. "exchange-traded fund" for ETF
 
 
 class Citation(BaseModel):
