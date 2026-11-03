@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from src.web_app.container import AppContainer
 from src.workflow.context import StaticContextLoader
 from src.workflow.factory import create_workflow
 from src.workflow.graph import WorkflowDeps, build_workflow, route_after_router
+from src.workflow.screenshot import SCREENSHOT_KEY, ScreenshotInput
 from src.workflow.state import AgentName, AgentOutput, FinanceState, RoutePlan, UserContext
 from tests.conftest import make_settings
 from tests.fakes import gateway, structured
@@ -209,3 +211,46 @@ async def test_container_builds_workflow(tmp_path: Path) -> None:
         assert len(saved.values["messages"]) == 2
     finally:
         await container.aclose()
+
+
+async def test_screenshot_turn_reads_routes_and_never_stores_the_image(
+    market: MarketDataService,
+) -> None:
+    gw, _ = gateway(
+        structured(
+            "ExtractedHoldings",
+            is_portfolio=True,
+            holdings=[{"symbol": "VTI", "quantity": 10, "price": 250.0}],
+        ),
+        # Low confidence would normally ask a clarifying question; a screenshot never does.
+        decision(["portfolio_analysis"], confidence=0.3, standalone_query="Analyze it."),
+        "Your screenshot holds one broad fund.",
+    )
+    saver = InMemorySaver()
+    config = Settings(_env_file=None).workflow  # type: ignore[call-arg]
+    graph = create_workflow(config, gw, make_kb(), market, StaticContextLoader(), saver)
+    marker = b"SECRET-PIXELS-1234"
+    thread = {"configurable": {"thread_id": "s1"}}
+    result = await graph.ainvoke(
+        {
+            "messages": [HumanMessage("Analyze the portfolio in this screenshot.")],
+            "user": USER,
+            "turn_id": "turn-1",
+        },
+        {
+            "configurable": {
+                **thread["configurable"],
+                SCREENSHOT_KEY: ScreenshotInput("image/png", marker),
+            }
+        },
+    )
+    final = result["final"]
+    assert final.kind == "answer" and final.agents == [AgentName.PORTFOLIO]
+    assert final.artifacts[0].kind == "screenshot_holdings"
+    assert [t.node for t in result["trace"]][:3] == ["load_context", "read_screenshot", "router"]
+
+    encoded = base64.b64encode(marker).decode()
+    async for snapshot in saver.alist(thread):
+        dumped = repr(snapshot.checkpoint) + repr(snapshot.metadata)
+        assert encoded not in dumped and marker.decode() not in dumped
+    assert result["screenshot"].holdings[0].symbol == "VTI"

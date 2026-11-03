@@ -8,7 +8,6 @@ session the caller put in `state["user"]`, never from message text.
 from __future__ import annotations
 
 import asyncio
-import time
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -27,9 +26,9 @@ from src.workflow.state import (
     Fresh,
     GoalSnapshot,
     PortfolioSnapshot,
-    TraceEvent,
     UserContext,
 )
+from src.workflow.tracing import TraceStep, trace_step
 
 log = get_logger(__name__)
 
@@ -149,7 +148,10 @@ class LoadContextNode:
         self._max_chars = max_message_chars
 
     async def __call__(self, state: FinanceState) -> dict[str, Any]:
-        started = time.perf_counter()
+        with trace_step("load_context") as step:
+            return await self._load(state, step)
+
+    async def _load(self, state: FinanceState, step: TraceStep) -> dict[str, Any]:
         user = state.get("user")
         if user is None:
             raise ValidationFailed("The workflow needs a signed-in user.")
@@ -173,14 +175,10 @@ class LoadContextNode:
             "notes": Fresh(),
             "trace": Fresh(
                 [
-                    TraceEvent(
-                        node="load_context",
-                        latency_ms=round((time.perf_counter() - started) * 1000),
-                        detail={
-                            "level": loaded.user.experience_level,
-                            "has_portfolio": loaded.portfolio is not None,
-                            "goals": len(loaded.goals),
-                        },
+                    step.event(
+                        level=loaded.user.experience_level,
+                        has_portfolio=loaded.portfolio is not None,
+                        goals=len(loaded.goals),
                     )
                 ]
             ),

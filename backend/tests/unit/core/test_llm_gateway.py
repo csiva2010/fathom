@@ -3,12 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel
 
 from src.core.errors import LLMUnavailable
 from src.core.llm import LLMGateway, build_llm_gateway
 from src.core.llm.gateway import NamedModel
+from src.core.tracing import current_step, record_llm_call, record_tool, recording
 from tests.conftest import make_settings
 from tests.fakes import scripted, structured
 
@@ -78,3 +79,39 @@ def test_build_gateway_skips_models_without_keys(tmp_path: Path) -> None:
         "anthropic:claude-sonnet-5-5",
         "openai:gpt-test",
     ]
+
+
+async def test_calls_are_recorded_on_the_open_trace_step() -> None:
+    usage = {"input_tokens": 10, "output_tokens": 4, "total_tokens": 14}
+    primary = scripted(RuntimeError("503"))
+    secondary = scripted(
+        "untraced", AIMessage("hi", usage_metadata=usage), structured("Answer", text="ok")
+    )
+    gateway = LLMGateway([NamedModel("a:1", primary), NamedModel("b:2", secondary)])
+
+    await gateway.ainvoke([HumanMessage("untraced")])  # no step open: nothing recorded
+    primary.replies.extend([RuntimeError("503"), RuntimeError("503")])
+    with recording() as step:
+        await gateway.ainvoke([HumanMessage("hi")])
+        await gateway.astructured(Answer, [HumanMessage("hi")])
+    assert step.llm_calls == 2 and step.fallbacks == 2
+    assert step.models == ["b:2"]
+    assert (step.input_tokens, step.output_tokens) == (10, 4)  # structured reply had no usage
+    assert current_step() is None
+
+
+async def test_unparseable_structured_reply_falls_back() -> None:
+    bad = scripted(structured("Answer", wrong="field"), AIMessage("no tool call"))
+    gateway = LLMGateway([NamedModel("a:1", bad), NamedModel("b:2", scripted())])
+    with pytest.raises(LLMUnavailable):
+        await gateway.astructured(Answer, [HumanMessage("hi")])  # parsing error
+    with pytest.raises(LLMUnavailable):
+        await gateway.astructured(Answer, [HumanMessage("hi")])  # nothing parsed
+
+
+def test_record_tool_needs_an_open_step() -> None:
+    record_tool("ignored")
+    with recording() as step:
+        record_tool("get_quotes")
+        record_llm_call("m", None)
+    assert step.tools == ["get_quotes"] and step.llm_calls == 1 and step.input_tokens == 0

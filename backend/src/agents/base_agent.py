@@ -30,6 +30,7 @@ from src.core.domain.market import Freshness
 from src.core.errors import AppError, LLMUnavailable
 from src.core.llm import LLMGateway
 from src.core.logging import get_logger
+from src.core.tracing import record_tool
 from src.rag.models import Citation
 from src.workflow.context import latest_user_text, recent_history
 from src.workflow.state import AgentName, AgentOutput, Artifact, FinanceState
@@ -245,6 +246,7 @@ class BaseAgent(ABC):
     async def _execute(self, call: ToolCall, tools: dict[str, AgentTool], run: AgentRun) -> str:
         name = call["name"]
         run.tool_calls.append(name)
+        record_tool(name)
         tool = tools.get(name)
         if tool is None:
             log.warning("tool not allowed", extra={"agent": self.name.value, "tool": name})

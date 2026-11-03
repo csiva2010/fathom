@@ -140,6 +140,8 @@ kb:
 llm:
   models:
     - { provider: gemini, model: gemini-flash-latest, temperature: 0.2 }
+    # Same key, separate capacity: answers when Flash is overloaded (503) or times out.
+    - { provider: gemini, model: gemini-flash-lite-latest, temperature: 0.2 }
     - { provider: anthropic, model: claude-sonnet-5-5, temperature: 0.2 }
 
 workflow:
@@ -151,6 +153,8 @@ workflow:
   history_messages: 8             # recent messages the router and agents see
   max_focus_tickers: 3
   max_message_chars: 4000
+  max_image_bytes: 5000000        # portfolio screenshot attached to a chat message
+  max_screenshot_holdings: 25
   checkpoint_path: var/checkpoints.db   # conversation memory; empty = in memory
 
 seed:

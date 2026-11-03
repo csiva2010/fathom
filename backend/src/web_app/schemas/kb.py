@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.rag.models import Citation, GlossaryTerm
 
@@ -24,6 +24,7 @@ class ArticleSummary(BaseModel):
     source_name: str
     source_url: str
     last_reviewed: date
+    reading_minutes: int
 
 
 class ArticleList(BaseModel):
@@ -34,6 +35,7 @@ class ArticleList(BaseModel):
 
 class ArticleOut(ArticleSummary):
     body_md: str
+    related: list[ArticleSummary] = Field(default_factory=list)  # what to read next
 
 
 class GlossaryList(BaseModel):

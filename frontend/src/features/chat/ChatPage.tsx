@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 import { ErrorState } from "@/components/feedback/ErrorState";
 import { LoadingState } from "@/components/feedback/LoadingState";
@@ -8,6 +8,7 @@ import { AssistantMessage } from "./components/AssistantMessage";
 import { Composer } from "./components/Composer";
 import { ConversationSidebar } from "./components/ConversationSidebar";
 import { UserMessage } from "./components/UserMessage";
+import type { Attachment } from "./attachments";
 import { draftFromMessage } from "./hooks/chatState";
 import { useChat } from "./hooks/useChat";
 import { useConversation } from "./hooks/useConversations";
@@ -19,6 +20,8 @@ const STARTERS = [
   "I want $40,000 for a house by 2030. Am I on track saving $500 a month?",
 ];
 
+const SCREENSHOT_TIP = "Tip: paste or attach a screenshot of your brokerage holdings to have them analyzed.";
+
 function Welcome({ onAsk }: { onAsk: (q: string) => void }) {
   return (
     <div className="mx-auto max-w-xl space-y-4 py-10 text-center">
@@ -27,6 +30,7 @@ function Welcome({ onAsk }: { onAsk: (q: string) => void }) {
         Ask about investing concepts, market data, your portfolio, savings goals, news or taxes. Answers explain; they
         never tell you what to buy or sell.
       </p>
+      <p className="text-xs text-slate-500 dark:text-slate-400">{SCREENSHOT_TIP}</p>
       <div className="grid gap-2 sm:grid-cols-2">
         {STARTERS.map((q) => (
           <button
@@ -46,12 +50,16 @@ function Welcome({ onAsk }: { onAsk: (q: string) => void }) {
 /** The Chat tab: conversation list, streamed answers and the composer (CH-01 to CH-07). */
 export function ChatPage() {
   const { conversationId } = useParams();
+  // "Ask Fathom about this" on an article opens /chat?ask=...: the question waits in the
+  // composer so the user can edit it before sending.
+  const [params] = useSearchParams();
+  const handedOver = params.get("ask") ?? "";
   const conversation = useConversation(conversationId);
   const chat = useChat(conversationId);
   const endRef = useRef<HTMLDivElement>(null);
 
   const messages = conversation.data?.messages ?? [];
-  const ask = (question: string) => void chat.send(question);
+  const ask = (question: string, image?: Attachment) => void chat.send(question, image);
   const lastAnswerId = [...messages].reverse().find((m) => m.role === "assistant")?.id;
 
   useEffect(() => {
@@ -72,7 +80,7 @@ export function ChatPage() {
           )}
           {messages.map((message) =>
             message.role === "user" ? (
-              <UserMessage key={message.id} content={message.content} />
+              <UserMessage key={message.id} content={message.content} hasImage={message.has_image} />
             ) : (
               <AssistantMessage
                 key={message.id}
@@ -85,21 +93,22 @@ export function ChatPage() {
           )}
           {chat.pending && (
             <>
-              <UserMessage content={chat.pending.question} />
+              <UserMessage content={chat.pending.question} imageUrl={chat.pending.image?.previewUrl} />
               <AssistantMessage
                 id="pending"
                 answer={chat.pending.answer}
                 onRetry={() => {
                   const question = chat.pending?.question ?? "";
+                  const image = chat.pending?.image;
                   chat.dismiss();
-                  ask(question);
+                  ask(question, image);
                 }}
               />
             </>
           )}
           <div ref={endRef} />
         </div>
-        <Composer onSend={ask} onStop={chat.stop} streaming={chat.isStreaming} />
+        <Composer key={handedOver} initialText={handedOver} onSend={ask} onStop={chat.stop} streaming={chat.isStreaming} />
       </section>
     </div>
   );

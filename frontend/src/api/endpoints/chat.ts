@@ -1,6 +1,6 @@
 import { API_PREFIX, ApiError, apiFetch, toApiError } from "../client";
 import { readEventStream } from "../sse";
-import type { ChatEvent, Conversation, ConversationDetail, ConversationList } from "../types";
+import type { ChatEvent, Conversation, ConversationDetail, ConversationList, MessageCreate } from "../types";
 
 export function listConversations(): Promise<ConversationList> {
   return apiFetch<ConversationList>("/conversations");
@@ -19,12 +19,13 @@ export async function deleteConversation(id: string): Promise<void> {
 }
 
 /**
- * Send a message and stream the answer (CH-01). Validation errors (unknown conversation,
- * message too long) reject before any event; failures mid-answer arrive as an `error` event.
+ * Send a message, optionally with a portfolio screenshot (CH-09), and stream the answer
+ * (CH-01). Validation errors (unknown conversation, message too long, bad image) reject
+ * before any event; failures mid-answer arrive as an `error` event.
  */
 export async function streamMessage(
   conversationId: string,
-  content: string,
+  message: MessageCreate,
   onEvent: (event: ChatEvent) => void,
   signal?: AbortSignal,
 ): Promise<void> {
@@ -34,7 +35,7 @@ export async function streamMessage(
       method: "POST",
       credentials: "same-origin",
       headers: { Accept: "text/event-stream", "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(message),
       signal,
     });
   } catch (error) {

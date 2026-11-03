@@ -29,6 +29,14 @@ export default defineConfig(({ mode }) => {
       globals: true,
       setupFiles: ["./src/test/setup.ts"],
       css: false,
+      coverage: {
+        provider: "v8",
+        include: ["src/**/*.{ts,tsx}"],
+        exclude: ["src/api/generated/**", "src/test/**", "src/main.tsx", "**/*.test.{ts,tsx}", "**/*.d.ts"],
+        reporter: ["text-summary", "text"],
+        // Same bar as the backend (NF-T01).
+        thresholds: { statements: 90, lines: 90, functions: 85, branches: 80 },
+      },
     },
   };
 });

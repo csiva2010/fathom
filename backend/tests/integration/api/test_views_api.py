@@ -267,6 +267,7 @@ def test_learn_routes(signed_in: TestClient) -> None:
 
     article = client.get(f"{API}/kb/articles/hsa-basics").json()
     assert article["category_label"] == "Tax" and article["body_md"].strip() and article["summary"]
+    assert article["reading_minutes"] >= 1 and article["related"] == []  # nothing shared
     assert client.get(f"{API}/kb/articles/nope").status_code == 404
 
     glossary = client.get(f"{API}/kb/glossary?q=roth").json()

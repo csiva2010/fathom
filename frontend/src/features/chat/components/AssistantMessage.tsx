@@ -8,6 +8,7 @@ import { AgentBadges } from "./AgentBadges";
 import { FollowUps } from "./FollowUps";
 import { MessageMarkdown } from "./MessageMarkdown";
 import { SourceCards } from "./SourceCards";
+import { TracePanel } from "./TracePanel";
 
 interface AssistantMessageProps {
   id: string;
@@ -66,6 +67,7 @@ export function AssistantMessage({ id, answer, onAsk, onRetry, busy }: Assistant
         </div>
       )}
       {answer.status === "done" && onAsk && <FollowUps questions={answer.followUps} onAsk={onAsk} disabled={busy} />}
+      <TracePanel steps={answer.trace} live={working} />
     </article>
   );
 }

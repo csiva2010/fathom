@@ -1,8 +1,10 @@
 """Portfolio Analysis agent (AG-02, PF-02 to PF-07): explains the user's holdings.
 
 Every metric comes from `PortfolioAnalysisService`, the same service behind the Portfolio
-view, so chat and screen show the same numbers. The saved portfolio is analyzed up front;
-holdings typed into the chat can be analyzed with a tool. The LLM only explains the
+view, so chat and screen show the same numbers. Holdings read from a screenshot in this
+conversation (CH-09) are analyzed up front, otherwise the saved portfolio; holdings typed
+into the chat can be analyzed with a tool. Screenshot prices are shown for comparison only:
+values use live market data. The LLM only explains the
 results and the educational observations; it never suggests trades.
 """
 
@@ -20,7 +22,7 @@ from src.core.llm import LLMGateway
 from src.core.services.market.market_data_service import MarketDataService
 from src.core.services.portfolio_service import PortfolioAnalysisService
 from src.utils.money import format_percent, format_usd
-from src.workflow.state import AgentName, Artifact, FinanceState
+from src.workflow.state import AgentName, AgentOutput, Artifact, FinanceState, ScreenshotRead
 
 MAX_CHAT_HOLDINGS = 25
 
@@ -34,6 +36,17 @@ NO_PORTFOLIO_CONTEXT = (
     "counts), call analyze_holdings with them. Otherwise explain briefly that they can add "
     "holdings in the Portfolio tab or list them in the chat, and answer any general part "
     "of the question."
+)
+
+SCREENSHOT_NAME = "Your screenshot"
+SCREENSHOT_UNREADABLE_ANSWER = (
+    "I couldn't find any holdings in that image. Try a screenshot that shows each "
+    "position's ticker and share count, or type them here (for example \"10 shares of VTI "
+    'and 5 of AAPL").'
+)
+SCREENSHOT_UNAVAILABLE_ANSWER = (
+    "I can't read images right now, so I couldn't analyze that screenshot. Please try "
+    'again in a moment, or type your holdings here (for example "10 shares of VTI").'
 )
 
 
@@ -114,6 +127,8 @@ cached or mock (data_status) rather than live.
 - Explain what each metric means and why it matters, and walk through the learning points.
 - Never tell the user to buy, sell, add, trim or rebalance anything, and never propose a \
 target allocation for them. Describe trade-offs instead.
+- When the holdings came from a screenshot, say so, and note that values use current \
+market prices rather than the prices in the image.
 - Call tools only for data you don't already have."""
 
     def __init__(
@@ -137,7 +152,7 @@ target allocation for them. Describe trade-offs instead.
             ),
             AgentTool(
                 "compare_to_benchmark",
-                "Compare the saved portfolio with the S&P 500 benchmark over another window.",
+                "Compare the analyzed portfolio with the S&P 500 benchmark over another window.",
                 BenchmarkArgs,
                 self._benchmark_tool,
             ),
@@ -152,21 +167,70 @@ target allocation for them. Describe trade-offs instead.
     # --- Prefetch ------------------------------------------------------------
 
     async def prepare(self, state: FinanceState, run: AgentRun) -> Prepared:
-        portfolio = state.get("portfolio")
-        if portfolio is None or not portfolio.holdings:
-            return Prepared(context=NO_PORTFOLIO_CONTEXT)
         user = state.get("user")
-        run.inputs.update(
-            holdings=portfolio.holdings, risk_profile=user.risk_profile if user else None
-        )
-        analysis = await self._portfolios.analyze(
-            portfolio.holdings, risk_profile=run.inputs["risk_profile"]
-        )
-        self._record(run, analysis, portfolio.name)
-        facts = {"portfolio_name": portfolio.name, **analysis_facts(analysis)}
+        risk_profile = user.risk_profile if user else None
+        shot = state.get("screenshot")
+        if shot is not None and shot.turn_id == state.get("turn_id") and not shot.holdings:
+            unavailable = shot.status == "unavailable"
+            return Prepared(
+                early=AgentOutput(
+                    agent=self.name,
+                    answer_md=(
+                        SCREENSHOT_UNAVAILABLE_ANSWER
+                        if unavailable
+                        else SCREENSHOT_UNREADABLE_ANSWER
+                    ),
+                    confidence=0.3,
+                    follow_ups=["What makes a portfolio diversified?"],
+                )
+            )
+        if shot is not None and shot.holdings:
+            holdings = [HoldingInput(symbol=h.symbol, quantity=h.quantity) for h in shot.holdings]
+            name = SCREENSHOT_NAME
+        else:
+            portfolio = state.get("portfolio")
+            if portfolio is None or not portfolio.holdings:
+                return Prepared(context=NO_PORTFOLIO_CONTEXT)
+            holdings, name = portfolio.holdings, portfolio.name
+        run.inputs.update(holdings=holdings, risk_profile=risk_profile)
+        analysis = await self._portfolios.analyze(holdings, risk_profile=risk_profile)
+        facts: dict[str, Any] = {"portfolio_name": name, **analysis_facts(analysis)}
+        if shot is not None and shot.holdings:
+            self._record_screenshot(run, shot, analysis)
+            facts["source"] = "holdings read from the user's screenshot; values use live prices"
+        self._record(run, analysis, name)
         return Prepared(
             context=as_data("portfolio_analysis", to_json(facts)),
-            data={"analysis": analysis, "name": portfolio.name},
+            data={"analysis": analysis, "name": name},
+        )
+
+    def _record_screenshot(
+        self, run: AgentRun, shot: ScreenshotRead, analysis: PortfolioAnalysis
+    ) -> None:
+        live = {h.symbol: h for h in analysis.holdings}
+        rows = []
+        for h in shot.holdings:
+            metrics = live.get(h.symbol)
+            rows.append(
+                {
+                    "symbol": h.symbol,
+                    "name": (metrics.name if metrics and metrics.name else h.name) or "",
+                    "quantity": h.quantity,
+                    "screenshot_price": h.price,
+                    "live_price": metrics.price if metrics else None,
+                    "market_value": metrics.market_value if metrics else None,
+                }
+            )
+        run.artifacts.append(
+            Artifact(
+                kind="screenshot_holdings",
+                title="Holdings read from your screenshot",
+                data={
+                    "rows": rows,
+                    "unpriced": analysis.unpriced,
+                    "freshness": [f.model_dump(mode="json") for f in analysis.freshness],
+                },
+            )
         )
 
     def _record(self, run: AgentRun, analysis: PortfolioAnalysis, name: str) -> None:
@@ -222,7 +286,7 @@ target allocation for them. Describe trade-offs instead.
     async def _benchmark_tool(self, run: AgentRun, args: BenchmarkArgs) -> str:
         holdings: Sequence[HoldingInput] = run.inputs.get("holdings", ())
         if not holdings:
-            return "Error: there is no saved portfolio to compare."
+            return "Error: there is no portfolio to compare."
         analysis = await self._portfolios.analyze(
             holdings, risk_profile=run.inputs.get("risk_profile"), benchmark_range=args.range
         )

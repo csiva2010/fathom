@@ -109,12 +109,13 @@ const WASH_SALE: ArticleSummary = {
   source_name: "IRS",
   source_url: "https://www.irs.gov/p550",
   last_reviewed: "2026-10-31",
+  reading_minutes: 2,
 };
 
 export const ARTICLES: ArticleList = {
   articles: [
     WASH_SALE,
-    { id: "index-funds", title: "Index Funds", category: "funds_etfs", category_label: "Funds & ETFs", level: "beginner", summary: "A fund that tracks a market index.", tags: [], source_name: "SEC", source_url: "https://www.investor.gov", last_reviewed: "2026-10-31" },
+    { id: "index-funds", title: "Index Funds", category: "funds_etfs", category_label: "Funds & ETFs", level: "beginner", summary: "A fund that tracks a market index.", tags: [], source_name: "SEC", source_url: "https://www.investor.gov", last_reviewed: "2026-10-31", reading_minutes: 1 },
   ],
   categories: [
     { id: "tax", label: "Tax", count: 11 },
@@ -123,4 +124,8 @@ export const ARTICLES: ArticleList = {
   levels: ["beginner", "intermediate", "advanced"],
 };
 
-export const ARTICLE: Article = { ...WASH_SALE, body_md: "# The Wash Sale Rule\n\nA wash sale happens when **you sell at a loss**." };
+export const ARTICLE: Article = {
+  ...WASH_SALE,
+  body_md: "# The Wash Sale Rule\n\nA wash sale happens when **you sell at a loss**.",
+  related: [{ ...WASH_SALE, id: "tax-loss-harvesting", title: "Tax-Loss Harvesting", level: "advanced", reading_minutes: 3 }],
+};

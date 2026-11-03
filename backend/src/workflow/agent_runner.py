@@ -8,12 +8,12 @@ synthesizer shows with whatever the other agents produced.
 from __future__ import annotations
 
 import asyncio
-import time
 from typing import Any, Protocol
 
 from src.core.errors import AppError
 from src.core.logging import get_logger
 from src.workflow.state import AgentName, AgentOutput, FinanceState, NodeError, TraceEvent
+from src.workflow.tracing import TraceStep, trace_step
 
 log = get_logger(__name__)
 
@@ -32,8 +32,11 @@ class AgentNode:
         self._retries = retries
 
     async def __call__(self, state: FinanceState) -> dict[str, Any]:
+        with trace_step(self._agent.name.value) as step:
+            return await self._run(state, step)
+
+    async def _run(self, state: FinanceState, step: TraceStep) -> dict[str, Any]:
         name = self._agent.name.value
-        started = time.perf_counter()
         error: NodeError | None = None
         for attempt in range(self._retries + 1):
             try:
@@ -60,18 +63,18 @@ class AgentNode:
             else:
                 return {
                     "agent_outputs": [output],
-                    "trace": [self._trace(started, attempt, output=output)],
+                    "trace": [self._trace(step, attempt, output=output)],
                 }
             log.warning(
                 "agent attempt failed",
                 extra={"agent": name, "attempt": attempt + 1, "code": error.code},
             )
         assert error is not None
-        return {"errors": [error], "trace": [self._trace(started, self._retries, error=error)]}
+        return {"errors": [error], "trace": [self._trace(step, self._retries, error=error)]}
 
     def _trace(
         self,
-        started: float,
+        step: TraceStep,
         attempt: int,
         *,
         output: AgentOutput | None = None,
@@ -81,16 +84,14 @@ class AgentNode:
         if output is not None:
             detail.update(
                 citations=len(output.citations),
+                sources=[c.title for c in output.citations],
                 artifacts=[a.kind for a in output.artifacts],
                 confidence=output.confidence,
+                grounded=output.grounded,
             )
         if error is not None:
             detail["error"] = error.code
-        return TraceEvent(
-            node=self._agent.name.value,
-            latency_ms=round((time.perf_counter() - started) * 1000),
-            detail=detail,
-        )
+        return step.event(**detail)
 
 
 async def agent_unavailable_node(state: dict[str, Any]) -> dict[str, Any]:
@@ -103,7 +104,10 @@ async def agent_unavailable_node(state: dict[str, Any]) -> dict[str, Any]:
                 code="agent_unavailable",
                 message=f"{agent.label} isn't available yet",
             )
-        ]
+        ],
+        "trace": [
+            TraceEvent(node=agent.value, latency_ms=0, detail={"error": "agent_unavailable"})
+        ],
     }
 
 

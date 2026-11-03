@@ -11,7 +11,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from src.core.errors import ConfigurationError, NotFound
-from src.rag.catalog import category_label, summarize
+from src.rag.catalog import category_label, reading_minutes, summarize
 from src.rag.knowledge_base import KnowledgeBase
 from src.rag.models import Article, GlossaryTerm
 from src.rag.retriever import citation_for
@@ -49,6 +49,7 @@ def _summary(article: Article) -> ArticleSummary:
         source_name=meta.source_name,
         source_url=str(meta.source_url),
         last_reviewed=meta.last_reviewed,
+        reading_minutes=reading_minutes(article.body),
     )
 
 
@@ -76,10 +77,15 @@ def list_articles(
 
 @router.get("/articles/{article_id}", response_model=ArticleOut, summary="One article")
 def get_article(article_id: str, _user: CurrentUserDep, container: ContainerDep) -> ArticleOut:
-    article = _kb(container).catalog.get(article_id)
+    catalog = _kb(container).catalog
+    article = catalog.get(article_id)
     if article is None:
         raise NotFound("That article doesn't exist.")
-    return ArticleOut(**_summary(article).model_dump(), body_md=article.body)
+    return ArticleOut(
+        **_summary(article).model_dump(),
+        body_md=article.body,
+        related=[_summary(a) for a in catalog.related(article_id)],
+    )
 
 
 @router.get("/search", response_model=KbSearchOut, summary="Ranked passages for a question")

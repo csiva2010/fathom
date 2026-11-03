@@ -121,11 +121,48 @@ symbols are set in `backend/config.yaml` under `market.indices`.
 
 ```bash
 cd backend && .venv/bin/pytest --cov && .venv/bin/ruff check src scripts tests && .venv/bin/mypy src scripts
-cd frontend && npm test && npm run lint && npm run typecheck
+cd frontend && npm run test:coverage && npm run lint && npm run typecheck
 ```
 
-CI (`.github/workflows/ci.yml`) runs all of these, enforces 90% backend coverage, rebuilds the
-knowledge base, and checks that the frontend's generated API types match the backend schema.
+CI (`.github/workflows/ci.yml`) runs all of these, enforces 90% coverage on both backend and
+frontend, rebuilds the knowledge base, runs the offline evaluation sets, and checks that the
+frontend's generated API types match the backend schema.
+
+## Evaluation (golden sets)
+
+Golden sets live in `backend/tests/eval/golden/`:
+
+| Set | Cases | Measures |
+| --- | --- | --- |
+| `retrieval.yaml` | 52 questions + 4 off-topic | hit@1/3/5, MRR@5, context precision@5, abstention |
+| `routing.yaml` | 42 messages | agent recall/precision per agent, advice redirects, clarifications, tickers, follow-ups |
+| `compliance.yaml` | 20 drafts + 18 messages | precision/recall of the advice-language and advice-request detectors |
+| `answers.yaml` | 15 full turns | agents, cited sources, charts, disclaimer, no advice; faithfulness (live) |
+
+```bash
+cd backend
+.venv/bin/python -m scripts.run_evals                    # offline: no keys, deterministic (CI)
+.venv/bin/python -m scripts.run_evals --live --pause 4   # real models + LLM faithfulness judge
+.venv/bin/python -m scripts.run_evals --live --suite answers --case ans-01 ans-04
+```
+
+Offline runs the real knowledge base with keyword retrieval, rule routing, template answers
+and mock market data; `tests/eval/test_offline_evals.py` fails CI if a metric drops below its
+floor (`OFFLINE_FLOORS` in `tests/eval/harness.py`). Live runs use `backend/.env` and make
+about 150 model calls. Reports (Markdown + JSON) are written to `backend/var/evals/`.
+
+## "How I answered" trace
+
+Every workflow node records its latency, model calls, tokens, models used (and whether a
+fallback model answered) and tool calls. The trace streams to the chat as `trace` events,
+is saved with each answer, and shows under it in a collapsible "How I answered" panel.
+
+For the full run tree (every LangGraph node, prompt, model response and tool call), turn on
+LangSmith in `backend/.env`: `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY=...`
+(optional `LANGSMITH_PROJECT`, default `fathom`; EU accounts also set
+`LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com`). The API exports these when it
+starts, so restart it after changing them. Live evals trace to `<project>-evals`; tests and
+offline evals never trace.
 
 ## Knowledge base
 

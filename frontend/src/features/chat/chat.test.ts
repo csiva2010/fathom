@@ -38,7 +38,7 @@ describe("applyEvent", () => {
     expect(draft.error).toEqual({ message: "Oops", retryable: true });
     draft = applyEvent(draft, {
       type: "done",
-      message: { id: "m", role: "assistant", kind: "redirect", content: "Final", follow_ups: ["Next?"] },
+      message: { id: "m", role: "assistant", kind: "redirect", content: "Final", follow_ups: ["Next?"], has_image: false },
     });
     expect(draft).toMatchObject({ status: "done", kind: "redirect", content: "Final", followUps: ["Next?"], agents: [] });
   });

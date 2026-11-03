@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { ErrorState } from "@/components/feedback/ErrorState";
@@ -7,7 +7,7 @@ import { chipClass, INPUT_CLASS } from "@/components/ui/styles";
 import { useDebounced } from "@/lib/hooks/useDebounced";
 
 import { useArticles } from "../hooks/useLearn";
-import { LevelBadge } from "./LevelBadge";
+import { ArticleCard } from "./ArticleCard";
 
 /** Browse and search articles by category and level (KB-08). Filters live in the URL. */
 export function ArticleBrowser() {
@@ -92,17 +92,7 @@ export function ArticleBrowser() {
           <ul className="grid gap-3 sm:grid-cols-2">
             {articles.data.articles.map((a) => (
               <li key={a.id}>
-                <Link
-                  to={`/learn/${a.id}`}
-                  className="block h-full rounded-xl border border-slate-200 p-4 hover:border-emerald-600 dark:border-slate-700 dark:hover:border-emerald-400"
-                >
-                  <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                    <span>{a.category_label}</span>
-                    <LevelBadge level={a.level} />
-                  </div>
-                  <h3 className="font-semibold">{a.title}</h3>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{a.summary}</p>
-                </Link>
+                <ArticleCard article={a} />
               </li>
             ))}
           </ul>

@@ -38,11 +38,16 @@ export type ChatMessage = Schemas["ChatMessage"];
 export type Conversation = Schemas["ConversationOut"];
 export type ConversationList = Schemas["ConversationList"];
 export type ConversationDetail = Schemas["ConversationDetail"];
+export type MessageCreate = Schemas["MessageCreate"];
+export type ImageAttachment = Schemas["ImageAttachment"];
+/** One workflow node's timing, LLM usage and tool calls ("How I answered", INN-01). */
+export type TraceStep = Schemas["TraceEvent"];
 
 /** One Server-Sent Event from POST /conversations/{id}/messages; `type` tells them apart. */
 export type ChatEvent =
   | Schemas["RouteEvent"]
   | Schemas["AgentStartEvent"]
+  | Schemas["TraceStepEvent"]
   | Schemas["TokenEvent"]
   | Schemas["ReplaceEvent"]
   | Schemas["ArtifactEvent"]

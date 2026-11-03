@@ -728,8 +728,12 @@ export interface components {
              * Format: date
              */
             last_reviewed: string;
+            /** Reading Minutes */
+            reading_minutes: number;
             /** Body Md */
             body_md: string;
+            /** Related */
+            related?: components["schemas"]["ArticleSummary"][];
         };
         /** ArticleSummary */
         ArticleSummary: {
@@ -756,6 +760,8 @@ export interface components {
              * Format: date
              */
             last_reviewed: string;
+            /** Reading Minutes */
+            reading_minutes: number;
         };
         /**
          * Artifact
@@ -766,7 +772,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "quote_card" | "price_chart" | "indicators" | "index_cards" | "movers" | "sector_table" | "portfolio_metrics" | "allocation" | "projection" | "example_allocation" | "news_list";
+            kind: "quote_card" | "price_chart" | "indicators" | "index_cards" | "movers" | "sector_table" | "portfolio_metrics" | "allocation" | "projection" | "example_allocation" | "news_list" | "screenshot_holdings";
             /** Title */
             title: string;
             /** Data */
@@ -886,6 +892,13 @@ export interface components {
             freshness?: components["schemas"]["Freshness"][];
             /** Follow Ups */
             follow_ups?: string[];
+            /**
+             * Has Image
+             * @default false
+             */
+            has_image: boolean;
+            /** Trace */
+            trace?: components["schemas"]["TraceEvent"][];
         };
         /**
          * Citation
@@ -1287,6 +1300,22 @@ export interface components {
             cost_basis: number | null;
             asset_class: components["schemas"]["AssetClass"] | null;
         };
+        /**
+         * ImageAttachment
+         * @description A portfolio screenshot (CH-09). The route checks size and type; it is never stored.
+         */
+        ImageAttachment: {
+            /**
+             * Media Type
+             * @enum {string}
+             */
+            media_type: "image/png" | "image/jpeg" | "image/webp";
+            /**
+             * Data
+             * @description Base64 image bytes
+             */
+            data: string;
+        };
         /** IndexOut */
         IndexOut: {
             index: components["schemas"]["IndexQuote"];
@@ -1405,8 +1434,12 @@ export interface components {
         };
         /** MessageCreate */
         MessageCreate: {
-            /** Content */
+            /**
+             * Content
+             * @default
+             */
             content: string;
+            image?: components["schemas"]["ImageAttachment"] | null;
         };
         /** MoversResponse */
         MoversResponse: {
@@ -1875,6 +1908,57 @@ export interface components {
             type: "token";
             /** Text */
             text: string;
+        };
+        /**
+         * TraceEvent
+         * @description One node's timing, LLM usage and tool calls for logs and the "How I answered" panel
+         *     (OR-08, INN-01). Built by `src.workflow.tracing.trace_step`.
+         */
+        TraceEvent: {
+            /** Node */
+            node: string;
+            /** Latency Ms */
+            latency_ms: number;
+            /**
+             * Llm Calls
+             * @default 0
+             */
+            llm_calls: number;
+            /**
+             * Input Tokens
+             * @default 0
+             */
+            input_tokens: number;
+            /**
+             * Output Tokens
+             * @default 0
+             */
+            output_tokens: number;
+            /** Models */
+            models?: string[];
+            /**
+             * Fallbacks
+             * @default 0
+             */
+            fallbacks: number;
+            /** Tools */
+            tools?: string[];
+            /** Detail */
+            detail?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * TraceStepEvent
+         * @description A workflow node finished: its timing, LLM usage and tool calls (OR-08).
+         */
+        TraceStepEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "trace";
+            step: components["schemas"]["TraceEvent"];
         };
     };
     responses: never;

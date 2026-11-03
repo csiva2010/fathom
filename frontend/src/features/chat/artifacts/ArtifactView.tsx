@@ -339,6 +339,57 @@ function NewsList({ title, data }: { title: string; data: Data }) {
   );
 }
 
+interface ScreenshotRow {
+  symbol: string;
+  name: string;
+  quantity: number;
+  screenshot_price: number | null;
+  live_price: number | null;
+  market_value: number | null;
+}
+
+/** Holdings read from a chat screenshot (CH-09): the image's price beside the live one. */
+function ScreenshotHoldings({ title, data }: { title: string; data: Data }) {
+  const rows = (data.rows as ScreenshotRow[]) ?? [];
+  const unpriced = (data.unpriced as string[]) ?? [];
+  const dash = <span className="text-slate-400">–</span>;
+  return (
+    <Card title={title} freshness={data.freshness as Freshness[]}>
+      <table className="w-full text-sm">
+        <caption className="sr-only">Holdings read from the screenshot</caption>
+        <thead className="text-left text-xs text-slate-500 dark:text-slate-400">
+          <tr>
+            <th className="py-1 font-medium">Holding</th>
+            <th className="py-1 text-right font-medium">Shares</th>
+            <th className="py-1 text-right font-medium">In image</th>
+            <th className="py-1 text-right font-medium">Price now</th>
+            <th className="py-1 text-right font-medium">Value now</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.symbol} className="border-t border-slate-100 tabular-nums dark:border-slate-800">
+              <td className="py-1">
+                <span className="font-medium">{r.symbol}</span>
+                {r.name && <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{r.name}</span>}
+              </td>
+              <td className="py-1 text-right">{r.quantity.toLocaleString("en-US", { maximumFractionDigits: 4 })}</td>
+              <td className="py-1 text-right">{num(r.screenshot_price) !== null ? formatPrice(r.screenshot_price as number) : dash}</td>
+              <td className="py-1 text-right">{num(r.live_price) !== null ? formatPrice(r.live_price as number) : dash}</td>
+              <td className="py-1 text-right">{num(r.market_value) !== null ? formatUsd(r.market_value as number) : dash}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        Values use current market prices, not the prices in the image. Check the rows: if a ticker or share count was misread,
+        type the correction in the chat.
+        {unpriced.length > 0 && ` Couldn't price: ${unpriced.join(", ")}.`}
+      </p>
+    </Card>
+  );
+}
+
 const RENDERERS: Record<Artifact["kind"], (props: { title: string; data: Data }) => ReactNode> = {
   quote_card: QuoteCard,
   indicators: IndicatorsCard,
@@ -351,6 +402,7 @@ const RENDERERS: Record<Artifact["kind"], (props: { title: string; data: Data })
   projection: Projection,
   example_allocation: ExampleAllocation,
   news_list: NewsList,
+  screenshot_holdings: ScreenshotHoldings,
 };
 
 /** A malformed payload hides its card instead of breaking the conversation. */

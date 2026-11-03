@@ -1,13 +1,15 @@
 """The LangGraph workflow (OR-01 to OR-08).
 
-    START -> load_context -> router -+-> advice_redirect ------------------+
-                                     +-> clarify --------------------------+
-                                     +-> Send(agent) x N (parallel) -> fallback -> synthesizer -+
-                                                                                               |
-                                     compliance <-------------------------------------------- -+
-                                         |
-                                        END
+    START -> load_context -> read_screenshot -> router -+-> advice_redirect ------------------+
+                                                        +-> clarify --------------------------+
+                                                        +-> Send(agent) x N (parallel)        |
+                                                              -> fallback -> synthesizer -----+
+                                                                                              |
+                                                        compliance <--------------------------+
+                                                            |
+                                                           END
 
+read_screenshot does nothing unless the turn has an image (see src/workflow/screenshot.py).
 The router's plan fans out with LangGraph's Send API; agent outputs merge through the
 `agent_outputs` reducer. All six agents are registered in production. A graph built with
 fewer (tests, partial deployments) replaces a missing agent with its substitute (Tax ->
@@ -33,6 +35,7 @@ from src.workflow.compliance import ComplianceNode
 from src.workflow.context import ContextLoader, LoadContextNode
 from src.workflow.responses import advice_redirect_node, clarify_node
 from src.workflow.router import RouterNode
+from src.workflow.screenshot import ReadScreenshotNode
 from src.workflow.state import AgentName, FinanceState
 from src.workflow.synthesizer import SynthesizerNode
 
@@ -82,6 +85,9 @@ def build_workflow(
     graph = StateGraph(FinanceState)
 
     graph.add_node("load_context", LoadContextNode(deps.context_loader, config.max_message_chars))
+    graph.add_node(
+        "read_screenshot", ReadScreenshotNode(deps.gateway, config.max_screenshot_holdings)
+    )
     graph.add_node("router", RouterNode(deps.gateway, config))
     graph.add_node("clarify", clarify_node)
     graph.add_node("advice_redirect", advice_redirect_node)
@@ -100,7 +106,8 @@ def build_workflow(
     graph.add_node("compliance", ComplianceNode(deps.gateway))
 
     graph.add_edge(START, "load_context")
-    graph.add_edge("load_context", "router")
+    graph.add_edge("load_context", "read_screenshot")
+    graph.add_edge("read_screenshot", "router")
     destinations = ["clarify", "advice_redirect", UNAVAILABLE, *(a.value for a in deps.agents)]
     graph.add_conditional_edges(
         "router",

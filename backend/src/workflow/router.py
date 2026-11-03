@@ -11,7 +11,6 @@ Confidence below the configured threshold turns into a clarifying question (OR-0
 from __future__ import annotations
 
 import re
-import time
 from typing import Any
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -22,7 +21,8 @@ from src.core.errors import LLMUnavailable
 from src.core.llm import LLMGateway
 from src.core.logging import get_logger
 from src.workflow.context import latest_user_text, recent_history
-from src.workflow.state import AgentName, FinanceState, RoutePlan, TraceEvent
+from src.workflow.state import AgentName, FinanceState, RoutePlan
+from src.workflow.tracing import TraceStep, trace_step
 
 log = get_logger(__name__)
 
@@ -55,7 +55,8 @@ _REFERENCE = re.compile(r"\b(it|its|it's|that|this|they|them|those|these|same)\b
 _KEYWORDS: dict[AgentName, re.Pattern[str]] = {
     AgentName.MARKET: re.compile(
         r"\b(price|quote|trading at|market (today|now|overview)|how('s| is) the market|"
-        r"index|indices|s&p|nasdaq|dow|movers?|gainers?|losers?|sectors?|moving average|"
+        r"index(?! funds?)|indices|s&p|nasdaq|dow|movers?|gainers?|losers?|sectors?|"
+        r"moving average|"
         r"52[- ]week|volatil\w*|chart|performance|doing today|up today|down today)\b",
         re.I,
     ),
@@ -78,13 +79,19 @@ _KEYWORDS: dict[AgentName, re.Pattern[str]] = {
         r"deduct\w*|rmd)\b",
         re.I,
     ),
+    # Last, so a specialist stays the main agent; adds the concept part of mixed questions
+    # ("What's an ETF, and how is SPY doing?"). With no match at all, Q&A is the default.
+    AgentName.FINANCE_QA: re.compile(
+        r"\b(what('s| is| are) (a|an)|explain|define|meaning of|what does \S+ mean)\b", re.I
+    ),
 }
 
 AGENT_GUIDE = """Agents you can route to:
 - finance_qa: explains finance concepts and terms (what is an ETF, how bonds work).
 - market_analysis: current quotes, price history, indices, sectors, movers, moving averages
   and volatility for specific tickers or the overall market.
-- portfolio_analysis: analyzes the user's saved portfolio (value, allocation, risk, fees).
+- portfolio_analysis: analyzes the user's saved portfolio or holdings from a screenshot
+  they shared (value, allocation, risk, fees).
 - goal_planning: goal projections, required monthly savings, allocations by risk profile.
 - news_synthesizer: recent news for a ticker or the market and why it matters.
 - tax_education: US account types (401(k), IRA, Roth, HSA, 529), capital gains, wash sales."""
@@ -144,8 +151,11 @@ def clean_tickers(raw: list[str], limit: int) -> list[str]:
     return tickers[:limit]
 
 
-def rule_based_decision(text: str, focus: list[str]) -> RouterDecision:
-    """Keyword routing used when the LLM is unavailable."""
+def rule_based_decision(
+    text: str, focus: list[str], default: AgentName = AgentName.FINANCE_QA
+) -> RouterDecision:
+    """Keyword routing used when the LLM is unavailable; `default` answers when no
+    keyword matches."""
     tickers = extract_tickers(text)
     if not tickers and focus and _REFERENCE.search(text):
         tickers = list(focus)
@@ -153,7 +163,7 @@ def rule_based_decision(text: str, focus: list[str]) -> RouterDecision:
     if tickers and not agents:
         agents = [AgentName.MARKET]
     if not agents:
-        agents = [AgentName.FINANCE_QA]
+        agents = [default]
     return RouterDecision(
         agents=agents,
         confidence=0.7 if len(text.split()) >= 2 else 0.4,
@@ -164,13 +174,34 @@ def rule_based_decision(text: str, focus: list[str]) -> RouterDecision:
     )
 
 
+def screenshot_this_turn(state: FinanceState) -> bool:
+    shot = state.get("screenshot")
+    return shot is not None and shot.turn_id == state.get("turn_id")
+
+
+def with_portfolio_agent(plan: RoutePlan, max_agents: int) -> RoutePlan:
+    """An attached screenshot always reaches the Portfolio agent, which explains the
+    holdings or says the image couldn't be read. Advice requests still redirect."""
+    agents = [AgentName.PORTFOLIO, *(a for a in plan.agents if a is not AgentName.PORTFOLIO)]
+    return plan.model_copy(
+        update={
+            "agents": agents[:max_agents],
+            "needs_clarification": False,
+            "clarifying_question": None,
+        }
+    )
+
+
 class RouterNode:
     def __init__(self, gateway: LLMGateway, config: WorkflowConfig):
         self._gateway = gateway
         self._config = config
 
     async def __call__(self, state: FinanceState) -> dict[str, Any]:
-        started = time.perf_counter()
+        with trace_step("router") as step:
+            return await self._route(state, step)
+
+    async def _route(self, state: FinanceState, step: TraceStep) -> dict[str, Any]:
         text = latest_user_text(state)
         focus = list(state.get("focus_tickers") or [])
 
@@ -179,9 +210,12 @@ class RouterNode:
             decision = await self._gateway.astructured(RouterDecision, self._messages(state, focus))
         except LLMUnavailable:
             method = "rules"
-            decision = rule_based_decision(text, focus)
+            default = AgentName.PORTFOLIO if screenshot_this_turn(state) else AgentName.FINANCE_QA
+            decision = rule_based_decision(text, focus, default)
 
         plan = self._plan(decision, text, method)
+        if screenshot_this_turn(state):
+            plan = with_portfolio_agent(plan, self._config.max_agents_per_turn)
         new_focus = plan.tickers or focus
         log.info(
             "routed",
@@ -197,24 +231,25 @@ class RouterNode:
             "plan": plan,
             "focus_tickers": new_focus,
             "trace": [
-                TraceEvent(
-                    node="router",
-                    latency_ms=round((time.perf_counter() - started) * 1000),
-                    detail={
-                        "method": method,
-                        "agents": [a.value for a in plan.agents],
-                        "confidence": plan.confidence,
-                        "tickers": plan.tickers,
-                    },
+                step.event(
+                    method=method,
+                    agents=[a.value for a in plan.agents],
+                    confidence=plan.confidence,
+                    tickers=plan.tickers,
+                    advice=plan.is_advice_request,
+                    clarify=plan.needs_clarification,
                 )
             ],
         }
 
     def _messages(self, state: FinanceState, focus: list[str]) -> list[Any]:
         portfolio = state.get("portfolio")
+        shot = state.get("screenshot")
         context = [
             f"Tickers discussed recently: {', '.join(focus) or 'none'}",
             f"User has a saved portfolio: {'yes' if portfolio else 'no'}",
+            "User shared holdings from a screenshot in this conversation: "
+            f"{'yes' if shot and shot.holdings else 'no'}",
             f"User has saved goals: {'yes' if state.get('goals') else 'no'}",
         ]
         history = recent_history(state, self._config.history_messages)

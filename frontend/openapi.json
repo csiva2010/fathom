@@ -1489,6 +1489,9 @@
                             "$ref": "#/components/schemas/AgentStartEvent"
                           },
                           {
+                            "$ref": "#/components/schemas/TraceStepEvent"
+                          },
+                          {
                             "$ref": "#/components/schemas/TokenEvent"
                           },
                           {
@@ -1515,6 +1518,7 @@
                           "mapping": {
                             "route": "#/components/schemas/RouteEvent",
                             "agent_start": "#/components/schemas/AgentStartEvent",
+                            "trace": "#/components/schemas/TraceStepEvent",
                             "token": "#/components/schemas/TokenEvent",
                             "replace": "#/components/schemas/ReplaceEvent",
                             "artifact": "#/components/schemas/ArtifactEvent",
@@ -3216,9 +3220,20 @@
             "format": "date",
             "title": "Last Reviewed"
           },
+          "reading_minutes": {
+            "type": "integer",
+            "title": "Reading Minutes"
+          },
           "body_md": {
             "type": "string",
             "title": "Body Md"
+          },
+          "related": {
+            "items": {
+              "$ref": "#/components/schemas/ArticleSummary"
+            },
+            "type": "array",
+            "title": "Related"
           }
         },
         "type": "object",
@@ -3233,6 +3248,7 @@
           "source_name",
           "source_url",
           "last_reviewed",
+          "reading_minutes",
           "body_md"
         ],
         "title": "ArticleOut"
@@ -3282,6 +3298,10 @@
             "type": "string",
             "format": "date",
             "title": "Last Reviewed"
+          },
+          "reading_minutes": {
+            "type": "integer",
+            "title": "Reading Minutes"
           }
         },
         "type": "object",
@@ -3295,7 +3315,8 @@
           "tags",
           "source_name",
           "source_url",
-          "last_reviewed"
+          "last_reviewed",
+          "reading_minutes"
         ],
         "title": "ArticleSummary"
       },
@@ -3314,7 +3335,8 @@
               "allocation",
               "projection",
               "example_allocation",
-              "news_list"
+              "news_list",
+              "screenshot_holdings"
             ],
             "title": "Kind"
           },
@@ -3565,6 +3587,18 @@
             },
             "type": "array",
             "title": "Follow Ups"
+          },
+          "has_image": {
+            "type": "boolean",
+            "title": "Has Image",
+            "default": false
+          },
+          "trace": {
+            "items": {
+              "$ref": "#/components/schemas/TraceEvent"
+            },
+            "type": "array",
+            "title": "Trace"
           }
         },
         "type": "object",
@@ -4543,6 +4577,33 @@
         ],
         "title": "HoldingOut"
       },
+      "ImageAttachment": {
+        "properties": {
+          "media_type": {
+            "type": "string",
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "title": "Media Type"
+          },
+          "data": {
+            "type": "string",
+            "maxLength": 14000000,
+            "minLength": 1,
+            "title": "Data",
+            "description": "Base64 image bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "media_type",
+          "data"
+        ],
+        "title": "ImageAttachment",
+        "description": "A portfolio screenshot (CH-09). The route checks size and type; it is never stored."
+      },
       "IndexOut": {
         "properties": {
           "index": {
@@ -4891,14 +4952,21 @@
           "content": {
             "type": "string",
             "maxLength": 20000,
-            "minLength": 1,
-            "title": "Content"
+            "title": "Content",
+            "default": ""
+          },
+          "image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImageAttachment"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
-        "required": [
-          "content"
-        ],
         "title": "MessageCreate"
       },
       "MoversResponse": {
@@ -6133,6 +6201,83 @@
         ],
         "title": "TokenEvent",
         "description": "Text to append to the answer."
+      },
+      "TraceEvent": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "llm_calls": {
+            "type": "integer",
+            "title": "Llm Calls",
+            "default": 0
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens",
+            "default": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens",
+            "default": 0
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "fallbacks": {
+            "type": "integer",
+            "title": "Fallbacks",
+            "default": 0
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tools"
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "latency_ms"
+        ],
+        "title": "TraceEvent",
+        "description": "One node's timing, LLM usage and tool calls for logs and the \"How I answered\" panel\n(OR-08, INN-01). Built by `src.workflow.tracing.trace_step`."
+      },
+      "TraceStepEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "trace",
+            "title": "Type",
+            "default": "trace"
+          },
+          "step": {
+            "$ref": "#/components/schemas/TraceEvent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step"
+        ],
+        "title": "TraceStepEvent",
+        "description": "A workflow node finished: its timing, LLM usage and tool calls (OR-08)."
       }
     }
   }

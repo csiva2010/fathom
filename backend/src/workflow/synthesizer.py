@@ -8,7 +8,6 @@ call fails, the answers are joined under agent headings instead.
 from __future__ import annotations
 
 import re
-import time
 from typing import Any
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -17,7 +16,8 @@ from src.core.errors import LLMUnavailable
 from src.core.llm import LLMGateway
 from src.core.logging import get_logger
 from src.rag.models import Citation
-from src.workflow.state import AgentOutput, FinalAnswer, FinanceState, TraceEvent
+from src.workflow.state import AgentOutput, FinalAnswer, FinanceState
+from src.workflow.tracing import TraceStep, trace_step
 
 log = get_logger(__name__)
 
@@ -73,7 +73,10 @@ class SynthesizerNode:
         self._gateway = gateway
 
     async def __call__(self, state: FinanceState) -> dict[str, Any]:
-        started = time.perf_counter()
+        with trace_step("synthesizer") as step:
+            return await self._synthesize(state, step)
+
+    async def _synthesize(self, state: FinanceState, step: TraceStep) -> dict[str, Any]:
         plan = state.get("plan")
         order = plan.agents if plan else []
         outputs = sorted(
@@ -104,13 +107,7 @@ class SynthesizerNode:
         )
         return {
             "draft": draft,
-            "trace": [
-                TraceEvent(
-                    node="synthesizer",
-                    latency_ms=round((time.perf_counter() - started) * 1000),
-                    detail={"agents": len(outputs), "merged_by": merged_by},
-                )
-            ],
+            "trace": [step.event(agents=len(outputs), merged_by=merged_by, notes=len(notes))],
         }
 
     async def _merge(

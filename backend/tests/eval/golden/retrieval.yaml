@@ -1,0 +1,86 @@
+# Retrieval golden set (INN-02, KB-05, KB-06).
+#
+# Each case is a question phrased the way a user would ask it (not the article title) and
+# the article ids that would be a correct source. Any one of `expected` counts as a hit.
+# `abstain: true` cases are outside the knowledge base: the retriever should return
+# nothing so the agent says it doesn't know instead of guessing.
+#
+# Metrics: hit@1, hit@3, hit@5, MRR@5, context precision@5 (share of the returned chunks
+# that come from an expected article) and abstention accuracy.
+
+cases:
+  # basics
+  - { id: ret-01, q: "How does compound interest make savings grow faster over time?", expected: [compound-interest, time-value-of-money, rule-of-72] }
+  - { id: ret-02, q: "Roughly how many years does it take for money to double at 8 percent?", expected: [rule-of-72] }
+  - { id: ret-03, q: "How does inflation eat away at the value of cash?", expected: [inflation-and-purchasing-power] }
+  - { id: ret-04, q: "Is my brokerage account protected if the broker goes bankrupt?", expected: [account-protection-fdic-sipc] }
+  - { id: ret-05, q: "Why do higher expected returns come with more risk?", expected: [risk-and-return] }
+  - { id: ret-06, q: "What's the difference between saving money and investing it?", expected: [saving-vs-investing, what-is-investing] }
+
+  # stocks
+  - { id: ret-07, q: "What does a price-to-earnings ratio tell me about a stock?", expected: [price-to-earnings-ratio] }
+  - { id: ret-08, q: "What is market cap and how are companies grouped by size?", expected: [market-capitalization] }
+  - { id: ret-09, q: "When would I use a limit order instead of a market order?", expected: [order-types] }
+  - { id: ret-10, q: "How do companies pay dividends to shareholders?", expected: [dividends-explained] }
+  - { id: ret-11, q: "What happens to my shares when a company does a stock split?", expected: [stock-splits-and-buybacks] }
+  - { id: ret-12, q: "What's the difference between growth stocks and value stocks?", expected: [growth-vs-value-investing] }
+
+  # bonds
+  - { id: ret-13, q: "Why do bond prices fall when interest rates go up?", expected: [bond-prices-and-interest-rates, bond-duration] }
+  - { id: ret-14, q: "What does it mean when the yield curve inverts?", expected: [yield-curve] }
+  - { id: ret-15, q: "How do Treasury Inflation-Protected Securities work?", expected: [tips-inflation-protected] }
+  - { id: ret-16, q: "Is the interest from municipal bonds tax free?", expected: [municipal-bonds] }
+  - { id: ret-17, q: "What do bond credit ratings like AAA or junk mean?", expected: [corporate-bonds-and-credit-ratings] }
+
+  # funds and ETFs
+  - { id: ret-18, q: "What's the difference between an ETF and a mutual fund?", expected: [etfs-vs-mutual-funds] }
+  - { id: ret-19, q: "Why does a fund's expense ratio matter over decades?", expected: [expense-ratios, understanding-investment-fees] }
+  - { id: ret-20, q: "How does a target-date retirement fund change its mix over time?", expected: [target-date-funds] }
+  - { id: ret-21, q: "Why do leveraged ETFs lose value when held for a long time?", expected: [leveraged-and-inverse-etfs] }
+  - { id: ret-22, q: "What is a real estate investment trust?", expected: [reits] }
+  - { id: ret-23, q: "Are index funds better than actively managed funds?", expected: [active-vs-passive-funds, index-funds] }
+
+  # retirement
+  - { id: ret-24, q: "How does an employer 401(k) match work?", expected: [401k-basics] }
+  - { id: ret-25, q: "Can I put extra money into my 401k once I turn 50?", expected: [catch-up-contributions] }
+  - { id: ret-26, q: "What is the 4 percent rule for retirement withdrawals?", expected: [four-percent-rule] }
+  - { id: ret-27, q: "At what age do required minimum distributions start?", expected: [required-minimum-distributions] }
+  - { id: ret-28, q: "How do I move my old 401k when I change jobs?", expected: [rollovers] }
+  - { id: ret-29, q: "Why do bad returns early in retirement hurt more?", expected: [sequence-of-returns-risk] }
+
+  # tax
+  - { id: ret-30, q: "How is a Roth IRA different from a traditional IRA?", expected: [roth-vs-traditional-ira, backdoor-roth-ira] }
+  - { id: ret-31, q: "If I sell a stock at a loss and buy it back two weeks later, can I deduct the loss?", expected: [wash-sale-rule, tax-loss-harvesting] }
+  - { id: ret-32, q: "How are long-term capital gains taxed compared with short-term gains?", expected: [capital-gains-tax] }
+  - { id: ret-33, q: "What's the difference between my marginal and effective tax rate?", expected: [tax-brackets-marginal-vs-effective] }
+  - { id: ret-34, q: "Can a health savings account double as a retirement account?", expected: [health-savings-accounts] }
+  - { id: ret-35, q: "How do 529 plans help pay for college?", expected: [529-plans] }
+  - { id: ret-36, q: "What is a backdoor Roth conversion?", expected: [backdoor-roth-ira] }
+
+  # risk and diversification
+  - { id: ret-37, q: "How does diversification lower portfolio risk?", expected: [diversification-explained, correlation-and-diversification] }
+  - { id: ret-38, q: "What does rebalancing a portfolio mean?", expected: [rebalancing] }
+  - { id: ret-39, q: "What does a stock's beta measure?", expected: [beta-explained] }
+  - { id: ret-40, q: "What is maximum drawdown?", expected: [max-drawdown] }
+  - { id: ret-41, q: "What is a simple three fund portfolio?", expected: [three-fund-portfolio] }
+
+  # budgeting and saving
+  - { id: ret-42, q: "How many months of expenses should an emergency fund cover?", expected: [emergency-fund] }
+  - { id: ret-43, q: "How does the 50/30/20 budgeting rule split my income?", expected: [budgeting-50-30-20] }
+  - { id: ret-44, q: "Should I pay off the smallest debt or the highest interest debt first?", expected: [debt-avalanche-vs-snowball] }
+  - { id: ret-45, q: "What goes into a credit score?", expected: [credit-scores] }
+
+  # market mechanics and behavior
+  - { id: ret-46, q: "What does the VIX fear index measure?", expected: [vix-and-market-volatility] }
+  - { id: ret-47, q: "How does short selling a stock work?", expected: [short-selling] }
+  - { id: ret-48, q: "What's the difference between a correction and a bear market?", expected: [bull-bear-markets-and-corrections] }
+  - { id: ret-49, q: "How do Federal Reserve rate hikes affect stocks and bonds?", expected: [federal-reserve-and-interest-rates] }
+  - { id: ret-50, q: "What is dollar-cost averaging?", expected: [dollar-cost-averaging] }
+  - { id: ret-51, q: "Why do people hold on to losing investments too long?", expected: [loss-aversion, common-investor-biases] }
+  - { id: ret-52, q: "Does trying to time the market work?", expected: [market-timing, staying-the-course] }
+
+  # outside the knowledge base: nothing should be returned
+  - { id: ret-53, q: "What's a good recipe for banana bread?", abstain: true }
+  - { id: ret-54, q: "Who won the football World Cup in 2018?", abstain: true }
+  - { id: ret-55, q: "How do I fix a leaking kitchen faucet?", abstain: true }
+  - { id: ret-56, q: "Translate good morning into Japanese", abstain: true }

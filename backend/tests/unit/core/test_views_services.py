@@ -17,8 +17,9 @@ from src.core.services.risk_questionnaire import (
     profile_for_score,
     score_answers,
 )
-from src.rag.catalog import ArticleCatalog, category_label, summarize
+from src.rag.catalog import ArticleCatalog, category_label, reading_minutes, summarize
 from src.rag.ingestion.article_loader import load_articles
+from src.rag.models import Article, ArticleMeta
 from src.utils.holdings_csv import MAX_ROWS, parse_holdings_csv
 
 FIXTURE_KB = Path(__file__).parents[2] / "fixtures" / "kb"
@@ -152,6 +153,43 @@ def test_catalog_filters_and_searches() -> None:
     assert [a.meta.id for a in kb.search("health savings")] == ["hsa-basics"]
     assert kb.search("health compounding") == []  # every term must match
     assert kb.get("hsa-basics") is not None and kb.get("missing") is None
+
+
+def _article(id: str, category: str, level: str, tags: list[str], words: int = 50) -> Article:
+    meta = ArticleMeta(
+        id=id,
+        title=id.replace("-", " ").title(),
+        category=category,
+        level=level,
+        source_url="https://example.com",  # type: ignore[arg-type]
+        source_name="Example",
+        last_reviewed=date(2026, 10, 1),
+        tags=tags,
+    )
+    return Article(meta=meta, body="word " * words, path=f"{id}.md")
+
+
+def test_related_articles_rank_shared_tags_then_category_then_level() -> None:
+    kb = ArticleCatalog(
+        [
+            _article("wash-sale", "tax", "intermediate", ["wash sale", "capital losses"]),
+            _article("loss-harvesting", "tax", "advanced", ["capital losses", "harvesting"]),
+            _article("ira-basics", "tax", "beginner", ["retirement"]),
+            _article("hsa", "tax", "intermediate", ["health"]),
+            _article("sale-signs", "stocks", "beginner", ["wash sale"]),
+            _article("unrelated", "bonds", "beginner", ["yield"]),
+        ]
+    )
+    # Shared tags first (incl. another category); same-category ties prefer the same or
+    # next level up; nothing in common is never suggested.
+    assert [a.meta.id for a in kb.related("wash-sale", limit=4)] == [
+        "loss-harvesting",
+        "sale-signs",
+        "hsa",
+        "ira-basics",
+    ]
+    assert kb.related("missing") == []
+    assert reading_minutes("word " * 30) == 1 and reading_minutes("word " * 1000) == 5
 
 
 def test_summary_and_labels() -> None:

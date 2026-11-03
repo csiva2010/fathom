@@ -12,9 +12,16 @@ from src.core.llm import LLMGateway
 from src.workflow.compliance import DISCLAIMER, FINAL_ANSWER_KEY
 from src.workflow.context import StaticContextLoader
 from src.workflow.graph import WorkflowDeps, build_workflow
-from src.workflow.state import AgentName, AgentOutput, FinalAnswer, FinanceState, UserContext
+from src.workflow.state import (
+    AgentName,
+    AgentOutput,
+    FinalAnswer,
+    FinanceState,
+    TraceEvent,
+    UserContext,
+)
 from src.workflow.streaming import ChatEvent, _Reconciler, history, stream_turn
-from tests.fakes import gateway, structured
+from tests.fakes import gateway, structured, tool_call
 from tests.unit.agents.test_agents import make_kb
 
 USER = UserContext(user_id="u1")
@@ -59,8 +66,12 @@ def graph(gw: LLMGateway, agents: dict[AgentName, Any] | None = None) -> Any:
     )
 
 
-async def collect(g: Any, text: str = "What is a Roth IRA?") -> list[ChatEvent]:
-    return [e async for e in stream_turn(g, thread_id="t1", user=USER, text=text, turn_id="m1")]
+async def collect(
+    g: Any, text: str = "What is a Roth IRA?", *, traces: bool = False
+) -> list[ChatEvent]:
+    """The turn's events; per-node `trace` events only when asked for."""
+    events = stream_turn(g, thread_id="t1", user=USER, text=text, turn_id="m1")
+    return [e async for e in events if traces or e.type != "trace"]
 
 
 def shown_text(events: list[ChatEvent]) -> str:
@@ -159,6 +170,39 @@ async def test_failures_become_error_events() -> None:
     assert events[0].retryable
 
 
+async def test_each_node_streams_a_trace_step_and_done_carries_the_trace() -> None:
+    usage = {"input_tokens": 120, "output_tokens": 30, "total_tokens": 150}
+    router_reply = decision(["finance_qa"])
+    router_reply.usage_metadata = usage  # type: ignore[attr-defined]
+    gw, _ = gateway(
+        router_reply,
+        tool_call("search_kb", {"query": "roth ira"}),
+        AIMessage("A Roth IRA uses after-tax money [1].", usage_metadata=usage),
+    )
+    events = await collect(graph(gw), traces=True)
+    steps = [e.step for e in events if e.type == "trace"]
+    assert [s.node for s in steps] == [
+        "load_context",
+        "router",
+        "finance_qa",
+        "synthesizer",
+        "compliance",
+    ]
+    router, agent = steps[1], steps[2]
+    assert router.llm_calls == 1 and router.input_tokens == 120
+    assert router.models == ["fake:primary"]
+    assert router.detail["method"] == "llm" and router.detail["agents"] == ["finance_qa"]
+    assert agent.tools == ["search_kb"] and agent.llm_calls == 2 and agent.output_tokens == 30
+    assert agent.detail["citations"] == 1 and agent.detail["sources"]
+    assert steps[0].llm_calls == 0 and steps[0].tools == []
+    # A node's trace step comes before its own events: route follows the router's step.
+    types = [e.type for e in events]
+    assert types.index("route") == types.index("trace", 1) + 1
+    done = events[-1]
+    assert done.type == "done" and [s.node for s in done.message.trace] == [s.node for s in steps]
+    assert done.message.trace[1] == router
+
+
 def test_reconciler() -> None:
     client = _Reconciler()
     client.append("Hello")
@@ -170,7 +214,12 @@ def test_reconciler() -> None:
 
 
 def test_history_rebuilds_rich_answers() -> None:
-    final = FinalAnswer(answer_md="Answer [1].", agents=[AgentName.TAX], follow_ups=["Why?"])
+    final = FinalAnswer(
+        answer_md="Answer [1].",
+        agents=[AgentName.TAX],
+        follow_ups=["Why?"],
+        trace=[TraceEvent(node="router", latency_ms=5, llm_calls=1)],
+    )
     messages = [
         HumanMessage("Q1", id="q1"),
         AIMessage(
@@ -190,4 +239,5 @@ def test_history_rebuilds_rich_answers() -> None:
         ("a2", "assistant"),
     ]
     assert out[1].agents == [AgentName.TAX] and out[1].follow_ups == ["Why?"]
+    assert [t.node for t in out[1].trace] == ["router"]  # the panel survives a reload
     assert out[3].content == "Plain answer" and out[3].agents == []

@@ -22,6 +22,7 @@ from src.core.errors import ValidationFailed
 from src.data.db.base import new_id
 from src.data.db.models import Conversation
 from src.data.db.repositories.conversation_repository import ConversationRepository
+from src.utils.images import decode_image
 from src.web_app.auth.current_user import CurrentUserDep
 from src.web_app.dependencies import ContainerDep, DbDep
 from src.web_app.schemas.chat import (
@@ -31,10 +32,13 @@ from src.web_app.schemas.chat import (
     ConversationOut,
     MessageCreate,
 )
+from src.workflow.screenshot import ScreenshotInput
 from src.workflow.state import UserContext
 from src.workflow.streaming import ChatEvent, history, stream_turn
 
 router = APIRouter(prefix="/conversations", tags=["chat"])
+
+SCREENSHOT_QUESTION = "Analyze the portfolio in this screenshot."
 
 
 def _out(conversation: Conversation) -> ConversationOut:
@@ -106,16 +110,25 @@ class ChatTurn:
     conversation_id: str
     user_id: str
     text: str
+    image: ScreenshotInput | None = None
 
 
 def start_turn(
     conversation_id: str, body: MessageCreate, user: CurrentUserDep, container: ContainerDep
 ) -> ChatTurn:
     """Validate the turn before the stream opens; also names and bumps the conversation."""
-    text = body.content.strip()
+    workflow = container.settings.workflow
+    image: ScreenshotInput | None = None
+    if body.image is not None:
+        try:
+            data = decode_image(body.image.data, body.image.media_type, workflow.max_image_bytes)
+        except ValueError as error:
+            raise ValidationFailed(str(error)) from None
+        image = ScreenshotInput(media_type=body.image.media_type, data=data)
+    text = body.content.strip() or (SCREENSHOT_QUESTION if image else "")
     if not text:
         raise ValidationFailed("Type a question to get started.")
-    limit = container.settings.workflow.max_message_chars
+    limit = workflow.max_message_chars
     if len(text) > limit:
         raise ValidationFailed(f"Keep messages under {limit} characters.")
     # Its own short session: a request-scoped one would stay open for the whole stream.
@@ -123,7 +136,7 @@ def start_turn(
         repo = ConversationRepository(db)
         repo.record_turn(repo.get_owned(user.id, conversation_id), text)
         db.commit()
-    return ChatTurn(conversation_id=conversation_id, user_id=user.id, text=text)
+    return ChatTurn(conversation_id=conversation_id, user_id=user.id, text=text, image=image)
 
 
 @router.post(
@@ -140,5 +153,6 @@ async def send_message(
         user=UserContext(user_id=turn.user_id),
         text=turn.text,
         turn_id=new_id(),
+        image=turn.image,
     ):
         yield event

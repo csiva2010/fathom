@@ -76,6 +76,24 @@ class GoalSnapshot(BaseModel):
     monthly_contribution: float = 0
 
 
+class ScreenshotHolding(BaseModel):
+    """One row read from a brokerage screenshot. `price` is what the image showed; the
+    analysis re-prices every holding with live market data."""
+
+    symbol: str
+    quantity: float = Field(gt=0)
+    price: float | None = None
+    name: str | None = None
+
+
+class ScreenshotRead(BaseModel):
+    """What the read_screenshot node found in an attached image (CH-09)."""
+
+    turn_id: str  # the turn the image was attached to
+    status: Literal["read", "empty", "unavailable"]
+    holdings: list[ScreenshotHolding] = Field(default_factory=list)
+
+
 class RoutePlan(BaseModel):
     """Router output (OR-01): which agents run, and the question they should answer."""
 
@@ -104,6 +122,7 @@ class Artifact(BaseModel):
         "projection",
         "example_allocation",
         "news_list",
+        "screenshot_holdings",
     ]
     title: str
     data: dict[str, Any]
@@ -128,10 +147,17 @@ class NodeError(BaseModel):
 
 
 class TraceEvent(BaseModel):
-    """One node's timing and details for logs and the "How I answered" panel (OR-08)."""
+    """One node's timing, LLM usage and tool calls for logs and the "How I answered" panel
+    (OR-08, INN-01). Built by `src.workflow.tracing.trace_step`."""
 
     node: str
     latency_ms: int
+    llm_calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    models: list[str] = Field(default_factory=list)
+    fallbacks: int = 0  # LLM calls answered by a fallback model
+    tools: list[str] = Field(default_factory=list)  # tool calls, in order
     detail: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -151,6 +177,7 @@ class FinalAnswer(BaseModel):
     freshness: list[Freshness] = Field(default_factory=list)
     follow_ups: list[str] = Field(default_factory=list)
     compliance: ComplianceReport = Field(default_factory=ComplianceReport)
+    trace: list[TraceEvent] = Field(default_factory=list)  # set by compliance, last node
 
 
 class FinanceState(TypedDict, total=False):
@@ -160,6 +187,9 @@ class FinanceState(TypedDict, total=False):
     portfolio: PortfolioSnapshot | None
     goals: list[GoalSnapshot]
     focus_tickers: list[str]
+    # The latest screenshot's holdings stay for the rest of the conversation so follow-ups
+    # ("and their risk?") still refer to them; the image itself is never in state.
+    screenshot: ScreenshotRead | None
     plan: RoutePlan | None
     agent_outputs: Annotated[list[AgentOutput], per_turn]
     errors: Annotated[list[NodeError], per_turn]
@@ -176,6 +206,8 @@ CHECKPOINT_TYPES: tuple[type, ...] = (
     PortfolioSnapshot,
     GoalSnapshot,
     RoutePlan,
+    ScreenshotHolding,
+    ScreenshotRead,
     AgentOutput,
     Artifact,
     NodeError,

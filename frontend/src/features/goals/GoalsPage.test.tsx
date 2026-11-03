@@ -89,6 +89,59 @@ describe("Goals", () => {
     expect(await screen.findByRole("region", { name: "Starter home" })).toBeInTheDocument();
   });
 
+  it("switches, edits, cancels and deletes goals", async () => {
+    let goals = [GOAL, { ...GOAL, id: "g2", type: "retirement" as const, name: null, projection: null }];
+    let updated: unknown = null;
+    mockFetch({
+      "GET /me": () => ({ body: WITH_PROFILE }),
+      "GET /goals": () => ({ body: { goals } }),
+      "POST /goals/project": () => ({ body: { projection: projection(500), example_allocation: { risk_profile: "moderate", slices: [], note: "" } } }),
+      "PUT /goals/g1": (init) => {
+        updated = JSON.parse(String(init?.body));
+        return { body: GOAL };
+      },
+      "DELETE /goals/g2": () => {
+        goals = [GOAL];
+        return { status: 204 };
+      },
+    });
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    renderApp("/goals");
+
+    const list = await screen.findByRole("list", { name: "Your goals" });
+    expect(within(list).getAllByRole("button")).toHaveLength(2);
+    expect(within(list).getByText(/On track|Short in the expected case/)).toBeInTheDocument();
+
+    // Edit: the form starts from the goal; the header's add button hides meanwhile.
+    await userEvent.click(within(await screen.findByRole("region", { name: "Starter home" })).getByRole("button", { name: "Edit" }));
+    expect(screen.getByRole("region", { name: "Edit goal" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add a goal" })).not.toBeInTheDocument();
+    await userEvent.clear(screen.getByLabelText("Name (optional)"));
+    await userEvent.type(screen.getByLabelText("Name (optional)"), "First home");
+    await userEvent.selectOptions(screen.getByLabelText("Goal type"), "education");
+    await userEvent.selectOptions(screen.getByLabelText("Risk profile for this goal"), "");
+    await userEvent.clear(screen.getByLabelText("Saved so far ($)"));
+    await userEvent.type(screen.getByLabelText("Saved so far ($)"), "12000");
+    await userEvent.clear(screen.getByLabelText("Monthly contribution ($)"));
+    await userEvent.type(screen.getByLabelText("Monthly contribution ($)"), "750");
+    fireEvent.change(screen.getByLabelText("Target date"), { target: { value: "2031-06-01" } });
+    await userEvent.click(screen.getByRole("button", { name: "Save changes" }));
+    await waitFor(() =>
+      expect(updated).toMatchObject({ name: "First home", type: "education", current_savings: 12000, monthly_contribution: 750, target_date: "2031-06-01", risk_profile: null }),
+    );
+
+    // Add, then cancel.
+    await userEvent.click(await screen.findByRole("button", { name: "Add a goal" }));
+    await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByRole("region", { name: "Add a goal" })).not.toBeInTheDocument();
+
+    // Switch to the second goal, then delete it.
+    await userEvent.click(within(screen.getByRole("list", { name: "Your goals" })).getAllByRole("button")[1] as HTMLElement);
+    expect(window.location.search).toContain("goal=g2");
+    await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(within(screen.getByRole("list", { name: "Your goals" })).getAllByRole("button")).toHaveLength(1));
+  });
+
   it("shows an error state when goals fail to load", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     mockFetch({

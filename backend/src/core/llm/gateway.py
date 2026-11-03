@@ -3,6 +3,7 @@
 Agents and workflow nodes call the gateway, never a vendor SDK. Each call tries the
 configured models in order (Gemini Flash first, then Claude); a failure is logged and the
 next model answers. If every model fails the caller gets `LLMUnavailable` and degrades.
+Each answered call is recorded (model, tokens, fallback) on the open trace step, if any.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from src.core.config import Settings
 from src.core.config.settings import LlmModelConfig
 from src.core.errors import LLMUnavailable
 from src.core.logging import get_logger
+from src.core.tracing import record_llm_call
 
 log = get_logger(__name__)
 
@@ -49,23 +51,29 @@ class LLMGateway:
     ) -> AIMessage:
         """One chat turn; with `tools`, the reply may contain tool calls."""
 
-        async def call(named: NamedModel) -> AIMessage:
+        async def call(named: NamedModel) -> tuple[AIMessage, AIMessage]:
             runnable: Any = named.model.bind_tools(list(tools)) if tools else named.model
             reply = await runnable.ainvoke(list(messages))
             if not isinstance(reply, AIMessage):
                 raise TypeError(f"expected AIMessage, got {type(reply).__name__}")
-            return reply
+            return reply, reply
 
         return cast(AIMessage, await self._with_fallback("chat", call))
 
     async def astructured(self, schema: type[T], messages: Sequence[BaseMessage]) -> T:
         """Structured output parsed into `schema` (router, compliance rewrite)."""
 
-        async def call(named: NamedModel) -> T:
-            result = await named.model.with_structured_output(schema).ainvoke(list(messages))
-            if isinstance(result, schema):
-                return result
-            return schema.model_validate(result)
+        async def call(named: NamedModel) -> tuple[T, Any]:
+            # include_raw keeps the provider message, so the call's token usage is traced.
+            runnable = named.model.with_structured_output(schema, include_raw=True)
+            result: dict[str, Any] = cast(dict[str, Any], await runnable.ainvoke(list(messages)))
+            if result.get("parsing_error") is not None:
+                raise result["parsing_error"]
+            parsed = result.get("parsed")
+            if parsed is None:
+                raise ValueError(f"no {schema.__name__} in the model's reply")
+            value = parsed if isinstance(parsed, schema) else schema.model_validate(parsed)
+            return value, result.get("raw")
 
         return cast(T, await self._with_fallback("structured", call))
 
@@ -76,7 +84,7 @@ class LLMGateway:
         for position, named in enumerate(self._models):
             started = time.perf_counter()
             try:
-                result = await call(named)
+                result, raw = await call(named)
             except Exception as error:
                 last_error = error
                 log.warning(
@@ -91,6 +99,7 @@ class LLMGateway:
                 continue
             if position > 0:
                 log.info("llm fallback used", extra={"model": named.name, "kind": kind})
+            record_llm_call(named.name, getattr(raw, "usage_metadata", None), fallback=position > 0)
             log.debug(
                 "llm call",
                 extra={

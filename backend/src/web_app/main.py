@@ -18,6 +18,7 @@ from src import __version__
 from src.core.config import Settings, get_settings, resolve_path
 from src.core.logging import configure_logging, get_logger
 from src.core.services.market.warmup import sample_symbols, warm_cache
+from src.core.tracing import configure_langsmith
 from src.data.providers.mock.seed_loader import SeedData
 from src.web_app.container import AppContainer
 from src.web_app.errors.handlers import register_error_handlers
@@ -45,6 +46,8 @@ def create_app(settings: Settings | None = None, container: AppContainer | None 
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        # Here, not at import time: importing this module builds `app` from the real .env.
+        langsmith_project = configure_langsmith(settings)
         app.state.container = container or AppContainer.build(settings)
         await app.state.container.start()
         warmup: asyncio.Task[dict[str, int]] | None = None
@@ -59,6 +62,7 @@ def create_app(settings: Settings | None = None, container: AppContainer | None 
                 "env": settings.app.env,
                 "auth_mode": settings.auth.mode,
                 "version": __version__,
+                "langsmith_project": langsmith_project,
             },
         )
         try:

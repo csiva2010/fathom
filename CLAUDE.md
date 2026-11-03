@@ -23,6 +23,7 @@ backend/                 Python 3.11+, FastAPI. Run every command from this fold
       config/            Settings: config.yaml + .env merged by pydantic-settings
       llm/               LLMGateway: ordered model fallback (Gemini -> Claude), structured output
       logging/           Structured JSON logs with request/user/thread context
+      tracing/           Per-node recorder: the gateway logs model calls/tokens, agents tool calls
       errors/            AppError hierarchy -> {error: {code, message, retryable}}
       domain/            Pydantic domain models shared across layers (market.py)
       services/market/   MarketDataService, ranges, symbol validation, factory
@@ -41,7 +42,8 @@ backend/                 Python 3.11+, FastAPI. Run every command from this fold
   data/kb/<category>/    KB articles (Markdown + YAML front matter) and glossary.yaml
   data/seed/             Sample portfolios, reference data, mock base prices
   scripts/               ingest_kb, seed_db, check_providers, export_openapi
-  tests/                 unit/ (mirrors src/), integration/, fixtures/
+  tests/                 unit/ (mirrors src/), integration/, fixtures/, eval/ (golden sets
+                         + harness; offline suites run in CI with metric floors)
 frontend/                React 18 + TypeScript (strict) + Vite + Tailwind + TanStack Query
   src/app/               App, routes, query client
   src/api/               fetch client, endpoints/, generated/ (OpenAPI types), types.ts
@@ -61,6 +63,7 @@ Backend (from `backend/`, venv at `backend/.venv`):
 .venv/bin/python -m scripts.seed_db                             # load 3 sample portfolios
 .venv/bin/python -m scripts.ingest_kb                           # rebuild KB index
 .venv/bin/python -m scripts.check_providers                     # day-1 gate: real API keys work?
+.venv/bin/python -m scripts.run_evals [--live]                  # golden-set evals -> var/evals/
 .venv/bin/pytest --cov                                          # tests, 90% coverage gate
 .venv/bin/ruff check src scripts tests && .venv/bin/ruff format src scripts tests
 .venv/bin/mypy src scripts                                      # strict
@@ -79,6 +82,7 @@ derives `frontend_url`, CORS origins and the Google redirect URI from `WEB_PORT`
 
 ```bash
 npm test             # Vitest + Testing Library
+npm run test:coverage  # same, with the 90% coverage gate CI enforces
 npm run lint && npm run typecheck && npm run build
 ```
 
@@ -127,6 +131,8 @@ cd ../frontend && npm run gen:api
   Agent instances are shared across requests: per-run data for tools goes on `AgentRun.inputs`,
   never on `self`. A new Pydantic type stored in graph state must be added to
   `CHECKPOINT_TYPES` in `workflow/state.py` or the checkpointer won't load it.
+  A new workflow node wraps its body in `with trace_step("<node>") as step:` and returns
+  `"trace": [step.event(...)]` last, so its model calls and tools are recorded.
 - Frontend: feature code lives in `features/<tab>/`; shared UI in `components/`; every view
   needs loading, empty and error states (UI-09). Use generated API types via `src/api/types.ts`.
   Charts use the `--viz-*` tokens in `styles/index.css` (validated light and dark); format
@@ -158,4 +164,17 @@ cd ../frontend && npm run gen:api
   Profile "Claude Desktop access" card, `GET /kb/search`, `POST /portfolios/analyze`, and the
   MCP server (`python -m src.mcp_server`, env `FINANCE_API_URL` + `FINANCE_API_TOKEN`; seven
   read-only tools; setup in README). Still to do: feedback endpoint (CH-08).
-- Day 6 to 7: tests and evals, Learn tab, trace panel, Docker, docs, demo.
+- Chat screenshots (CH-09, beyond the PRD): paste, drop or pick a brokerage screenshot in
+  the composer; `read_screenshot` (`workflow/screenshot.py`) extracts holdings with the
+  vision LLM and the router always adds the Portfolio agent, which re-prices them with live
+  data. The image travels in the run config (`configurable["screenshot"]`), never in state,
+  so it is never checkpointed; only the rows (`FinanceState.screenshot`) are kept.
+- Day 6 (done): trace (OR-08, INN-01): nodes wrap their work in `trace_step(...)`
+  (`workflow/tracing.py`); `TraceEvent` carries latency, LLM calls, tokens, models, fallbacks
+  and tools, streams as SSE `trace` events, and is saved on `FinalAnswer.trace` for the chat's
+  "How I answered" panel (`features/chat/components/TracePanel.tsx`). Evals (INN-02):
+  `tests/eval/` golden sets for retrieval, routing, compliance and answers; offline floors in
+  CI, `scripts.run_evals --live` adds real models and an LLM faithfulness judge. Learn polish:
+  related articles, reading time, "Ask Fathom about this" (opens `/chat?ask=...`, prefilled).
+  Frontend coverage gate 90% (`npm run test:coverage`).
+- Day 7: Docker, docs, demo.

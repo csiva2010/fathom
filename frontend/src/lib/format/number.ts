@@ -23,3 +23,10 @@ export function direction(change?: number | null): Direction {
   if (change == null || change === 0) return "flat";
   return change > 0 ? "up" : "down";
 }
+
+const countFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+
+/** Whole-number counts with thousands separators: 12,345. */
+export function formatCount(value: number): string {
+  return countFormat.format(value);
+}

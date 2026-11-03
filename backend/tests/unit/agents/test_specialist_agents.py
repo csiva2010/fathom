@@ -16,7 +16,12 @@ from src.agents.base_agent import AgentRun
 from src.agents.finance_qa import NO_CONTEXT_ANSWER
 from src.agents.goal_planning import NO_GOALS_ANSWER, GoalPlanningAgent
 from src.agents.news_synthesizer import NewsArgs, NewsSynthesizerAgent
-from src.agents.portfolio_analysis import NO_PORTFOLIO_ANSWER, PortfolioAnalysisAgent
+from src.agents.portfolio_analysis import (
+    NO_PORTFOLIO_ANSWER,
+    SCREENSHOT_UNAVAILABLE_ANSWER,
+    SCREENSHOT_UNREADABLE_ANSWER,
+    PortfolioAnalysisAgent,
+)
 from src.agents.tax_education import TaxEducationAgent
 from src.core.domain.market import DataStatus, Freshness, NewsItem, Sourced
 from src.core.domain.portfolio import HoldingInput
@@ -30,6 +35,8 @@ from src.workflow.state import (
     FinanceState,
     GoalSnapshot,
     PortfolioSnapshot,
+    ScreenshotHolding,
+    ScreenshotRead,
     UserContext,
 )
 from tests.conftest import make_settings
@@ -128,7 +135,62 @@ async def test_portfolio_tools(market: MarketDataService) -> None:
     # Without a saved portfolio there is nothing to compare.
     gw, model = gateway(tool_call("compare_to_benchmark", {"range": "1Y"}), "OK.")
     await portfolio_agent(gw, market).run(state("Compare my portfolio"))
-    assert model.calls[1][-1].text.startswith("Error: there is no saved portfolio")
+    assert model.calls[1][-1].text.startswith("Error: there is no portfolio")
+
+
+SHOT = ScreenshotRead(
+    turn_id="turn-1",
+    status="read",
+    holdings=[
+        ScreenshotHolding(symbol="VTI", quantity=10, price=1.0, name="From image"),
+        ScreenshotHolding(symbol="ZZZZ", quantity=3),  # not in the mock universe: unpriced
+    ],
+)
+
+
+async def test_portfolio_analyzes_screenshot_holdings_over_the_saved_one(
+    market: MarketDataService,
+) -> None:
+    gw, model = gateway(tool_call("compare_to_benchmark", {"range": "1Y"}), "Here's what I see.")
+    output = await portfolio_agent(gw, market).run(
+        with_context(state("Analyze this"), portfolio=PORTFOLIO, screenshot=SHOT, turn_id="turn-1")
+    )
+    assert [a.kind for a in output.artifacts] == [
+        "screenshot_holdings",
+        "portfolio_metrics",
+        "allocation",
+    ]
+    table = output.artifacts[0]
+    vti, unknown = table.data["rows"]
+    assert vti["screenshot_price"] == 1.0 and vti["live_price"] not in (None, 1.0)
+    assert unknown["live_price"] is None and table.data["unpriced"] == ["ZZZZ"]
+    prompt = model.calls[0][-1].text
+    assert "Your screenshot" in prompt and "My mix" not in prompt
+    # The benchmark tool compares the screenshot holdings, not "no portfolio".
+    assert '"range":"1Y"' in model.calls[1][-1].text
+
+
+async def test_portfolio_keeps_screenshot_holdings_for_follow_ups(
+    market: MarketDataService,
+) -> None:
+    output = await portfolio_agent(OFFLINE, market).run(
+        with_context(state("And their risk?"), screenshot=SHOT, turn_id="turn-2")
+    )
+    assert output.answer_md.startswith("**Your screenshot** is worth $")
+
+
+async def test_portfolio_explains_an_unreadable_screenshot(market: MarketDataService) -> None:
+    for status, expected in (
+        ("empty", SCREENSHOT_UNREADABLE_ANSWER),
+        ("unavailable", SCREENSHOT_UNAVAILABLE_ANSWER),
+    ):
+        shot = ScreenshotRead(turn_id="turn-1", status=status)  # type: ignore[arg-type]
+        output = await portfolio_agent(OFFLINE, market).run(
+            with_context(
+                state("Analyze this"), portfolio=PORTFOLIO, screenshot=shot, turn_id="turn-1"
+            )
+        )
+        assert output.answer_md == expected and not output.artifacts
 
 
 # --- Goal Planning ---------------------------------------------------------------

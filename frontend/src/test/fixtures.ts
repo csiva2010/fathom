@@ -1,4 +1,4 @@
-import type { AuthConfig, Health, MarketOverview, Me } from "@/api/types";
+import type { AuthConfig, Health, MarketOverview, Me, TraceStep } from "@/api/types";
 
 export const ME: Me = {
   id: "u1",
@@ -46,3 +46,8 @@ export const HEALTH: Health = {
 export const GUEST: Me = { ...ME, id: "g1", email: "", name: "Guest", is_guest: true };
 
 export const GUEST_MODE: AuthConfig = { mode: "guest", google_enabled: false, guest_enabled: true };
+
+/** A workflow trace step with zero usage unless given ("How I answered" tests). */
+export function traceStep(node: string, latency_ms: number, extra: Partial<TraceStep> = {}): TraceStep {
+  return { node, latency_ms, llm_calls: 0, input_tokens: 0, output_tokens: 0, fallbacks: 0, ...extra };
+}

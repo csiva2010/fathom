@@ -30,6 +30,18 @@ describe("Learn", () => {
     await userEvent.click(screen.getByRole("link", { name: /The Wash Sale Rule/ }));
     expect(await screen.findByText("you sell at a loss", { selector: "strong" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "IRS" })).toHaveAttribute("href", "https://www.irs.gov/p550");
+    expect(screen.getByText("2 min read")).toBeInTheDocument();
+
+    // What to read next, and a hand-off to Chat with the question waiting in the composer.
+    const next = screen.getByRole("region", { name: "Keep learning" });
+    expect(within(next).getByRole("link", { name: /Tax-Loss Harvesting/ })).toHaveAttribute("href", "/learn/tax-loss-harvesting");
+    mockFetch({
+      "GET /me": () => ({ body: ME }),
+      "GET /conversations": () => ({ body: { conversations: [] } }),
+    });
+    await userEvent.click(screen.getByRole("link", { name: "Ask Fathom about this" }));
+    expect(await screen.findByLabelText("Ask a question")).toHaveValue('Help me understand "The Wash Sale Rule" with an example.');
+    expect(window.location.pathname).toBe("/chat");
   });
 
   it("searches the glossary and follows related terms", async () => {

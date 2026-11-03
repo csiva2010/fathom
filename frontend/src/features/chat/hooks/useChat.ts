@@ -6,10 +6,12 @@ import { createConversation, streamMessage } from "@/api/endpoints/chat";
 import { queryKeys } from "@/api/queryKeys";
 import type { ChatMessage, ConversationDetail } from "@/api/types";
 
+import { SCREENSHOT_QUESTION, toImageAttachment, type Attachment } from "../attachments";
 import { applyEvent, emptyDraft, type DraftAnswer } from "./chatState";
 
 export interface PendingTurn {
   question: string;
+  image?: Attachment; // kept in memory only, so the preview shows and a retry can resend it
   answer: DraftAnswer;
 }
 
@@ -38,12 +40,12 @@ export function useChat(conversationId: string | undefined) {
   const isStreaming = pending !== null && (pending.answer.status === "routing" || pending.answer.status === "streaming");
 
   const send = useCallback(
-    async (text: string) => {
-      const question = text.trim();
+    async (text: string, image?: Attachment) => {
+      const question = text.trim() || (image ? SCREENSHOT_QUESTION : "");
       if (!question || abortRef.current) return;
       const controller = new AbortController();
       abortRef.current = controller;
-      setPending({ question, answer: emptyDraft() });
+      setPending({ question, image, answer: emptyDraft() });
 
       let id = conversationId;
       let final: ChatMessage | undefined;
@@ -56,7 +58,7 @@ export function useChat(conversationId: string | undefined) {
         streamingIdRef.current = id;
         await streamMessage(
           id,
-          question,
+          { content: question, image: image ? toImageAttachment(image) : null },
           (event) => {
             if (event.type === "done") final = event.message;
             setPending((turn) => turn && { ...turn, answer: applyEvent(turn.answer, event) });
@@ -65,7 +67,13 @@ export function useChat(conversationId: string | undefined) {
         );
         if (final) {
           const key = queryKeys.conversation(id);
-          const asked: ChatMessage = { id: `${final.id}-q`, role: "user", content: question, kind: "answer" };
+          const asked: ChatMessage = {
+            id: `${final.id}-q`,
+            role: "user",
+            content: question,
+            kind: "answer",
+            has_image: Boolean(image),
+          };
           const answered = final;
           const updated = queryClient.setQueryData<ConversationDetail>(
             key,

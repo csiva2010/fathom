@@ -26,6 +26,8 @@ jobs:
         run: pytest --cov --cov-report=term-missing
       - name: Knowledge base builds
         run: python -m scripts.ingest_kb
+      - name: Evaluation golden sets, offline (INN-02)
+        run: python -m scripts.run_evals --gate --out /tmp/evals
       - name: OpenAPI schema is in sync with the frontend copy
         run: |
           python -m scripts.export_openapi /tmp/openapi.json
@@ -48,5 +50,6 @@ jobs:
         run: npm run gen:api && git diff --exit-code src/api/generated
       - run: npm run lint
       - run: npm run typecheck
-      - run: npm test
+      - name: Test (coverage gate 90%)
+        run: npm run test:coverage
       - run: npm run build

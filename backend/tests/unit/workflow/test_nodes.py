@@ -150,6 +150,10 @@ def test_rule_based_routing() -> None:
     assert follow_up.tickers == ["AAPL"] and follow_up.agents == [AgentName.MARKET]
     assert rule_based_decision("NVDA", []).agents == [AgentName.MARKET]
     assert rule_based_decision("hmm", []).confidence < 0.6
+    # "index fund" is a concept, not the market's indices (found by the routing eval).
+    assert rule_based_decision("What is an index fund?", []).agents == [AgentName.FINANCE_QA]
+    mixed = rule_based_decision("What's an ETF, and how is SPY doing today?", [])
+    assert mixed.agents == [AgentName.MARKET, AgentName.FINANCE_QA]
 
 
 async def test_router_llm_plan_and_focus_tickers() -> None:

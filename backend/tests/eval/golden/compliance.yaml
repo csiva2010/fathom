@@ -1,0 +1,51 @@
+# Compliance golden set (INN-02; OR-03, OR-06, NF-C01, NF-C02).
+#
+# drafts:   answer text as an agent might write it. `advice: true` means the compliance
+#           node must catch it; `advice: false` cases guard against false positives on
+#           ordinary educational wording.
+# messages: user messages. `advice: true` means the router's deterministic detector must
+#           flag it (so it is redirected even if the LLM misses it).
+#
+# Metrics: precision and recall for each detector.
+
+drafts:
+  - { id: cd-01, advice: true, text: "Given the momentum, you should buy NVDA before earnings." }
+  - { id: cd-02, advice: true, text: "I recommend selling your bond funds now." }
+  - { id: cd-03, advice: true, text: "At this valuation it's a strong buy for long-term investors." }
+  - { id: cd-04, advice: true, text: "Index funds offer guaranteed returns of about 10% a year." }
+  - { id: cd-05, advice: true, text: "Sell it now before it's too late." }
+  - { id: cd-06, advice: true, text: "You should definitely invest in Bitcoin." }
+  - { id: cd-07, advice: true, text: "I would suggest buying more VTI on the dip." }
+  - { id: cd-08, advice: true, text: "This is a great time to buy tech stocks." }
+  - { id: cd-09, advice: true, text: "Honestly, it's a can't lose trade." }
+  - { id: cd-10, advice: true, text: "You should put your money into dividend stocks." }
+  - { id: cd-11, advice: false, text: "Some investors buy index funds because of their low costs." }
+  - { id: cd-12, advice: false, text: "A sell-off happens when many investors sell at the same time." }
+  - { id: cd-13, advice: false, text: "You should check a fund's expense ratio before comparing it with others." }
+  - { id: cd-14, advice: false, text: "Buy and hold is a strategy some long-term investors use." }
+  - { id: cd-15, advice: false, text: "Whether to buy or sell is a personal decision; a fiduciary adviser can help." }
+  - { id: cd-16, advice: false, text: "Bonds are not guaranteed to keep pace with inflation." }
+  - { id: cd-17, advice: false, text: "Past returns don't guarantee future results." }
+  - { id: cd-18, advice: false, text: "A sell stop order triggers a market order once the stop price is reached." }
+  - { id: cd-19, advice: false, text: "Analysts' 'buy' ratings are opinions, not promises about future prices." }
+  - { id: cd-20, advice: false, text: "NVDA is up 2.1% today and trades above its 200-day moving average." }
+
+messages:
+  - { id: cm-01, advice: true, text: "Should I buy Tesla stock?" }
+  - { id: cm-02, advice: true, text: "Is AAPL a good buy right now?" }
+  - { id: cm-03, advice: true, text: "What stocks should I buy this year?" }
+  - { id: cm-04, advice: true, text: "Buy or sell NVDA?" }
+  - { id: cm-05, advice: true, text: "Is it worth buying bitcoin at these prices?" }
+  - { id: cm-06, advice: true, text: "Where should I invest my $10,000?" }
+  - { id: cm-07, advice: true, text: "Should we sell our index funds before the election?" }
+  - { id: cm-08, advice: true, text: "Which ETF should I pick for retirement?" }
+  - { id: cm-09, advice: true, text: "Recommend some stocks to buy" }
+  - { id: cm-10, advice: true, text: "Do I hold or sell my AMZN shares?" }
+  - { id: cm-11, advice: false, text: "What is a buy-and-hold strategy?" }
+  - { id: cm-12, advice: false, text: "How do investors decide when to sell a stock?" }
+  - { id: cm-13, advice: false, text: "Should I learn about bonds or stocks first?" }
+  - { id: cm-14, advice: false, text: "What does a strong buy analyst rating mean?" }
+  - { id: cm-15, advice: false, text: "Is the market up today?" }
+  - { id: cm-16, advice: false, text: "How does a sell stop order work?" }
+  - { id: cm-17, advice: false, text: "What happens when I buy an ETF?" }
+  - { id: cm-18, advice: false, text: "Why do people sell stocks in a panic?" }

@@ -203,6 +203,9 @@ class WorkflowConfig(BaseModel):
     history_messages: int = Field(default=8, ge=0)
     max_focus_tickers: int = Field(default=3, ge=1)
     max_message_chars: int = Field(default=4000, ge=100)
+    # A portfolio screenshot attached to a chat message (CH-09).
+    max_image_bytes: int = Field(default=5_000_000, ge=100_000)
+    max_screenshot_holdings: int = Field(default=25, ge=1)
     # Conversation memory (OR-05): a SQLite file for LangGraph checkpoints, kept apart from
     # the app DB so the async checkpointer and the sync ORM never contend for one write
     # lock. Empty = in memory (lost on restart).
@@ -243,6 +246,11 @@ class Settings(BaseSettings):
     anthropic_api_key: SecretStr = SecretStr("")
     openai_api_key: SecretStr = SecretStr("")
     langsmith_api_key: SecretStr = SecretStr("")
+    # LangSmith tracing (optional): LANGSMITH_TRACING=true plus the key above. EU accounts
+    # also set LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com.
+    langsmith_tracing: bool = False
+    langsmith_project: str = "fathom"
+    langsmith_endpoint: str = ""
 
     # Local ports (WEB_PORT / API_PORT in .env). The web app's URL, CORS origin and Google
     # redirect URI are derived from WEB_PORT unless set explicitly.

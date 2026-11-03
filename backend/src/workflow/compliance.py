@@ -12,7 +12,6 @@ rewritten answer is flagged so the API can send a `replace` event over the strea
 from __future__ import annotations
 
 import re
-import time
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -20,13 +19,8 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from src.core.errors import LLMUnavailable
 from src.core.llm import LLMGateway
 from src.core.logging import get_logger
-from src.workflow.state import (
-    AgentName,
-    ComplianceReport,
-    FinalAnswer,
-    FinanceState,
-    TraceEvent,
-)
+from src.workflow.state import AgentName, ComplianceReport, FinalAnswer, FinanceState
+from src.workflow.tracing import TraceStep, trace_step
 
 log = get_logger(__name__)
 
@@ -92,7 +86,10 @@ class ComplianceNode:
         self._gateway = gateway
 
     async def __call__(self, state: FinanceState) -> dict[str, Any]:
-        started = time.perf_counter()
+        with trace_step("compliance") as step:
+            return await self._check(state, step)
+
+    async def _check(self, state: FinanceState, step: TraceStep) -> dict[str, Any]:
         draft = state.get("draft") or FinalAnswer(answer_md="")
         answer = draft.answer_md
         report = ComplianceReport()
@@ -124,7 +121,10 @@ class ComplianceNode:
         report.passed = not report.issues
         if report.issues:
             log.warning("compliance fixed answer", extra={"issues": report.issues, "found": found})
-        final = draft.model_copy(update={"answer_md": answer, "compliance": report})
+        # Compliance is the last node, so its event completes the turn's trace, which rides
+        # on the answer for the "How I answered" panel.
+        trace = [*(state.get("trace") or []), step.event(**report.model_dump())]
+        final = draft.model_copy(update={"answer_md": answer, "compliance": report, "trace": trace})
         # The full answer rides on the message so a reloaded conversation shows its agents,
         # sources and charts. Prompts only ever see message text (see recent_history).
         message = AIMessage(
@@ -135,13 +135,7 @@ class ComplianceNode:
         return {
             "final": final,
             "messages": [message],
-            "trace": [
-                TraceEvent(
-                    node="compliance",
-                    latency_ms=round((time.perf_counter() - started) * 1000),
-                    detail=report.model_dump(),
-                )
-            ],
+            "trace": [trace[-1]],
         }
 
     async def _rewrite(self, answer: str) -> str:
