@@ -10,4 +10,5 @@ Clock = Callable[[], float]
 Sleeper = Callable[[float], Awaitable[None]]
 
 monotonic: Clock = time.monotonic
+wall: Clock = time.time  # for windows aligned to calendar days (UTC)
 sleep: Sleeper = asyncio.sleep

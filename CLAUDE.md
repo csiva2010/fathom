@@ -31,11 +31,13 @@ backend/                 Python 3.11+, FastAPI. Run every command from this fold
       db/                SQLAlchemy models, session, repositories
       migrations/        Alembic (versions/0001_initial_schema.py, 0002_add_users_is_guest.py)
       providers/         alpaca/, alpha_vantage/, mock/ + chain.py (fallback order)
-      resilience/        Token bucket, retry/backoff, circuit breaker, ProviderGuard
+      resilience/        Token bucket, daily usage budget, retry/backoff, circuit breaker,
+                         ProviderGuard
       cache/             In-process TTL cache with stale reads and request coalescing
     rag/                 ingestion/, keyword/ (BM25), embeddings, vector_store (Chroma),
                          reranker, retriever (hybrid + RRF + threshold), glossary, knowledge_base
-    web_app/             FastAPI app: routers/, auth/, middleware/, errors/, schemas/
+    web_app/             FastAPI app: routers/, auth/, middleware/ (incl. rate_limit), errors/,
+                         schemas/
     utils/               Small pure helpers
     mcp_server/          MCP server for Claude Desktop: stdio, calls the REST API with a
                          personal access token (api_client.py, server.py, __main__.py)
@@ -115,6 +117,11 @@ cd ../frontend && npm run gen:api
 - **Secrets live only in `backend/.env`** (see `.env.example`). Non-secret settings go in
   `backend/config.yaml`. Nested values can be overridden with `__`, e.g. `AUTH__MODE=stub`.
   Nothing secret goes to the frontend; the frontend `.env` holds only the dev proxy target.
+- **Rate limits:** HTTP limits are rules in `config.yaml` `rate_limit` (per client IP or
+  global); give a new expensive route its own rule. Provider calls are capped per minute,
+  per day (`max_requests_per_day`) and by queue wait; over a cap the guard raises
+  `ProviderQuotaExceeded` and the chain degrades to cache or mock. Tests run with
+  `rate_limit.enabled=false` (see `tests/conftest.py`).
 - **Errors** raise an `AppError` subclass from `core/errors`; handlers render the envelope.
 - **Compliance:** educational framing only; no buy/sell/hold recommendations; the disclaimer
   stays visible in the UI.

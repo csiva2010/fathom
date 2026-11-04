@@ -23,6 +23,7 @@ from src.data.providers.mock.seed_loader import SeedData
 from src.web_app.container import AppContainer
 from src.web_app.errors.handlers import register_error_handlers
 from src.web_app.middleware.origin_check import OriginCheckMiddleware
+from src.web_app.middleware.rate_limit import RateLimitMiddleware
 from src.web_app.middleware.request_context import RequestContextMiddleware
 from src.web_app.routers import (
     api_tokens,
@@ -86,6 +87,11 @@ def create_app(settings: Settings | None = None, container: AppContainer | None 
     # Middleware runs outermost-last-added: request context wraps everything.
     allowed_origins = list({*settings.app.cors_origins, settings.app.frontend_url})
     app.add_middleware(OriginCheckMiddleware, allowed_origins=allowed_origins)
+    # Inside CORS so 429 responses still carry CORS headers; inside request context so
+    # they are logged with a request id.
+    app.add_middleware(
+        RateLimitMiddleware, config=settings.rate_limit, api_prefix=settings.app.api_prefix
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,

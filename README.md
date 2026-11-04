@@ -239,6 +239,174 @@ The token authenticates as you, so the backend must be reachable from the machin
 Claude Desktop. If the token is rejected, the tools say so; create a new one and update the
 config.
 
+## Deployment
+
+Fathom runs on one Linux VM (Google Cloud `e2-medium` or AWS `t3.medium`, Ubuntu 24.04):
+nginx serves the built frontend and proxies `/api` to uvicorn as a systemd service. State lives
+in `backend/var/` (SQLite, ChromaDB, checkpoints) on the VM's disk.
+
+```
+Browser ──80/443──► nginx ──┬── /        → frontend/dist (static files)
+                            └── /api/... → uvicorn 127.0.0.1:8000 (FastAPI)
+```
+
+The longer guide (creating the VM on GCP or AWS, restricted AWS accounts, Amazon Linux) is
+`docs/deployment.md`, which is kept out of the repository.
+
+### One-time setup
+
+Open firewall ports 80 and 443, reserve a static IP, then on the VM:
+
+```bash
+# System packages, plus 2 GB swap so the npm build and ChromaDB fit in memory
+sudo apt update && sudo apt -y upgrade
+sudo apt -y install python3-venv python3-pip git nginx build-essential
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt -y install nodejs
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+# Code: add ~/.ssh/id_ed25519.pub as a read-only GitHub deploy key first
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519 && cat ~/.ssh/id_ed25519.pub
+cd ~ && git clone git@github.com:csiva2010/fathom.git
+
+# Backend
+cd ~/fathom/backend
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+cp .env.example .env
+python3 -c "import secrets; print(secrets.token_urlsafe(48))"   # value for SESSION_SECRET
+nano .env                                                       # see below
+.venv/bin/alembic upgrade head
+.venv/bin/python -m scripts.seed_db
+.venv/bin/python -m scripts.ingest_kb          # needs the embedding API keys
+.venv/bin/python -m scripts.check_providers    # confirms the keys work from the VM
+
+# Frontend
+cd ~/fathom/frontend && npm ci && npm run build
+chmod o+x $HOME $HOME/fathom $HOME/fathom/frontend   # let nginx read dist/
+```
+
+Production values in `backend/.env`, alongside the provider and LLM keys:
+
+```bash
+SESSION_SECRET=<the value printed above>
+API_PORT=8000
+APP__ENV=production
+APP__FRONTEND_URL=http://<IP>      # or https://your.domain
+AUTH__MODE=guest                   # google needs a domain with HTTPS
+```
+
+Run the API as a systemd service:
+
+```bash
+sudo tee /etc/systemd/system/fathom.service >/dev/null <<EOF
+[Unit]
+Description=Fathom API
+After=network.target
+
+[Service]
+User=$USER
+WorkingDirectory=$HOME/fathom/backend
+ExecStart=$HOME/fathom/backend/.venv/bin/python -m scripts.run_api --no-reload --host 127.0.0.1
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload && sudo systemctl enable --now fathom
+```
+
+Configure nginx. The `limit_req` and `limit_conn` lines are the first rate-limit layer; the API
+applies finer per-route limits from `rate_limit` in `backend/config.yaml`.
+
+```bash
+sudo tee /etc/nginx/sites-available/fathom >/dev/null <<EOF
+limit_req_zone \$binary_remote_addr zone=fathom_api:10m rate=20r/s;
+limit_conn_zone \$binary_remote_addr zone=fathom_conn:10m;
+
+server {
+    listen 80;
+    server_name _;
+    client_max_body_size 10m;                  # chat screenshots
+    client_header_timeout 10s;
+    client_body_timeout 10s;
+
+    root $HOME/fathom/frontend/dist;
+    location / { try_files \$uri /index.html; }    # SPA routes
+
+    location /api/ {
+        limit_req zone=fathom_api burst=40 nodelay;
+        limit_conn fathom_conn 20;
+        limit_req_status 429;
+        limit_conn_status 429;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_http_version 1.1;
+        proxy_buffering off;                   # required for SSE chat streaming
+        proxy_read_timeout 300s;
+    }
+}
+EOF
+sudo ln -sf /etc/nginx/sites-available/fathom /etc/nginx/sites-enabled/fathom
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+HTTPS (needs a DNS A record for the domain): `sudo apt -y install certbot python3-certbot-nginx`,
+set `server_name your.domain;`, run `sudo certbot --nginx -d your.domain`, then set
+`APP__FRONTEND_URL=https://your.domain` and `AUTH__COOKIE_SECURE=true` in `backend/.env` and
+restart the service. For Google sign-in also set `AUTH__MODE=google` and add
+`https://your.domain/api/v1/auth/google/callback` as a redirect URI on the OAuth client.
+
+### Deploying updates
+
+```bash
+cd ~/fathom && git pull
+
+# Backend changes (Python, config.yaml, migrations)
+cd ~/fathom/backend
+.venv/bin/pip install -r requirements.txt
+.venv/bin/alembic upgrade head
+sudo systemctl restart fathom
+
+# Frontend changes: rebuild; nginx serves the new files at once, no restart needed
+cd ~/fathom/frontend && npm ci && npm run build
+
+# Knowledge-base changes (backend/data/kb/): rebuild the index, then restart
+cd ~/fathom/backend && .venv/bin/python -m scripts.ingest_kb && sudo systemctl restart fathom
+```
+
+`backend/.env` changes need `sudo systemctl restart fathom`; nginx config changes need
+`sudo nginx -t && sudo systemctl reload nginx`.
+
+### Service commands
+
+| Task | Command |
+|---|---|
+| API status | `systemctl status fathom --no-pager` |
+| Restart / stop / start the API | `sudo systemctl restart fathom` (or `stop`, `start`) |
+| Follow API logs | `journalctl -u fathom -f` |
+| API logs since a time | `journalctl -u fathom --since "1 hour ago" --no-pager` |
+| Rate-limited requests | `journalctl -u fathom --since today \| grep -c "rate limited"` |
+| Alpaca budget used up | `journalctl -u fathom --since today \| grep provider_quota_exceeded` |
+| Health check | `curl -s localhost:8000/api/v1/health` |
+| Test and reload nginx | `sudo nginx -t && sudo systemctl reload nginx` |
+| nginx logs | `sudo tail -f /var/log/nginx/access.log /var/log/nginx/error.log` |
+| Back up data | `tar czf ~/fathom-backup-$(date +%F).tgz -C ~/fathom/backend var .env` |
+
+| Symptom | Check |
+|---|---|
+| 502 Bad Gateway | The API is down: `systemctl status fathom`, `journalctl -u fathom -n 100` |
+| Chat answer appears all at once | `proxy_buffering off` is missing from the `/api/` location |
+| Screenshot upload fails with 413 | Raise `client_max_body_size` |
+| nginx 403 or 404 on `/` | `frontend/dist` missing or unreadable: rebuild and rerun the `chmod` |
+| Many 429s for real users | Users share one IP (NAT, office Wi-Fi): raise `rate_limit` rules or nginx `rate`/`burst` |
+| Market data shows "mock" all day | Alpaca daily budget spent: raise `market.alpaca.max_requests_per_day` |
+
+Stop the VM when you are not demoing; a running `e2-medium` costs roughly $25 to $30 a month.
+
 ## Troubleshooting
 
 - **Port already in use**: change `WEB_PORT` / `API_PORT` in both `backend/.env` and

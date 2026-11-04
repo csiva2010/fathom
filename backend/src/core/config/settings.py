@@ -5,12 +5,14 @@ Priority (highest first): constructor kwargs > environment > .env file > config.
 
 from __future__ import annotations
 
+import ipaddress
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, Field, SecretStr, model_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -65,6 +67,9 @@ class AlpacaConfig(BaseModel):
     data_base_url: str = "https://data.alpaca.markets"
     feed: Literal["sip", "iex"] = "sip"
     requests_per_minute: int = Field(default=180, gt=0)
+    # Hard cap on calls per UTC day so the demo cannot exhaust the account (None = no cap).
+    # Over the cap, data comes from cache or mock until midnight UTC.
+    max_requests_per_day: int | None = Field(default=None, gt=0)
     # Read-only assets list for symbol search (MD-09), served from the Trading API host.
     # Empty = picked from the key: paper keys (PK...) use paper-api, live keys use api.
     assets_base_url: str = ""
@@ -73,6 +78,7 @@ class AlpacaConfig(BaseModel):
 class AlphaVantageConfig(BaseModel):
     base_url: str = "https://www.alphavantage.co/query"
     requests_per_minute: int = Field(default=5, gt=0)
+    max_requests_per_day: int | None = Field(default=None, gt=0)
 
 
 class RetryConfig(BaseModel):
@@ -116,6 +122,9 @@ class WarmCacheConfig(BaseModel):
 
 class MarketConfig(BaseModel):
     http_timeout_seconds: float = 10
+    # A provider call that would wait longer than this for a rate-limit token is refused
+    # (and served from cache or mock) instead of queueing behind a traffic spike.
+    max_queue_wait_seconds: float = Field(default=5, gt=0)
     alpaca: AlpacaConfig = Field(default_factory=AlpacaConfig)
     alpha_vantage: AlphaVantageConfig = Field(default_factory=AlphaVantageConfig)
     retry: RetryConfig = Field(default_factory=RetryConfig)
@@ -212,6 +221,57 @@ class WorkflowConfig(BaseModel):
     checkpoint_path: str = ""
 
 
+class RateLimitRule(BaseModel):
+    """One HTTP rate limit: `requests` per `per_seconds` for matching requests.
+
+    `path` is a regex matched against the path after the API prefix (e.g. `/market/`);
+    `methods` empty = every method. `scope` client = a separate allowance per client IP;
+    global = one allowance shared by every client (caps total cost, e.g. LLM spend).
+    """
+
+    name: str
+    path: str = "/"
+    methods: list[str] = Field(default_factory=list)
+    requests: int = Field(gt=0)
+    per_seconds: float = Field(gt=0)
+    scope: Literal["client", "global"] = "client"
+
+    @field_validator("path")
+    @classmethod
+    def _valid_regex(cls, value: str) -> str:
+        try:
+            re.compile(value)
+        except re.error as error:
+            raise ValueError(f"invalid path regex {value!r}: {error}") from error
+        return value
+
+
+class RateLimitConfig(BaseModel):
+    """Per-client and global HTTP rate limits in front of the API (abuse and cost protection)."""
+
+    enabled: bool = True
+    # The client IP is read from X-Forwarded-For only when the direct peer is one of these
+    # (IPs or CIDRs), e.g. nginx on the same host. Otherwise the peer address is used.
+    trusted_proxies: list[str] = Field(default_factory=lambda: ["127.0.0.1", "::1"])
+    # Least recently seen clients are forgotten beyond this, bounding memory.
+    max_tracked_clients: int = Field(default=10_000, ge=1)
+    rules: list[RateLimitRule] = Field(default_factory=list)
+
+    @field_validator("trusted_proxies")
+    @classmethod
+    def _valid_networks(cls, value: list[str]) -> list[str]:
+        for entry in value:
+            ipaddress.ip_network(entry, strict=False)
+        return value
+
+    @model_validator(mode="after")
+    def _unique_rule_names(self) -> RateLimitConfig:
+        names = [rule.name for rule in self.rules]
+        if len(names) != len(set(names)):
+            raise ValueError("rate_limit rule names must be unique")
+        return self
+
+
 class SeedConfig(BaseModel):
     dir: str = "data/seed"
 
@@ -233,6 +293,7 @@ class Settings(BaseSettings):
     kb: KnowledgeBaseConfig = Field(default_factory=KnowledgeBaseConfig)
     llm: LlmConfig = Field(default_factory=LlmConfig)
     workflow: WorkflowConfig = Field(default_factory=WorkflowConfig)
+    rate_limit: RateLimitConfig = Field(default_factory=RateLimitConfig)
     seed: SeedConfig = Field(default_factory=SeedConfig)
 
     # Secrets: environment / .env only, never in config.yaml, never sent to the browser.
