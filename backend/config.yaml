@@ -35,16 +35,23 @@ logging:
 
 market:
   http_timeout_seconds: 10
+  # A provider call that would queue longer than this behind the per-minute limit is
+  # served from cache or mock instead, so a traffic spike cannot pile up waiting requests.
+  max_queue_wait_seconds: 5
   alpaca:
     data_base_url: https://data.alpaca.markets
     feed: sip                 # sip = paid real-time; iex = free tier
     requests_per_minute: 180
+    # Hard cap per UTC day so the demo cannot use up the account; past it, quotes and bars
+    # come from cache, then mock data, until midnight UTC. Remove for no cap.
+    max_requests_per_day: 10000
     # Symbol search reads the assets list from the Trading API host (read-only, never
     # trading). Leave unset to pick paper-api or api from the key type.
     # assets_base_url: https://paper-api.alpaca.markets
   alpha_vantage:
     base_url: https://www.alphavantage.co/query
     requests_per_minute: 5    # raise to match your plan
+    # max_requests_per_day: 25  # free tier; uncomment to stop calling once it is spent
   retry:
     attempts: 3
     base_delay_seconds: 0.5
@@ -156,6 +163,25 @@ workflow:
   max_image_bytes: 5000000        # portfolio screenshot attached to a chat message
   max_screenshot_holdings: 25
   checkpoint_path: var/checkpoints.db   # conversation memory; empty = in memory
+
+# HTTP rate limits per client IP (scope: client) or shared by everyone (scope: global).
+# Paths are regexes after the API prefix. Over a limit the API answers 429 + Retry-After.
+# Sized for individual users (~30-60 calls/min at peak). For a room demo on shared Wi-Fi,
+# everyone shares one IP: raise api and market first.
+rate_limit:
+  enabled: true
+  trusted_proxies: [127.0.0.1, "::1"]   # nginx on the same host sets X-Forwarded-For
+  max_tracked_clients: 10000
+  rules:
+    - { name: api, path: /, requests: 280, per_seconds: 60 }
+    # Market routes can reach Alpaca / Alpha Vantage on a cache miss.
+    - { name: market, path: /market/, requests: 200, per_seconds: 60 }
+    # Each chat message runs the LLMs: per-client, plus global caps on total spend.
+    - { name: chat, path: "/conversations/[^/]+/messages$", methods: [POST], requests: 20, per_seconds: 60 }
+    - { name: chat_global, path: "/conversations/[^/]+/messages$", methods: [POST], requests: 120, per_seconds: 60, scope: global }
+    - { name: chat_global_daily, path: "/conversations/[^/]+/messages$", methods: [POST], requests: 2000, per_seconds: 86400, scope: global }
+    # Each guest sign-in creates a user row.
+    - { name: guest_signin, path: /auth/guest$, methods: [POST], requests: 30, per_seconds: 600 }
 
 seed:
   dir: data/seed

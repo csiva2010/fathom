@@ -39,6 +39,8 @@ def make_settings(tmp_path: Path, **overrides: object) -> Settings:
             "categories": ["basics", "tax"],
         },
         "workflow": {"checkpoint_path": str(tmp_path / "checkpoints.db")},
+        # Off so suites that make many requests are not throttled; see test_rate_limit.py.
+        "rate_limit": {"enabled": False},
         "session_secret": "test-secret-0123456789-abcdefghijklmnopqrstuvwxyz",
         "google_client_id": "",
         "google_client_secret": "",

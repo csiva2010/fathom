@@ -2,16 +2,24 @@
 
 from __future__ import annotations
 
-import asyncio
-
 from src.data.resilience import clock as default_clock
+
+
+class WaitTooLong(Exception):
+    """Raised by `acquire(max_wait=...)` when the queue ahead is longer than the caller allows."""
+
+    def __init__(self, wait_seconds: float):
+        super().__init__(f"would wait {wait_seconds:.1f}s for a rate-limit token")
+        self.wait_seconds = wait_seconds
 
 
 class TokenBucket:
     """Allows `capacity` requests in a burst, refilling at `rate_per_second`.
 
     `acquire()` waits until a token is available instead of failing, so callers are
-    smoothed under the provider's limit.
+    smoothed under the provider's limit. Each caller reserves its token up front (the
+    balance may go negative), so the wait is known immediately and `max_wait` can refuse
+    callers that would queue too long, which keeps a traffic spike from piling up tasks.
     """
 
     def __init__(
@@ -30,7 +38,6 @@ class TokenBucket:
         self._clock = clock
         self._sleep = sleep
         self._updated = clock()
-        self._lock = asyncio.Lock()
 
     @classmethod
     def per_minute(cls, requests_per_minute: int, **kwargs: object) -> TokenBucket:
@@ -46,14 +53,16 @@ class TokenBucket:
 
     @property
     def available(self) -> float:
+        """Tokens on hand; negative while callers are queued for future tokens."""
         self._refill()
         return self._tokens
 
-    async def acquire(self) -> None:
-        async with self._lock:
-            while True:
-                self._refill()
-                if self._tokens >= 1:
-                    self._tokens -= 1
-                    return
-                await self._sleep((1 - self._tokens) / self.rate)
+    async def acquire(self, max_wait: float | None = None) -> None:
+        # No await between the refill and the reservation, so this is atomic in asyncio.
+        self._refill()
+        wait = max(0.0, (1 - self._tokens) / self.rate)
+        if max_wait is not None and wait > max_wait:
+            raise WaitTooLong(wait)
+        self._tokens -= 1
+        if wait > 0:
+            await self._sleep(wait)

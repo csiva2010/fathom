@@ -30,7 +30,12 @@ def build_providers(settings: Settings, http_client: httpx.AsyncClient) -> Marke
         alpaca=AlpacaProvider(
             client=http_client,
             config=market.alpaca,
-            guard=ProviderGuard.from_config("alpaca", market.alpaca.requests_per_minute, market),
+            guard=ProviderGuard.from_config(
+                "alpaca",
+                market.alpaca.requests_per_minute,
+                market,
+                max_requests_per_day=market.alpaca.max_requests_per_day,
+            ),
             key_id=settings.alpaca_api_key_id.get_secret_value(),
             secret_key=settings.alpaca_api_secret_key.get_secret_value(),
         ),
@@ -38,7 +43,10 @@ def build_providers(settings: Settings, http_client: httpx.AsyncClient) -> Marke
             client=http_client,
             config=market.alpha_vantage,
             guard=ProviderGuard.from_config(
-                "alpha_vantage", market.alpha_vantage.requests_per_minute, market
+                "alpha_vantage",
+                market.alpha_vantage.requests_per_minute,
+                market,
+                max_requests_per_day=market.alpha_vantage.max_requests_per_day,
             ),
             api_key=settings.alpha_vantage_api_key.get_secret_value(),
         ),

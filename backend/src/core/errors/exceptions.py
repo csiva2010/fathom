@@ -92,6 +92,17 @@ class CircuitOpen(ProviderError):
     code = "provider_circuit_open"
 
 
+class ProviderQuotaExceeded(ProviderError):
+    """Our own call budget for a provider is used up, or its queue is too long.
+
+    Not retried and does not trip the circuit breaker: the chain falls back to cache or
+    mock data until the budget refills.
+    """
+
+    code = "provider_quota_exceeded"
+    retryable = False
+
+
 class UnknownSymbol(AppError):
     code = "unknown_symbol"
     status_code = 404
