@@ -239,6 +239,12 @@ The token authenticates as you, so the backend must be reachable from the machin
 Claude Desktop. If the token is rejected, the tools say so; create a new one and update the
 config.
 
+## Deployment
+
+To run Fathom on a Google Cloud or AWS VM (nginx + systemd, single origin, data on the VM's
+disk), follow [docs/deployment.md](docs/deployment.md). It also covers HTTPS with Google
+sign-in and what to do in restricted AWS accounts.
+
 ## Troubleshooting
 
 - **Port already in use**: change `WEB_PORT` / `API_PORT` in both `backend/.env` and
