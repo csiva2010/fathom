@@ -176,6 +176,10 @@ cd ../frontend && npm run gen:api
   vision LLM and the router always adds the Portfolio agent, which re-prices them with live
   data. The image travels in the run config (`configurable["screenshot"]`), never in state,
   so it is never checkpointed; only the rows (`FinanceState.screenshot`) are kept.
+- Chat voice input (beyond the PRD): a mic button in the composer fills the box using the
+  browser's Web Speech API (`features/chat/hooks/useSpeechInput.ts`); no backend or key, the
+  button is hidden where unsupported (Firefox), and the text is sent only on Send. Browsers
+  allow the mic only on HTTPS or localhost.
 - Day 6 (done): trace (OR-08, INN-01): nodes wrap their work in `trace_step(...)`
   (`workflow/tracing.py`); `TraceEvent` carries latency, LLM calls, tokens, models, fallbacks
   and tools, streams as SSE `trace` events, and is saved on `FinalAnswer.trace` for the chat's

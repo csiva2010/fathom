@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useRef,
   useState,
   type ChangeEvent,
@@ -11,6 +12,7 @@ import {
 import { Button } from "@/components/ui/Button";
 
 import { IMAGE_TYPES, imageFrom, readImage, type Attachment } from "../attachments";
+import { appendSpoken, useSpeechInput } from "../hooks/useSpeechInput";
 
 export const MAX_MESSAGE_CHARS = 4000;
 
@@ -24,7 +26,9 @@ interface ComposerProps {
 
 /**
  * Enter sends, Shift+Enter adds a line. A portfolio screenshot can be pasted, dropped or
- * picked from disk (CH-09); it is sent with the next message and never stored.
+ * picked from disk (CH-09); it is sent with the next message and never stored. The mic
+ * button (shown where the browser supports speech recognition) fills the box from speech;
+ * the text is sent only when the user presses Send.
  */
 export function Composer({ onSend, onStop, streaming, initialText = "" }: ComposerProps) {
   const [text, setText] = useState(initialText);
@@ -32,6 +36,10 @@ export function Composer({ onSend, onStop, streaming, initialText = "" }: Compos
   const [imageError, setImageError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const typedBeforeSpeech = useRef("");
+  const speech = useSpeechInput(
+    useCallback((spoken: string) => setText(appendSpoken(typedBeforeSpeech.current, spoken)), []),
+  );
   const tooLong = text.length > MAX_MESSAGE_CHARS;
   const canSend = (text.trim().length > 0 || image !== null) && !tooLong;
 
@@ -44,6 +52,7 @@ export function Composer({ onSend, onStop, streaming, initialText = "" }: Compos
   const submit = (event?: FormEvent) => {
     event?.preventDefault();
     if (streaming || !canSend) return;
+    speech.cancel();
     onSend(text, image ?? undefined);
     setText("");
     setImage(null);
@@ -65,6 +74,14 @@ export function Composer({ onSend, onStop, streaming, initialText = "" }: Compos
     if (file) {
       event.preventDefault();
       attach(file);
+    }
+  };
+  const toggleMic = () => {
+    if (speech.listening) {
+      speech.stop();
+    } else {
+      typedBeforeSpeech.current = text;
+      speech.start();
     }
   };
   const onPick = (event: ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +142,20 @@ export function Composer({ onSend, onStop, streaming, initialText = "" }: Compos
           >
             Image
           </Button>
+          {speech.supported && (
+            <Button
+              variant="secondary"
+              onClick={toggleMic}
+              disabled={streaming}
+              aria-pressed={speech.listening}
+              aria-label={speech.listening ? "Stop voice input" : "Speak your question"}
+              title={speech.listening ? "Stop listening" : "Speak your question (your browser converts it to text)"}
+              className={`px-3 ${speech.listening ? "border-rose-500 text-rose-600 dark:border-rose-400 dark:text-rose-300" : ""}`}
+            >
+              <MicIcon />
+              {speech.listening && <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" aria-hidden="true" />}
+            </Button>
+          )}
           <label htmlFor="chat-input" className="sr-only">
             Ask a question
           </label>
@@ -135,8 +166,11 @@ export function Composer({ onSend, onStop, streaming, initialText = "" }: Compos
             onChange={(e) => setText(e.target.value)}
             onKeyDown={onKeyDown}
             onPaste={onPaste}
+            readOnly={speech.listening}
             placeholder={
-              image
+              speech.listening
+                ? "Listening… click the mic again when you're done"
+                : image
                 ? "Add a question about these holdings, or just send…"
                 : "Ask about a concept, a ticker, your portfolio or a goal, or paste a portfolio screenshot…"
             }
@@ -158,11 +192,25 @@ export function Composer({ onSend, onStop, streaming, initialText = "" }: Compos
           Keep messages under {MAX_MESSAGE_CHARS} characters ({text.length} now).
         </p>
       )}
+      {speech.error && (
+        <p role="alert" className="text-xs text-rose-700 dark:text-rose-300">
+          {speech.error}
+        </p>
+      )}
       {imageError && (
         <p role="alert" className="text-xs text-rose-700 dark:text-rose-300">
           {imageError}
         </p>
       )}
     </form>
+  );
+}
+
+function MicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+    </svg>
   );
 }
